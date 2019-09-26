@@ -1,0 +1,20 @@
+<div class="film" *ngFor="let item of list$ | async; let index=index">
+  <div class="film__title">{{ item.item.title }} / {{ item.item.original_title }}</div>
+  <div>{{ item.item.genre_ids }}</div>
+
+  <button mat-icon-button class="film__delete" (click)="deleteItem(item)">
+    <mat-icon class="mat-icon-rtl-mirror">
+      delete_forever
+    </mat-icon>
+  </button>
+
+  <div class="film__info">
+    <img class="film__image" [src]="item.item.image"/>
+    <div class="film__description">
+      <div>{{ item.item.description }}</div>
+
+      <app-link class="film__link" [link]="item.url" *ngIf="item.url"></app-link>
+    </div>
+  </div>
+  <app-status [(ngModel)]="item.status" (ngModelChange)="updateItem(item)"></app-status>
+</div>

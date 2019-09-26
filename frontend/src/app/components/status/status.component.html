@@ -1,0 +1,8 @@
+<mat-form-field>
+  <mat-label>Статус</mat-label>
+  <mat-select [value]="value" (value)="value=$event;onChange($event)">
+    <mat-option *ngFor="let status of statusList" [value]="status.status">
+      {{ status.name }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
