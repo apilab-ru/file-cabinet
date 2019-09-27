@@ -1,0 +1,36 @@
+.found__list {
+  padding: 1rem;
+  overflow: auto;
+  max-height: calc(100vh - 4rem);
+}
+.found__image {
+  max-width: 8rem;
+  margin-right: 1.2rem;
+}
+.found__info {
+  padding: 0.5rem 0;
+}
+.found__item {
+  display: flex;
+  margin-bottom: 1rem;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background-color 0.5s ease-in-out;
+  align-items: flex-start;
+}
+.found__item:hover {
+  background: rgba(79, 79, 216, 0.05);
+}
+.found__date {
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+.found__name {
+  font-weight: 500;
+  line-height: 1.2em;
+  margin-bottom: 0.3rem;
+}
+.found__description {
+  font-size: 0.9rem;
+  line-height: 1.2em;
+}

@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ChromeApiService } from '../services/chrome-api.service';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
-import { MatTreeNestedDataSource } from '@angular/material';
+import { MatDialog, MatTreeNestedDataSource } from '@angular/material';
 import { LibraryService } from '../services/library.service';
+import { AddItemComponent } from '../components/add-item/add-item.component';
 
 interface TreeItem extends BookmarkTreeNode {
   removed?: boolean;
@@ -22,6 +23,7 @@ export class AnalyzeComponent implements OnInit {
   constructor(
     private chromeApiService: ChromeApiService,
     private libraryService: LibraryService,
+    private dialog: MatDialog,
   ) {
   }
 
@@ -42,14 +44,31 @@ export class AnalyzeComponent implements OnInit {
       });
   }
 
-  onAssign(patch: string, node: TreeItem): void {
-    console.log('on assign', patch, node);
-    this.libraryService
+  onAssign(path: string, node: TreeItem): void {
+    //console.log('on assign', path, node);
+    const title = this.libraryService.findName(node.title, node.url);
+    //console.log('title', title, node.title, node.url, path);
+    const dialog = this.dialog.open(AddItemComponent, {
+      data: {
+        path,
+        title,
+        fullName: node.title,
+        url: node.url
+      }
+    });
+    //this.libraryService.findItem(path, title).subscribe(res => console.log('res', res))
+    /*this.dialog.open(AddItemComponent, {
+      data: {
+        path,
+
+      }
+    })*/
+    /*this.libraryService
       .addItemByName(patch, node.title)
       .subscribe(() => {
         alert('Ok!');
         //this.removeNode(node);
-      });
+      });*/
   }
 
   hasChild = (_: number, node: BookmarkTreeNode) => !!node.children && node.children.length > 0;

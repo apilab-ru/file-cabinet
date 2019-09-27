@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /extension/app
+/extension/popup/stars.js
 # Only exists if Bazel was run
 /bazel-out
 

@@ -1,10 +1,18 @@
 import { Injectable } from '@angular/core';
 import { filter, first, map, switchMap } from 'rxjs/operators';
 import { FilmsService } from './films.service';
-import { fromEvent, Observable, of, ReplaySubject } from 'rxjs';
+import { fromEvent, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { AnimeService } from './anime.service';
-import { Library, Anime, Film, SearchRequestResult, Status } from '@cab/api';
+import { Library, Anime, Film, SearchRequestResult, Status, Item, ISchema } from '@cab/api';
 import { ChromeApiService } from './chrome-api.service';
+import { MatDialog } from '@angular/material';
+import { FoundItemsComponent } from '../components/found-items/found-items.component';
+
+export interface ItemParams {
+  tags?: string[];
+  status?: string;
+  comment?: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -16,101 +24,122 @@ export class LibraryService {
   private readonly nameExp = /([a-zA-zа-яА-яёЁ\s0-9]*)/;
 
   private storeSubject = new ReplaySubject<Library>(1);
+  private schemas: ISchema[];
   store$: Observable<Library> = this.storeSubject.asObservable();
 
   constructor(
     private filmsService: FilmsService,
     private animeService: AnimeService,
     private chromeApi: ChromeApiService,
+    private dialog: MatDialog,
   ) {
     this.loadState();
     this.listenChangeState();
+    this.chromeApi.fileCab.reload()
+      .then(({schemas, types}) => {
+        this.schemas = schemas;
+      });
   }
 
   getStatusList(): Promise<Status[]> {
     return this.chromeApi.fileCab.getStatusList();
   }
 
-  addItemByName(path: string, fullName: string): Observable<void> {
+  addItemByName(path: string, name: string, params?: ItemParams): Observable<void> {
     if (!this.store[path]) {
       this.store[path] = [];
     }
-    const name = this.findName(fullName);
-    switch (path) {
+    return this.findItem(path, name)
+      .pipe(
+        switchMap(result => this.checkFindItem(name, result)),
+        switchMap(item => this.checkUnique(path, item)),
+        map(item => {
+          this.store.data[path].push({
+            item,
+            ...params
+          });
+          this.saveStore();
+        })
+      )
+  }
+
+  findItem(path: string, name: string): Observable<SearchRequestResult<Film | Anime>> {
+    switch(path) {
       case 'films':
-        return this.addMovieByName(name);
+        return this.filmsService.findMovie(name);
 
       case 'tv':
-        return this.addTvByName(name);
+        return this.filmsService.findTv(name);
 
       case 'anime':
-        break;
+        return this.animeService.findAnime(name);
     }
   }
 
-  addMovieByName(name: string): Observable<void> {
-    return this.filmsService
-      .findMovie(name)
-      .pipe(
-        switchMap(result => this.checkFindItem<Film>(name, result)),
-        map(item => {
-          this.store.data['films'].push({
-            item,
-            tags: []
-          });
-          this.saveStore();
-        })
-      );
+  findName(fullName: string, url?: string): string {
+    const host = url && this.getHost(url);
+    const schema = this.schemas[host];
+    if (schema) {
+      return eval(schema.func)(fullName);
+    } else {
+      return fullName.match(this.nameExp)[0].trim();
+    }
   }
 
-  addTvByName(name: string): Observable<void> {
-    return this.filmsService
-      .findTv(name)
-      .pipe(
-        switchMap(result => this.checkFindItem<Film>(name, result)),
-        map(item => {
-          this.store.data['tv'].push({
-            item,
-            tags: []
-          });
-          this.saveStore();
-        })
-      );
+  getHost(url: string): string {
+    return url.split('/')[2];
   }
 
-  addAnimeByName(name: string): Observable<void> {
-    return this.animeService
-      .findAnime(name)
-      .pipe(
-        switchMap(result => this.checkFindItem<Anime>(name, result)),
-        map(item => {
-          this.store.data['anime'].push({
-            item,
-            tags: []
-          });
-          this.saveStore();
-        })
-      );
-  }
-
-  findName(fullName: string): string {
-    return fullName.match(this.nameExp)[0].trim();
-  }
-
-  deleteItem(path, id: number): void {
-    const index = this.store.data[path].indexOf(it => it.item.id === id);
+  deleteItem(path: string, id: number): void {
+    const index = this.store.data[path].findIndex(it => it.item.id === id);
     if (index !== -1) {
       this.store.data[path].splice(index, 1);
       this.saveStore();
     }
   }
 
-  private checkFindItem<T>(name: string, result: SearchRequestResult<T>): Observable<T> {
+  updateItem(path: string, id: number, item) {
+    const index = this.store.data[path].findIndex(it => it.item.id === id);
+    this.store.data[path][index] = item;
+    this.saveStore();
+  }
+
+  private checkUnique(path: string, item: Anime | Film): Observable<Anime | Film> {
+    const result$ = new Subject<Anime | Film>();
+    if (this.store.data[path]) {
+      const found = this.store.data[path].find(it => it.item.id === item.id);
+      if (found) {
+        result$.error({code: 'notUnique', item: found});
+      } else {
+        result$.next(item);
+      }
+    } else {
+      result$.next(item);
+    }
+    return result$.asObservable().pipe(first());
+  }
+
+  private checkFindItem(name: string, result: SearchRequestResult<Anime | Film>): Observable<Anime | Film> {
     if (result.results.length === 1) {
       return of(result.results[0]);
     } else {
-      alert('ADD popup to select result!');
+      return this.showModalSelectItem(result.results);
     }
+  }
+
+  private showModalSelectItem(list: (Anime | Film)[]): Observable<Anime | Film> {
+    const subject = new Subject<Anime | Film>();
+    const dialog = this.dialog.open(FoundItemsComponent, {
+      data: list
+    });
+    dialog.afterClosed().subscribe((item) => {
+      if (item) {
+        subject.next(item);
+      } else {
+        subject.error({code: 'notSelected'});
+      }
+    });
+    return subject.asObservable().pipe(first());
   }
 
   private saveStore(): void {
@@ -134,6 +163,7 @@ export class LibraryService {
       .pipe(filter((event: StorageEvent) => event.key === this.key))
       .subscribe((event: StorageEvent) => {
         const data = JSON.parse(event.newValue);
+        this.store = data;
         this.storeSubject.next(data);
       });
   }

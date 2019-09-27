@@ -1,6 +1,6 @@
-<div class="film" *ngFor="let item of list$ | async; let index=index">
+<div class="film" *ngFor="let item of list">
   <div class="film__title">{{ item.item.title }} / {{ item.item.original_title }}</div>
-  <div>{{ item.item.genre_ids }}</div>
+  <app-genres [list]="item.item.genre_ids" [genres]="genres$ | async"></app-genres>
 
   <button mat-icon-button class="film__delete" (click)="deleteItem(item)">
     <mat-icon class="mat-icon-rtl-mirror">

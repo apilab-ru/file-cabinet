@@ -22,6 +22,7 @@ class FileCab {
 
   constructor() {
     this.initedData = this.init();
+    this.popup = null;
     this.store$ = new ReplaySubject(1);
     this.loadStore();
     this.listenChangeStore();
@@ -89,8 +90,9 @@ class FileCab {
   * */
   addItem(path, name, param) {
     console.log('add item', path, name, param);
-    this.searchData(path, name)
+    return this.searchData(path, name)
       .then(res => this.checkResults(res))
+      .then(item => this.checkUnique(path, item))
       .then(item => {
         this.addItemToStore(item, path, param);
         return item;
@@ -101,8 +103,22 @@ class FileCab {
     if (res.total_results === 1) {
       return Promise.resolve(res.results[0]);
     } else {
-      // TODO add window to select result
+      if (!this.popup) {
+        console.error('popup null', this);
+        return Promise.reject({code: 'popupNull'});
+      }
+      return this.popup.showModal(res.results);
     }
+  }
+
+  checkUnique(path, item) {
+    if(this.store.data[path]) {
+      const founded = this.store.data[path].find(it => it.item.id === item.id);
+      if (founded) {
+        return Promise.reject({code: 'notUnique', item: founded});
+      }
+    }
+    return Promise.resolve(item);
   }
 
   /*
@@ -146,6 +162,7 @@ class FileCab {
       console.log('storage change', event);
       if (event.key === keyStore) {
         const data = JSON.parse(event.newValue);
+        this.store = data;
         this.store$.next(data);
       }
     });
@@ -158,13 +175,12 @@ window.fileCab = new FileCab();
 function ReplaySubject(count) {
   const callbacks = [];
   const currentValue = [];
-  const subject = {
+  return {
     next: (value) => {
       currentValue.push(value);
       if (currentValue.length > count) {
         currentValue.shift();
       }
-      console.log('callbacks', callbacks);
       callbacks.forEach(({next}) => next && next(value));
     },
     error: (value) => {
@@ -176,6 +192,8 @@ function ReplaySubject(count) {
         currentValue.forEach(value => next(value));
       }
     },
+    unsubscribe: () => {
+      callbacks.shift();
+    }
   };
-  return subject;
 }

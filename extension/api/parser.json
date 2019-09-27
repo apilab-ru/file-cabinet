@@ -11,5 +11,13 @@
   "kinopoisk.ru": {
     "func": "(title) => title.split('-')[0]",
     "type": "films"
+  },
+  "kino.mail.ru": {
+    "func": "(title) => { var [ru, en] = title.split(/[()]/); var res = en.split(','); return res.length > 1 ? res[0] : ru }",
+    "type": "films"
+  },
+  "afisha.mail.ru": {
+    "func": "(title) => { var [ru, en] = title.split(/[()]/); var res = en.split(','); return res.length > 1 ? res[0] : ru }",
+    "type": "films"
   }
 }

@@ -13,6 +13,10 @@ import { AssignerComponent } from './components/assigner/assigner.component';
 import { StatusComponent } from './components/status/status.component';
 import { FormsModule } from '@angular/forms';
 import { LinkComponent } from './components/link/link.component';
+import { GenresComponent } from './components/genres/genres.component';
+import { FoundItemsComponent } from './components/found-items/found-items.component';
+import { AddItemComponent } from './components/add-item/add-item.component';
+import { StarsModule } from '../../projects/stars/src/app/stars/stars.module';
 
 @NgModule({
   declarations: [
@@ -22,7 +26,10 @@ import { LinkComponent } from './components/link/link.component';
     AnalyzeComponent,
     AssignerComponent,
     StatusComponent,
-    LinkComponent
+    LinkComponent,
+    GenresComponent,
+    FoundItemsComponent,
+    AddItemComponent,
   ],
   imports: [
     BrowserModule,
@@ -31,8 +38,13 @@ import { LinkComponent } from './components/link/link.component';
     SharedModule,
     HttpClientModule,
     FormsModule,
+    StarsModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    FoundItemsComponent,
+    AddItemComponent,
+  ]
 })
 export class AppModule { }

@@ -2,6 +2,7 @@ class Parser {
 
   constructor() {
     this.startLoading();
+    this.fileCab.popup = this;
     this.init().then(() => {
       this.stopLoading();
       this.fileCab.store$.subscribe(data => {
@@ -9,7 +10,65 @@ class Parser {
         this.store = data;
         this.render();
       });
+
+      chrome.windows.onFocusChanged.addListener((window) => {
+        this.fileCab.store$.unsubscribe();
+      });
+
+      const modals = M.Modal.init(document.querySelectorAll('.modal'), {
+        onOpenStart: () => {
+          this.togglePopup();
+        },
+        onCloseEnd: () => {
+          this.togglePopup();
+        }
+      });
+      this.modal = modals[0];
+      /*document.querySelector('.js-add')
+        .addEventListener('click', () => {
+          modals[0].open();
+        });*/
     });
+  }
+
+  showModal(data) {
+    let resolve, reject;
+    let isResolved = false;
+    this.modal.options.onCloseStart = () => {
+      if (!isResolved) {
+        reject();
+      }
+    };
+    this.renderModalItems(data);
+    document.querySelectorAll('.found__list .found__item')
+      .forEach((node, index) => {
+        node.addEventListener('click', () => {
+          isResolved = true;
+          resolve(data[index]);
+          this.modal.close();
+        });
+      });
+    this.modal.open();
+    return new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+  }
+
+  renderModalItems(list) {
+    let items = '';
+    list.forEach(item => {
+      items +=
+        `<div class='found__item'>
+          <img class="found__image" src="${item.image}">
+          <div class="found__info">
+            <div class="found__date">${item.date}</div>
+            <div class="found__name">${item.title} / ${item.original_title}</div>
+            <div class="found__description">${item.description}</div>
+          </div>
+        </div>`;
+    });
+    document.querySelector('.found__list').innerHTML = items;
   }
 
   init() {
@@ -60,7 +119,16 @@ class Parser {
     });
     statusListHtml += '</select>';
     document.querySelector('.status-list').innerHTML = statusListHtml;
-    const selectInstance = M.FormSelect.init(document.querySelector('.status-list select'));
+    const $select = document.querySelector('.status-list select');
+    $select.addEventListener('change', event => {
+      const status = event.target.value;
+      if (status === 'complete') {
+        document.querySelector('.app-stars').classList.add('show');
+      } else {
+        document.querySelector('.app-stars').classList.remove('show');
+      }
+    });
+    const selectInstance = M.FormSelect.init($select);
   }
 
   getTitle(host) {
@@ -117,7 +185,23 @@ class Parser {
         console.log('path', path, title, param);
         return this.fileCab.addItem(path, title, param);
       })
-      .then(() => this.stopLoading());
+      .then(() => this.stopLoading())
+      .catch(error => {
+        this.stopLoading();
+        this.errorHandler(error);
+      })
+  }
+
+  errorHandler(reason) {
+    switch (reason.code) {
+      case 'notUnique':
+        this.showMessage('Элемент уже добавлен в библиотеку');
+        break;
+    }
+  }
+
+  showMessage(message) {
+    alert(message);
   }
 
   startLoading() {
@@ -145,6 +229,11 @@ class Parser {
       return this.schemas[host].title;
     }
     return 'document.title';
+  }
+
+  togglePopup() {
+    console.log('toggle');
+    document.querySelector('.popup').classList.toggle('show-modal');
   }
 
 }

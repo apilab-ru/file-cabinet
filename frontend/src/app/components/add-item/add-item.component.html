@@ -1,0 +1,10 @@
+<div>
+  <mat-form-field class="search">
+    <input matInput [(ngModel)]="title" [title]="fullName"/>
+  </mat-form-field>
+  <mat-form-field class="search">
+    <input matInput [(ngModel)]="url" title="Ссылка"/>
+  </mat-form-field>
+</div>
+<app-status class="status" [(ngModel)]="status"></app-status>
+<app-stars></app-stars>

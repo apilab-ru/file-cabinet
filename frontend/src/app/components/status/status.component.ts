@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { LibraryService } from '../../services/library.service';
 import { Status } from '@cab/api';
+import { MatSelectChange } from '@angular/material';
 
 @Component({
   selector: 'app-status',
@@ -38,6 +39,11 @@ export class StatusComponent implements ControlValueAccessor {
   }
 
   registerOnTouched(fn: any): void {
+  }
+
+  handleChange(event: MatSelectChange): void {
+    this.value = event.value;
+    this.onChange(event.value);
   }
 
 }

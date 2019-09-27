@@ -4,6 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" href="materialize.css"/>
   <link rel="stylesheet" href="popup.css"/>
+  <script src="stars.js"></script>
 </head>
 <body class="popup">
   <div class="load-box">
@@ -15,11 +16,21 @@
     <div class="info"></div>
     <div class="buttons"></div>
     <div class="status-list"></div>
+    <app-stars class="app-stars"></app-stars>
   </div>
   <div class="line">
+    <button class="waves-effect waves-light btn js-add">
+      Добавить
+    </button>
     <a class="waves-effect waves-light btn" href="/app/index.html" target="_blank">
       Библиотека
     </a>
+  </div>
+  <div id="more-films" class="modal">
+    <div class="found__list"></div>
+    <div class="modal-footer">
+      <a class="modal-close waves-effect waves-green btn-flat">Отмена</a>
+    </div>
   </div>
 </body>
 <script src="materialize.min.js"></script>

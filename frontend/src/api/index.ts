@@ -17,6 +17,12 @@ export interface LibraryItem<T extends Item> {
   url?: string;
 }
 
+export interface ISchema {
+  func: string;
+  title?: string;
+  type: string;
+}
+
 export type ItemType = Anime | Film;
 
 export interface Library {

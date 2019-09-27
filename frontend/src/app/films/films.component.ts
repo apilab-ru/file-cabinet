@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Destructible } from '../shared/destructible';
-import { map, takeUntil, tap } from 'rxjs/operators';
+import { map, publishReplay, refCount, takeUntil, tap } from 'rxjs/operators';
 import { LibraryService } from '../services/library.service';
 import { Observable } from 'rxjs';
 import { Film, Genre, LibraryItem } from '@cab/api';
 import { FilmsService } from '../services/films.service';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-films',
@@ -17,6 +18,8 @@ import { FilmsService } from '../services/films.service';
 export class FilmsComponent extends Destructible implements OnInit {
 
   mode: 'films' | 'tv';
+  list: LibraryItem<Film>[];
+  genres$ = this.filmsService.getGenres();
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -30,28 +33,27 @@ export class FilmsComponent extends Destructible implements OnInit {
     this.activeRoute
       .data
       .pipe(takeUntil(this.destroy$))
-      .subscribe(data => this.mode = data.mode);
-  }
-
-  get genres$(): Observable<Genre[]> {
-    return this.filmsService.getGenres();
-  }
-
-  get list$(): Observable<LibraryItem<Film>[]> {
-    return this.libraryService.store$
-      .pipe(
-        tap(store => console.log('store', store)),
-        map(store => store.data[this.mode] as LibraryItem<Film>[]),
-        tap(list => console.log('list', list))
-      );
+      .subscribe(data => {
+        this.mode = data.mode;
+        this.load();
+      });
   }
 
   updateItem(item: LibraryItem<Film>): void {
-    console.log('update item', item);
+    this.libraryService.updateItem('films', item.item.id , item);
   }
 
   deleteItem(item: LibraryItem<Film>): void {
     this.libraryService.deleteItem('films', item.item.id);
   }
 
+  private load(): void {
+    this.libraryService.store$
+      .pipe(
+        map(store => store.data[this.mode] as LibraryItem<Film>[]),
+        takeUntil(this.destroy$),
+      ).subscribe(list => {
+        this.list = list;
+      });
+  }
 }
