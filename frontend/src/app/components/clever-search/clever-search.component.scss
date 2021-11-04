@@ -1,0 +1,81 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+.field {
+  width: 100%;
+}
+
+.key {
+  padding: 3px;
+  display: inline-block;
+}
+
+.section {
+  cursor: pointer;
+  padding: 0 2px 2px;
+  display: inline-block;
+  background: #d2f5ab;
+
+  &.-selected {
+    background: #83ed83;
+  }
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.value {
+  margin: 2px;
+  cursor: pointer;
+  display: inline-block;
+  padding: 0 2px 2px;
+  background: #e9f0fd;
+
+  &.-selected {
+    background: #d9d9f9;
+  }
+}
+
+.available {
+  overflow: hidden;
+  max-height: 0;
+  transition: 0.5s;
+
+  &.-show {
+    max-height: 500px;
+  }
+}
+
+.button {
+  padding: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #3f51b5;
+  color: #fff;
+}
+
+.toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: 0.5s;
+
+  &.-show {
+    transform: rotate(180deg);
+  }
+}
+
+.clear {
+  position: absolute;
+  top: 0;
+  right: 40px;
+}
+
+.help {
+  padding: 7px 10px 9px;
+  background: #ffffeb;
+}

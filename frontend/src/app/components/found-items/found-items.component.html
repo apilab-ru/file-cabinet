@@ -1,6 +1,6 @@
-<div class="found_list">
+<div class="found__list">
   <div class='found__item' *ngFor="let item of list" (click)="selectItem(item)">
-    <img class="found__image" [src]="item.image">
+    <img class="found__image" [src]="item.image" *ngIf="item.image">
     <div class="found__info">
       <div class="found__date">{{ item.date }}</div>
       <div class="found__name">{{ item.title }} / {{ item.original_title }}</div>

@@ -14,10 +14,11 @@ export interface GenresResult {
 }
 
 export interface Film extends Item {
-  "genre_ids": number[];
-  "original_title": string;
-  "date": string;
-  "popularity": number;
+  genre_ids: number[];
+  original_title: string;
+  date: string;
+  year: number;
+  popularity: number;
 }
 
 export interface FilmsItem {

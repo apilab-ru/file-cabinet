@@ -1,0 +1,25 @@
+<mat-form-field class="field" #field>
+  <input matInput placeholder="Поиск" [formControl]="inputControl"/>
+</mat-form-field>
+<span class="toggle button icon-arrow_upward" [class.-show]="isShowAdvanced" (click)="toggle()"></span>
+<span class="clear button icon-close" (click)="clear()"></span>
+<div class="available" [class.-show]="isShowAdvanced">
+  <span class="key" *ngFor="let item of keys | keyvalue; let key=index">
+    <span class="section" [class.-selected]="isSectionSelected(item.key)" (click)="setSection(item.key)">
+      ?{{ item.value.name }}=
+    </span>
+    <span class="list" *ngIf="item.value.list">
+      <span class="value"
+            [class.-selected]="isValueSelected(item.key, it.id)"
+            *ngFor="let it of item.value.list"
+            (click)="selectValue(item.key, it.id)"
+      >
+        {{ it.name }}
+      </span>
+    </span>
+  </span>
+  <div class="help">
+    Клик по секциям - добавляет/убирает их, клик по жанрам и статусам,
+    с зажатым ctrl - добавляет, с зажатым alt - добавляет с отрицанием, без alt и ctrl - выбирает только его.
+  </div>
+</div>

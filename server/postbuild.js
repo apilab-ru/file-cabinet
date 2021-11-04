@@ -1,5 +1,6 @@
-var path = require('path');
-var fs = require('fs');
+const path = require('path');
+const fs = require('fs');
+const nodeModulesPath = '"./../../';
 
 function fromDir(startPath, filter, callback) {
 
@@ -15,16 +16,42 @@ function fromDir(startPath, filter, callback) {
 }
 
 fromDir('./dist', /\.ts$/, function (filename) {
-  //fs.unlink(filename);
+  fs.unlink(filename, () => {});
 });
 
+fromDir('./dist', /\.map$/, function (filename) {
+  fs.unlink(filename, () => {});
+});
+
+const replaceList = [
+  /("@nestjs\/.*)"/g,
+  /("typeorm)"/g,
+  /("moment)"/g,
+  /("firebase-admin)"/g,
+];
+
 fromDir('./dist', /\.js$/, function (filename) {
-  //fs.unlink(filename);
+  //
+  const depth = filename.split('\\').length - 2;
+
+  const getPatch = (depth) => {
+    let path = nodeModulesPath;
+    for (let i=0; i<depth; i++) {
+      path += '../';
+    }
+    return path + 'node_modules/';
+  };
+
   fs.readFile(filename, 'utf8', function (err, data) {
     if (err) {
       return console.log(err);
     }
-    var result = data.replace('"@nestjs/core', '"./../node_modules/@nestjs/core');
+    let result = data;
+    replaceList.forEach(regEx => {
+      result = result.replace(regEx, it => {
+        return getPatch(depth) + it.substr(1);
+      });
+    });
 
     fs.writeFile(filename, result, 'utf8', function (err) {
       if (err) return console.log(err);

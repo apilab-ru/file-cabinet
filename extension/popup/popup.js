@@ -1,13 +1,14 @@
 class Parser {
 
   constructor() {
+    this.import = new Import();
     this.startLoading();
     this.fileCab.popup = this;
     this.init().then(() => {
       this.stopLoading();
       this.fileCab.store$.subscribe(data => {
-        console.log('data', data);
         this.store = data;
+        console.log('store', data);
         this.render();
       });
 
@@ -128,7 +129,56 @@ class Parser {
         document.querySelector('.app-stars').classList.remove('show');
       }
     });
-    const selectInstance = M.FormSelect.init($select);
+    M.FormSelect.init($select);
+    if (foundItem && foundItem.status ==='complete') {
+      document.querySelector('.app-stars').star = foundItem.star || 0;
+      document.querySelector('.app-stars').classList.add('show');
+    }
+
+    document.querySelector('.app-stars').addEventListener('setStars', event => {
+      if (foundItem) {
+        foundItem.star = event.detail;
+        const {path, ...item} = foundItem;
+        this.fileCab.updateItem(path, item.item.id, item);
+      }
+    });
+
+    let subActionsHtml = null;
+    if (this.import.checkHost(this.host, this.url)) {
+      subActionsHtml = '<button class="waves-effect waves-light btn js-import">Импортировать</button>'
+    }
+    document.querySelector('.js-sub-actions').innerHTML = subActionsHtml;
+    if (subActionsHtml) {
+      document.querySelector('.js-import')
+        .addEventListener('click', () => {
+          chrome.tabs.executeScript({code: this.import.smotretAnime()}, ([data]) => {
+            const list = this.import.handleSmotretAnime(data, this.store.data.anime);
+            const result = [];
+            let process = 0;
+            Promise.all(
+              list.map(item => this.fileCab.getAnimeById(item.id)
+                .then(item => {
+                  process = process + 1;
+                  console.log('status', process, list.length);
+                  return item;
+                })
+              )
+            ).then(data => {
+              data.forEach((item, index) => {
+                result.push({
+                  item,
+                  ...list[index].param
+                })
+              });
+              this.fileCab.store.data.anime.push(
+                ...result
+              );
+              this.fileCab.saveStore();
+              console.log('store', this.fileCab.store, result);
+            });
+          });
+        });
+    }
   }
 
   getTitle(host) {
@@ -147,7 +197,10 @@ class Parser {
     Object.keys(this.store.data).forEach(path => {
       const item = this.store.data[path].find(item => item.url === this.url);
       if (item) {
-        foundItem = item;
+        foundItem = {
+          ...item,
+          path
+        };
         return false;
       }
     });
@@ -162,7 +215,8 @@ class Parser {
         param: {
           url: this.url,
           status: this.getStatus()
-        }
+        },
+        star: document.querySelector('.app-stars').star
       }));
   }
 
@@ -182,7 +236,6 @@ class Parser {
     this.startLoading();
     this.getData()
       .then(({title, param}) => {
-        console.log('path', path, title, param);
         return this.fileCab.addItem(path, title, param);
       })
       .then(() => this.stopLoading())
@@ -232,8 +285,75 @@ class Parser {
   }
 
   togglePopup() {
-    console.log('toggle');
     document.querySelector('.popup').classList.toggle('show-modal');
+  }
+
+}
+
+class Import {
+
+  checkHost(host, url) {
+    switch(host) {
+      case 'smotret-anime-365.ru':
+        return url.match(/smotret\-anime-365\.ru\/users\/[0-9]*\/list/);
+        break;
+    }
+  }
+
+  smotretAnime() {
+    return `var data = [];
+    document.querySelectorAll('.m-animelist-card')
+      .forEach(nodeCard => {
+        const title = nodeCard.querySelector('.card-title').innerText.trim();
+        const section = {
+          title,
+          list: []
+        };
+        nodeCard.querySelectorAll('.m-animelist-item')
+          .forEach(tdNode => {
+            const tdNodes = tdNode.querySelectorAll('td');
+            const link = tdNodes[1].querySelector('a').href;
+            const id = +link.match(/\\/([0-9]{1,5})/g)[0].substr(1);
+            const progress = tdNodes[2].innerText.trim().split('/').map(it => +it)[0];
+            let score = tdNodes[3].innerText.trim();
+            score = score === '-' ? 0 : +score;
+            section.list.push({link, id, progress, score});
+          });
+        data.push(section);
+      });
+    data;`;
+  }
+
+  handleSmotretAnime(data, store) {
+    const list = [];
+    const statusMap = {
+      'Смотрю': 'process',
+      'Просмотрено': 'complete',
+      'Отложено': 'planned',
+      'Брошено': 'drop',
+      'Запланировано': 'planned'
+    };
+    data.forEach(section => {
+      const status = statusMap[section.title];
+      section.list.forEach(item => {
+        if (this.checkUnique(store, item.id)) {
+          list.push({
+            id: item.id,
+            param: {
+              status,
+              progress: item.progress,
+              url: item.link,
+              star: item.score
+            }
+          });
+        }
+      });
+    });
+    return list;
+  }
+
+  checkUnique(store, id) {
+    return !store.find(item => item.item.id === id);
   }
 
 }

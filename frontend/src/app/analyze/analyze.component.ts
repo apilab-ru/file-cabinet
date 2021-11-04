@@ -1,13 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ChromeApiService } from '../services/chrome-api.service';
 import { NestedTreeControl } from '@angular/cdk/tree';
-import BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
-import { MatDialog, MatTreeNestedDataSource } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { LibraryService } from '../services/library.service';
 import { AddItemComponent } from '../components/add-item/add-item.component';
+import { filter, first, mergeMap, tap } from 'rxjs/operators';
+import BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
+import { saveData } from '../shared/save-data';
 
 interface TreeItem extends BookmarkTreeNode {
   removed?: boolean;
+  load?: boolean;
 }
 
 @Component({
@@ -36,18 +40,24 @@ export class AnalyzeComponent implements OnInit {
     return protocol + '//' + domain + '/favicon.ico';
   }
 
-  removeNode(node: TreeItem): void {
-    this.chromeApiService
+  removeNode(node: TreeItem): Promise<void> {
+    return this.chromeApiService
       .removeBookmark(node.id)
       .then(() => {
         node.removed = true;
       });
   }
 
+  removeFolder(node: TreeItem): void {
+    Promise.all(
+      node.children.map(item => item.children ? this.removeFolder(item) : this.removeNode(item))
+    ).then(() => {
+      this.removeNode(node);
+    })
+  }
+
   onAssign(path: string, node: TreeItem): void {
-    //console.log('on assign', path, node);
     const title = this.libraryService.findName(node.title, node.url);
-    //console.log('title', title, node.title, node.url, path);
     const dialog = this.dialog.open(AddItemComponent, {
       data: {
         path,
@@ -56,19 +66,31 @@ export class AnalyzeComponent implements OnInit {
         url: node.url
       }
     });
-    //this.libraryService.findItem(path, title).subscribe(res => console.log('res', res))
-    /*this.dialog.open(AddItemComponent, {
-      data: {
-        path,
+    dialog.afterClosed()
+      .pipe(
+        filter(data => !!data),
+        mergeMap(data => {
+          const { title, path, param } = data;
+          return this.libraryService.addItemByName(path, title, param);
+        })
+      )
+      .subscribe(res => {
+        node.load = false;
+        this.removeNode(node);
+      }, error => {
+        this.handleError(error);
+      });
+  }
 
-      }
-    })*/
-    /*this.libraryService
-      .addItemByName(patch, node.title)
-      .subscribe(() => {
-        alert('Ok!');
-        //this.removeNode(node);
-      });*/
+  exportNode(node: BookmarkTreeNode): void {
+    console.log('export node', node);
+    const html = this.chromeApiService.generateExportBookmarkHtml(node);
+    saveData(html, `bookmark-${node.title}.html`);
+  }
+
+  handleError(error): void {
+    console.error(error);
+    alert(error.code);
   }
 
   hasChild = (_: number, node: BookmarkTreeNode) => !!node.children && node.children.length > 0;
@@ -76,7 +98,6 @@ export class AnalyzeComponent implements OnInit {
   private init(): void {
     this.chromeApiService.getTreeBookmarks()
       .then(list => {
-        console.log('list', list, this.treeControl);
         this.dataSource.data = list;
       });
   }

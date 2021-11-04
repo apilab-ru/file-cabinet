@@ -1,6 +1,6 @@
 {
   "anidub.tv": {
-    "func": "(title) => title.split('/')[1]",
+    "func": "(title) => title.split('/')[1].split('[')[0]",
     "type": "anime"
   },
   "animestars.org": {
@@ -8,8 +8,16 @@
     "title": "document.querySelector('.short-t-or').innerText",
     "type": "anime"
   },
+  "smotret-anime-365.ru": {
+    "func": "(title) => title.substr(15).match(/([\\S\\s]*)\\. онлайн\\./)[1].trim()",
+    "type": "anime"
+  },
+  "smotret-anime.online": {
+    "func": "(title) => title.substr(15).match(/([\\S\\s]*)\\. онлайн\\./)[1].trim()",
+    "type": "anime"
+  },
   "kinopoisk.ru": {
-    "func": "(title) => title.split('-')[0]",
+    "func": "(title) => title.split(/[\\-\\—]/)[0]",
     "type": "films"
   },
   "kino.mail.ru": {
@@ -18,6 +26,10 @@
   },
   "afisha.mail.ru": {
     "func": "(title) => { var [ru, en] = title.split(/[()]/); var res = en.split(','); return res.length > 1 ? res[0] : ru }",
+    "type": "films"
+  },
+  "ivi.ru": {
+    "func": "(title) => title.substr(6).split('(')[0].trim()",
     "type": "films"
   }
 }

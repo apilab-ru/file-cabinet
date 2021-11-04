@@ -4,16 +4,24 @@ const apiUrl = 'http://localhost:3000/';
 const nameExp = /([a-zA-zа-яА-яёЁ\s0-9]*)/;
 const statusList = [
   {
-    name: 'Запланированно',
-    status: 'letter'
+    name: 'Запланировано',
+    status: 'planned'
   },
   {
     name: 'Просмотренно',
     status: 'complete'
   },
   {
+    name: 'Смотрю',
+    status: 'process'
+  },
+  {
     name: 'Брошенно',
     status: 'drop'
+  },
+  {
+    name: 'Скрыть',
+    status: 'hide'
   }
 ];
 const keyStore = 'store';
@@ -52,6 +60,12 @@ class FileCab {
   searchAnime(name) {
     return fetch(
       new URL(apiUrl + 'anime/search?name=' + name).href
+    ).then(res => res.json());
+  }
+
+  getAnimeById(id) {
+    return fetch(
+      new URL(apiUrl + 'anime/' + id).href
     ).then(res => res.json());
   }
 
@@ -137,6 +151,12 @@ class FileCab {
     console.log('store', this.store);
   }
 
+  updateItem(path, id, item) {
+    const index = this.store.data[path].findIndex(it => it.item.id === id);
+    this.store.data[path][index] = item;
+    this.saveStore();
+  }
+
   loadStore() {
     try {
       this.store = JSON.parse(localStorage.getItem(keyStore));
@@ -167,7 +187,7 @@ class FileCab {
       }
     });
   }
-  
+
 }
 
 window.fileCab = new FileCab();

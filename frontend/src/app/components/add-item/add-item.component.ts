@@ -1,33 +1,51 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { LibraryService } from '../../services/library.service';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ItemType, MetaData } from '@cab/api';
 
-interface MatDialogData {
+interface ItemData extends MetaData {
+  title?: string;
+  fullName?: string;
+  item?: ItemType;
   path: string;
-  title: string;
-  fullName: string;
-  url: string;
 }
 
 @Component({
   selector: 'app-add-item',
   templateUrl: './add-item.component.html',
-  styleUrls: ['./add-item.component.scss']
+  styleUrls: ['./add-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddItemComponent {
 
-  path: string;
+  data: MetaData;
   title: string;
   fullName: string;
-  url: string;
-
-  status = 'planned';
+  path: string;
 
   constructor(
-    public dialogRef: MatDialogRef<AddItemComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: MatDialogData,
+    private dialogRef: MatDialogRef<AddItemComponent>,
+    @Inject(MAT_DIALOG_DATA) data: ItemData,
   ) {
-    Object.assign(this, data);
+    const {path, title, fullName, ...item} = data;
+    this.data = {
+      ...item,
+      status: item.status || 'planned'
+    };
+    this.title = title;
+    this.path = path;
+    this.fullName = fullName;
+  }
+
+  get isShowStar(): boolean {
+    return this.data.status === 'complete' || this.data.status === 'process' || this.data.status === 'drop';
+  }
+
+  send(): void {
+    this.dialogRef.close({
+      path: this.path,
+      title: this.title,
+      param: this.data
+    });
   }
 
 }

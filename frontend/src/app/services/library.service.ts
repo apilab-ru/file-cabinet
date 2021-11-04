@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { filter, first, map, switchMap } from 'rxjs/operators';
+import { filter, first, map, mergeMap, switchMap } from 'rxjs/operators';
 import { FilmsService } from './films.service';
 import { fromEvent, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { AnimeService } from './anime.service';
-import { Library, Anime, Film, SearchRequestResult, Status, Item, ISchema } from '@cab/api';
+import { Library, Anime, Film, SearchRequestResult, Status, Item, ISchema, LibraryItem, ItemType } from '@cab/api';
 import { ChromeApiService } from './chrome-api.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { FoundItemsComponent } from '../components/found-items/found-items.component';
 
 export interface ItemParams {
@@ -45,14 +45,27 @@ export class LibraryService {
     return this.chromeApi.fileCab.getStatusList();
   }
 
+  addItem(path: string, item: LibraryItem<ItemType>): Observable<void> {
+    if (!this.store[path]) {
+      this.store[path] = [];
+    }
+    return this.checkUnique(path, item.item)
+      .pipe(
+        map(() => {
+          this.store.data[path].push(item);
+          this.saveStore();
+        })
+      );
+  }
+
   addItemByName(path: string, name: string, params?: ItemParams): Observable<void> {
     if (!this.store[path]) {
       this.store[path] = [];
     }
     return this.findItem(path, name)
       .pipe(
-        switchMap(result => this.checkFindItem(name, result)),
-        switchMap(item => this.checkUnique(path, item)),
+        mergeMap(result => this.checkFindItem(name, result)),
+        mergeMap(item => this.checkUnique(path, item)),
         map(item => {
           this.store.data[path].push({
             item,
@@ -87,7 +100,11 @@ export class LibraryService {
   }
 
   getHost(url: string): string {
-    return url.split('/')[2];
+    let host = url.split('/')[2];
+    if (host.substr(0, 4) === 'www.') {
+      host = host.substr(4);
+    }
+    return host;
   }
 
   deleteItem(path: string, id: number): void {
@@ -104,8 +121,13 @@ export class LibraryService {
     this.saveStore();
   }
 
+  updateStore(store: Library): void {
+    this.store = store;
+    this.saveStore();
+  }
+
   private checkUnique(path: string, item: Anime | Film): Observable<Anime | Film> {
-    const result$ = new Subject<Anime | Film>();
+    const result$ = new ReplaySubject<Anime | Film>(1);
     if (this.store.data[path]) {
       const found = this.store.data[path].find(it => it.item.id === item.id);
       if (found) {
@@ -162,6 +184,7 @@ export class LibraryService {
     fromEvent(window, 'storage')
       .pipe(filter((event: StorageEvent) => event.key === this.key))
       .subscribe((event: StorageEvent) => {
+        console.log('reload store', event);
         const data = JSON.parse(event.newValue);
         this.store = data;
         this.storeSubject.next(data);

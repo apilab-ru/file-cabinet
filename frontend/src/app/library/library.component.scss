@@ -1,0 +1,79 @@
+app-library {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.library {
+  min-width: 400px;
+  width: 25%;
+  box-sizing: border-box;
+  padding: 10px 20px 10px 10px;
+  position: relative;
+
+  &__genres {
+    margin-bottom: 0.5em;
+  }
+
+  &__delete {
+    position: absolute !important;
+    top: 8px;
+    right: 10px;
+    color: #f44336;
+  }
+
+  &__info {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  &__title {
+    font-size: 16px;
+    min-height: 2.69em;
+    display: flex;
+    align-items: center;
+    padding-right: 30px;
+  }
+
+  &__description {
+    padding-left: 10px;
+    max-height: 271px;
+    overflow: auto;
+    flex: 1;
+  }
+
+  &__image {
+    width: 180px;
+    height: 270px;
+    object-fit: cover;
+  }
+
+  &__link {
+    margin-top: 15px;
+    display: block;
+  }
+
+  &__status {
+    margin-bottom: -10px;
+    display: flex;
+    margin-top: 6px;
+  }
+
+  &__subtitle {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__year {
+    font-weight: bold;
+  }
+
+  &__rating {
+    font-weight: bold;
+  }
+
+  &__submit {
+    display: flex;
+    align-items: center;
+    padding-top: 10px;
+  }
+}

@@ -1,20 +1,15 @@
-import { Item } from '../../../server/src/api';
-
-export interface Library {
-  sections: LibrarySection[];
-}
-
-export interface LibrarySection {
-  key: string;
-  list: LibraryItem[];
-}
-
-export interface LibraryItem extends Item {
-  comment: string;
-  tags: number[];
-}
-
 export interface Tag {
   name: string;
   id: number;
+}
+
+export enum Path {
+  anime = 'anime',
+  tv = 'tv',
+  films = 'films'
+}
+
+export enum LibraryMode {
+  library = 'library',
+  search = 'search'
 }

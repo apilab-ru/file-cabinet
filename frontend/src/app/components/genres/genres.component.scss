@@ -1,0 +1,10 @@
+:host {
+  display: flex;
+  flex-wrap: wrap;
+
+  .tag {
+    padding: 3px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+}

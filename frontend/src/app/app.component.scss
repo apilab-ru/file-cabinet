@@ -2,11 +2,21 @@
 @import '~@angular/material/theming';
 
 .search {
-  margin-bottom: -1rem;
-  /*padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 10px;*/
-  width: calc(100% - 20px);
+  display: flex;
+
+  &__input {
+    flex: 1;
+  }
+
+  &__setting {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    display: flex;
+  }
+
+  &__setting-item {
+    margin-right: 0.5rem;
+  }
 }
 
 .app {

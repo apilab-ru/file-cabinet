@@ -21,7 +21,7 @@
   </ng-container>
   <!-- This is the tree node template for expandable nodes -->
   <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
-    <li>
+    <li *ngIf="!node.removed">
       <div class="mat-tree-node">
         <button mat-icon-button matTreeNodeToggle
                 [attr.aria-label]="'toggle ' + node.name">
@@ -30,6 +30,12 @@
           </mat-icon>
         </button>
         Папка: {{ node.title || 'Базовая' }}
+        <button mat-stroked-button (click)="removeFolder(node)">
+          Удалить
+        </button>
+        <button mat-stroked-button (click)="exportNode(node)">
+          Экспортировать
+        </button>
       </div>
       <ul [class.example-tree-invisible]="!treeControl.isExpanded(node)">
         <ng-container matTreeNodeOutlet></ng-container>

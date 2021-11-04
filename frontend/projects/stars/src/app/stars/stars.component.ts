@@ -20,7 +20,7 @@ import {
     <span class="counter">{{ star }} / 10</span>
   `,
   styleUrls: ['stars.component.scss'],
-  encapsulation: ViewEncapsulation.Native
+  encapsulation: ViewEncapsulation.ShadowDom
 })
 export class StarsComponent {
 

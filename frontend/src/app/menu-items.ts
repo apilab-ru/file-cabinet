@@ -1,34 +1,42 @@
-import { AnimeComponent } from './anime/anime.component';
-import { FilmsComponent } from './films/films.component';
+import { LibraryComponent } from './library/library.component';
 import { Route } from '@angular/router';
 import { AnalyzeComponent } from './analyze/analyze.component';
+import { SettingsComponent } from './settings/settings.component';
 
 export const MENU_ITEMS: (Route & {name: string})[]  = [
   {
     path: 'anime',
-    component: AnimeComponent,
-    name: 'Аниме'
+    component: LibraryComponent,
+    name: 'Аниме',
+    data: {
+      path: 'anime'
+    },
   },
   {
     path: 'films',
-    component: FilmsComponent,
+    component: LibraryComponent,
     data: {
-      mode: 'films'
+      path: 'films'
     },
     name: 'Фильмы'
   },
   {
     path: 'tv',
-    component: FilmsComponent,
+    component: LibraryComponent,
     data: {
-      mode: 'tv'
+      path: 'tv'
     },
     name: 'Сериалы'
   },
   {
     path: 'articles',
-    component: FilmsComponent,
+    component: LibraryComponent,
     name: 'Статьи'
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent,
+    name: 'Настройки'
   },
   {
     path: 'analyze',

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject } from 'rxjs';
-import { NavigationItem } from '../../api';
+import { NavigationItem } from '@cab/api';
 import { MENU_ITEMS } from '../menu-items';
 
 @Injectable({
@@ -9,6 +9,7 @@ import { MENU_ITEMS } from '../menu-items';
 export class NavigationService {
 
   private items$ = new ReplaySubject<NavigationItem[]>(1);
+  private pathSubject = new ReplaySubject<string>(1);
   private structItems = [
     {
       name: 'Аниме',
@@ -30,6 +31,14 @@ export class NavigationService {
 
   constructor() {
     this.items$.next(MENU_ITEMS);
+  }
+
+  setPath(path: string): void {
+    this.pathSubject.next(path);
+  }
+
+  get path$(): Observable<string> {
+    return this.pathSubject.asObservable();
   }
 
   getItems(): Observable<NavigationItem[]> {
