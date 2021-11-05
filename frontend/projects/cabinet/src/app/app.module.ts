@@ -15,7 +15,7 @@ import { LinkComponent } from './components/link/link.component';
 import { GenresComponent } from './components/genres/genres.component';
 import { FoundItemsComponent } from './components/found-items/found-items.component';
 import { AddItemComponent } from './components/add-item/add-item.component';
-import { StarsModule } from '../../../stars/src/app/stars/stars.module';
+import { StarsModule } from '../../../shared/stars/stars.module';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { SettingsComponent } from './settings/settings.component';
 import { CleverSearchComponent } from './components/clever-search/clever-search.component';
