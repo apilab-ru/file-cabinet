@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { NavigationService } from '../../services/navigation.service';
 import { Observable } from 'rxjs';
 import { NavigationItem } from '../../../api';
@@ -6,7 +6,7 @@ import { NavigationItem } from '../../../api';
 @Component({
   selector: 'app-assigner',
   templateUrl: './assigner.component.html',
-  styleUrls: ['./assigner.component.scss']
+  styleUrls: ['./assigner.component.scss'],
 })
 export class AssignerComponent {
 

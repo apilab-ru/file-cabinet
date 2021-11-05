@@ -81,9 +81,39 @@ export class FileCab {
       .then(res => this.checkResults(res))
       .then(item => this.checkUnique(path, item))
       .then(item => {
-        this.addItemToStore(item, path, param);
+        this.addItemToStore(path, item, param);
         return item;
       });
+  }
+
+  addItemLibToStore(path: string, item:  LibraryItem<ItemType>): Promise<void> {
+    return this.checkUnique(path, item.item)
+      .then(() => {
+        const meta = deepCopy(item);
+        delete meta.item;
+
+        this.addItemToStore(path, item.item, meta);
+      })
+  }
+
+  addItemToStore(path: string, item: ItemType, param: MetaData): void {
+    console.log('add item to store', item, path, param);
+
+    const { data } = this.store.getValue();
+
+    if (!data[path]) {
+      data[path] = [];
+    }
+
+    data[path].push({
+      item,
+      ...param,
+    });
+
+    this.updateStore({
+      ...this.store.getValue(),
+      data,
+    });
   }
 
   checkResults(res: SearchRequestResult<ItemType>) {
@@ -111,26 +141,6 @@ export class FileCab {
   }
 
 
-  addItemToStore(item: ItemType, path: string, param: MetaData): void {
-    console.log('add item to store', item, path, param);
-
-    const { data } = this.store.getValue();
-
-    if (!data[path]) {
-      data[path] = [];
-    }
-
-    data[path].push({
-      item,
-      ...param,
-    });
-
-    this.updateStore({
-      ...this.store.getValue(),
-      data,
-    });
-  }
-
   updateItem(path: string, id: number, item: LibraryItem<ItemType>): void {
     const { data } = deepCopy(this.store.getValue());
 
@@ -142,6 +152,20 @@ export class FileCab {
     data[path][index] = item;
 
     this.updateStore({ ...this.store.getValue(), data });
+  }
+
+  deleteItem(path: string, id: number): void {
+    const { data } = deepCopy(this.store.getValue());
+
+    if (!data[path]) {
+      return;
+    }
+
+    const index = data[path].findIndex(it => it.item.id === id);
+    if (index !== -1) {
+      data[path].splice(index, 1);
+      this.updateStore({ ...this.store.getValue(), data });
+    }
   }
 
   private loadStore(): typeof storeData {

@@ -49,7 +49,7 @@ export class SearchService {
   filterByState(data: LibraryItem<ItemType>[], state: ISearchStatus): LibraryItem<ItemType>[] {
     if (state) {
       state.search = state.search && state.search.toLocaleLowerCase();
-      return data.filter(item => this.itemToStateCompare(item, state));
+      return data?.filter(item => this.itemToStateCompare(item, state));
     } else {
       return data;
     }

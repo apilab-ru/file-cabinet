@@ -19,6 +19,10 @@ export class ListComponent<T> {
   @ContentChild(ListIteratorDirective, { static: false }) private listIterator: ListIteratorDirective<T>;
 
   @Input() set list(list: T[]) {
+    if (!list) {
+      return;
+    }
+
     // Костыль, не сбивать паджинацию при удалении одного элемента
     if (this.data && Math.abs(this.data.length - list.length) > 1) {
       this.page = 1;

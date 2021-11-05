@@ -29,11 +29,6 @@ export const MENU_ITEMS: (Route & {name: string})[]  = [
     name: 'Сериалы'
   },
   {
-    path: 'articles',
-    component: LibraryComponent,
-    name: 'Статьи'
-  },
-  {
     path: 'settings',
     component: SettingsComponent,
     name: 'Настройки'

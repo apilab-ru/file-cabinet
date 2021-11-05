@@ -10,7 +10,7 @@ import { AnimeService } from '../services/anime.service';
 import { DataFactory } from './data-factory';
 import { SearchService } from '../services/search.service';
 import { AddItemComponent } from '../components/add-item/add-item.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-library',
@@ -19,7 +19,6 @@ import { MatDialog } from '@angular/material';
   encapsulation: ViewEncapsulation.None,
 })
 export class LibraryComponent extends Destructible implements OnInit {
-
   path: Path;
   list: LibraryItem<ItemType>[];
 

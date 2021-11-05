@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { filter, first, map, mergeMap } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { FilmsService } from './films.service';
-import { fromEvent, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { from, Observable, Subject } from 'rxjs';
 import { AnimeService } from './anime.service';
 import { Anime, Film, ISchema, ItemType, Library, LibraryItem, SearchRequestResult } from '../../api';
 import { ChromeApiService } from './chrome-api.service';
@@ -19,14 +19,10 @@ export interface ItemParams {
   providedIn: 'root',
 })
 export class LibraryService {
-
-  private store: Library;
-  private key = 'store';
   private readonly nameExp = /([a-zA-zа-яА-яёЁ\s0-9]*)/;
-
-  private storeSubject = new ReplaySubject<Library>(1);
   private schemas: ISchema[];
-  store$: Observable<Library> = this.storeSubject.asObservable();
+
+  store$: Observable<Library>;
 
   constructor(
     private filmsService: FilmsService,
@@ -35,43 +31,15 @@ export class LibraryService {
     private dialog: MatDialog,
     private fileCab: FileCab,
   ) {
-    this.loadState();
-    this.listenChangeState();
-    this.fileCab.reload()
-      .then(({ schemas, types }) => {
-        this.schemas = schemas;
-      });
+    this.store$ = this.fileCab.store$;
   }
 
-  addItem(path: string, item: LibraryItem<ItemType>): Observable<void> {
-    if (!this.store[path]) {
-      this.store[path] = [];
-    }
-    return this.checkUnique(path, item.item)
-      .pipe(
-        map(() => {
-          this.store.data[path].push(item);
-          this.saveStore();
-        }),
-      );
+  addItem(path: string, item: LibraryItem<ItemType>): Observable<any> {
+    return from(this.fileCab.addItemLibToStore(path, item));
   }
 
-  addItemByName(path: string, name: string, params?: ItemParams): Observable<void> {
-    if (!this.store[path]) {
-      this.store[path] = [];
-    }
-    return this.findItem(path, name)
-      .pipe(
-        mergeMap(result => this.checkFindItem(name, result)),
-        mergeMap(item => this.checkUnique(path, item)),
-        map(item => {
-          this.store.data[path].push({
-            item,
-            ...params,
-          });
-          this.saveStore();
-        }),
-      );
+  addItemByName(path: string, name: string, params?: ItemParams): Observable<ItemType> {
+    return from(this.fileCab.addItem(path, name, params || {}));
   }
 
   findItem(path: string, name: string): Observable<SearchRequestResult<Film | Anime>> {
@@ -106,46 +74,17 @@ export class LibraryService {
   }
 
   deleteItem(path: string, id: number): void {
-    const index = this.store.data[path].findIndex(it => it.item.id === id);
-    if (index !== -1) {
-      this.store.data[path].splice(index, 1);
-      this.saveStore();
-    }
+    this.fileCab.deleteItem(path, id);
   }
 
-  updateItem(path: string, id: number, item) {
-    const index = this.store.data[path].findIndex(it => it.item.id === id);
-    this.store.data[path][index] = item;
-    this.saveStore();
+  updateItem(path: string, id: number, item): void {
+    this.fileCab.updateItem(path, id, item);
   }
 
   updateStore(store: Library): void {
-    this.store = store;
-    this.saveStore();
+    console.log('xxx store', store);
   }
 
-  private checkUnique(path: string, item: Anime | Film): Observable<Anime | Film> {
-    const result$ = new ReplaySubject<Anime | Film>(1);
-    if (this.store.data[path]) {
-      const found = this.store.data[path].find(it => it.item.id === item.id);
-      if (found) {
-        result$.error({ code: 'notUnique', item: found });
-      } else {
-        result$.next(item);
-      }
-    } else {
-      result$.next(item);
-    }
-    return result$.asObservable().pipe(first());
-  }
-
-  private checkFindItem(name: string, result: SearchRequestResult<Anime | Film>): Observable<Anime | Film> {
-    if (result.results.length === 1) {
-      return of(result.results[0]);
-    } else {
-      return this.showModalSelectItem(result.results);
-    }
-  }
 
   private showModalSelectItem(list: (Anime | Film)[]): Observable<Anime | Film> {
     const subject = new Subject<Anime | Film>();
@@ -160,41 +99,5 @@ export class LibraryService {
       }
     });
     return subject.asObservable().pipe(first());
-  }
-
-  private saveStore(): void {
-    localStorage.setItem(this.key, JSON.stringify(this.store));
-    this.storeSubject.next(this.store);
-  }
-
-  private loadState(): void {
-    try {
-      this.store = JSON.parse(localStorage.getItem(this.key));
-    } catch (e) {
-    }
-    if (!this.store) {
-      this.loadBaseState();
-    } else {
-      this.storeSubject.next(this.store);
-    }
-  }
-
-  private listenChangeState(): void {
-    fromEvent(window, 'storage')
-      .pipe(filter((event: StorageEvent) => event.key === this.key))
-      .subscribe((event: StorageEvent) => {
-        console.log('reload store', event);
-        const data = JSON.parse(event.newValue);
-        this.store = data;
-        this.storeSubject.next(data);
-      });
-  }
-
-  private loadBaseState(): void {
-    this.store = {
-      tags: [],
-      data: {},
-    };
-    this.saveStore();
   }
 }
