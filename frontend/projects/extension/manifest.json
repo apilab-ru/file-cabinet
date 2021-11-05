@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+  "name": "File-cabinet",
+  "version": "1.1",
+
+  "description": "This extension allows you control your library",
+  "icons": {
+    "48": "library_add.png"
+  },
+
+
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+
+  "browser_action": {
+    "default_title": "File cabinet",
+    "default_icon": "library_add.png",
+    "default_popup": "popup/index.html"
+  },
+
+  "background": {
+    "persistent": true,
+    "scripts": ["background.js"]
+  },
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "bookmarks",
+    "http://*/*",
+    "https://*/*"
+  ]
+}

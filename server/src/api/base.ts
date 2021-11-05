@@ -11,8 +11,8 @@ export interface Genre {
 }
 
 export interface SearchRequestResult<T> {
-  "page": number;
-  "total_results": number;
-  "total_pages": number;
-  "results": T[];
+  page: number;
+  total_results: number;
+  total_pages: number;
+  results: T[];
 }

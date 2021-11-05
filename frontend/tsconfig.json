@@ -19,7 +19,8 @@
       "dom"
     ],
     "paths": {
-      "@cab/api": ["./src/api"]
+      "@server/api/*": ["../server/src/api/*"],
+      "@shared/*": ["projects/shared/*"]
     }
   }
 }

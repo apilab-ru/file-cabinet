@@ -4,8 +4,7 @@
 /dist
 /tmp
 /out-tsc
-/extension/app
-/extension/popup/stars.js
+/extension
 # Only exists if Bazel was run
 /bazel-out
 

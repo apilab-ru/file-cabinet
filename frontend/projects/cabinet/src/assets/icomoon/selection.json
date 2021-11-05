@@ -1,0 +1,114 @@
+{
+  "IcoMoonType": "selection",
+  "icons": [
+    {
+      "icon": {
+        "paths": [
+          "M810 274l-238 238 238 238-60 60-238-238-238 238-60-60 238-238-238-238 60-60 238 238 238-238z"
+        ],
+        "attrs": [],
+        "isMulticolor": false,
+        "isMulticolor2": false,
+        "tags": [
+          "clear, close"
+        ],
+        "grid": 24
+      },
+      "attrs": [],
+      "properties": {
+        "order": 5,
+        "ligatures": "clear, close",
+        "id": 153,
+        "prevSize": 24,
+        "code": 59650,
+        "name": "clearclose"
+      },
+      "setIdx": 0,
+      "setId": 0,
+      "iconIdx": 153
+    },
+    {
+      "icon": {
+        "paths": [
+          "M170 512l342-342 342 342-62 60-238-238v520h-84v-520l-240 238z"
+        ],
+        "attrs": [],
+        "isMulticolor": false,
+        "isMulticolor2": false,
+        "tags": [
+          "arrow_upward"
+        ],
+        "grid": 24
+      },
+      "attrs": [],
+      "properties": {
+        "order": 4,
+        "ligatures": "arrow_upward",
+        "id": 606,
+        "prevSize": 24,
+        "code": 59649,
+        "name": "arrow_upward"
+      },
+      "setIdx": 0,
+      "setId": 0,
+      "iconIdx": 606
+    },
+    {
+      "icon": {
+        "paths": [
+          "M662 170h148v86h-596v-86h148l44-42h212zM360 506l92 92-90 90 60 60 90-90 90 90 60-60-90-90 90-92-60-60-90 92-90-92zM256 810v-512h512v512q0 34-26 60t-60 26h-340q-34 0-60-26t-26-60z"
+        ],
+        "attrs": [],
+        "isMulticolor": false,
+        "isMulticolor2": false,
+        "tags": [
+          "delete_forever"
+        ],
+        "grid": 24
+      },
+      "attrs": [],
+      "properties": {
+        "order": 3,
+        "ligatures": "delete_forever",
+        "id": 893,
+        "prevSize": 24,
+        "code": 59648,
+        "name": "delete"
+      },
+      "setIdx": 0,
+      "setId": 0,
+      "iconIdx": 893
+    }
+  ],
+  "height": 1024,
+  "metadata": {
+    "name": "icomoon"
+  },
+  "preferences": {
+    "showGlyphs": true,
+    "showCodes": true,
+    "showQuickUse": true,
+    "showQuickUse2": true,
+    "showSVGs": true,
+    "fontPref": {
+      "prefix": "icon-",
+      "metadata": {
+        "fontFamily": "icomoon"
+      },
+      "metrics": {
+        "emSize": 1024,
+        "baseline": 6.25,
+        "whitespace": 50
+      },
+      "embed": false
+    },
+    "imagePref": {
+      "prefix": "icon-",
+      "png": true,
+      "useClassSelector": true,
+      "color": 0,
+      "bgColor": 16777215
+    },
+    "historySize": 50
+  }
+}

@@ -1,0 +1,41 @@
+<div class="load-box">
+  <div class="progress-box">
+    <div class="progress">
+      <div class="indeterminate"></div>
+    </div>
+  </div>
+  <div class="info">
+    {{ statuses | json }}
+  </div>
+  <div *ngIf="types$ | async as types" class="buttons">
+    <button *ngFor="let type of types">
+      {{ type.name }}
+    </button>
+  </div>
+  <div class="status-list"></div>
+  <!--app-stars class="app-stars"></app-stars-->
+</div>
+<div class="line">
+  <!--button class="waves-effect waves-light btn js-add">
+    Добавить
+  </button-->
+  <a class="waves-effect waves-light btn" href="/cabinet/index.html" target="_blank">
+    Библиотека
+  </a>
+</div>
+<div class="line js-sub-actions"></div>
+<div id="more-films" class="modal">
+  <div class="found__list">
+    <!--div class='found__item'>
+      <img class="found__image" src="${item.image}">
+      <div class="found__info">
+        <div class="found__date">${item.date}</div>
+        <div class="found__name">${item.title} / ${item.original_title}</div>
+        <div class="found__description">${item.description}</div>
+      </div>
+    </div-->
+  </div>
+  <div class="modal-footer">
+    <a class="modal-close waves-effect waves-green btn-flat">Отмена</a>
+  </div>
+</div>

@@ -1,13 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  HostBinding,
-  HostListener,
-  Input,
-  OnInit,
-  Output,
-  ViewEncapsulation,
-} from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-stars',
@@ -20,7 +11,7 @@ import {
     <span class="counter">{{ star }} / 10</span>
   `,
   styleUrls: ['stars.component.scss'],
-  encapsulation: ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class StarsComponent {
 

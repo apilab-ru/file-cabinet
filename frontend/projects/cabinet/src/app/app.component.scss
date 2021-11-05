@@ -1,0 +1,28 @@
+@import "../../../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css";
+@import '../../../../node_modules/@angular/material/theming';
+
+.search {
+  display: flex;
+
+  &__input {
+    flex: 1;
+  }
+
+  &__setting {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    display: flex;
+  }
+
+  &__setting-item {
+    margin-right: 0.5rem;
+  }
+}
+
+.app {
+  border: 5px solid #3f51b5;
+  display: block;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+}

@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../extension",
+    "types": [],
+    "sourceMap": false,
+    "module": "commonjs",
+    "target": "es5"
+  },
+  "files": [
+    "./projects/background/background.ts",
+    "./projects/page/page.ts"
+  ],
+  "include": [
+    "./src/**/*.d.ts"
+  ]
+}
