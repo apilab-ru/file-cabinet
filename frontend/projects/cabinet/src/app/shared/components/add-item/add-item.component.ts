@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ItemType, MetaData } from '../../../api';
+import { ItemType, MetaData } from '../../../../models';
 
 interface ItemData extends MetaData {
   title?: string;

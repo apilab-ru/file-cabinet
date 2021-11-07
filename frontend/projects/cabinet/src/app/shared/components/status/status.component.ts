@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, forwardRef } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { LibraryService } from '../../services/library.service';
-import { Status } from '../../../api';
+import { LibraryService } from '../../../services/library.service';
+import { Status } from '../../../../models';
 import { MatSelectChange } from '@angular/material/select';
 import { FileCab } from '@shared/services/file-cab';
 
@@ -11,12 +11,13 @@ import { FileCab } from '@shared/services/file-cab';
   styleUrls: ['./status.component.scss'],
   providers: [
     { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => StatusComponent), multi: true },
-  ]
+  ],
 })
 export class StatusComponent implements ControlValueAccessor {
+  @Input() value: string;
+  @Output() onUpdate = new EventEmitter<string>();
 
-  value: string;
-  onChange: (status: string) => void;
+  onChange?: (status: string) => void;
   statusList: Status[];
 
   constructor(
@@ -34,7 +35,7 @@ export class StatusComponent implements ControlValueAccessor {
     });
   }
 
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (status: string) => void): void {
     this.onChange = fn;
   }
 
@@ -43,7 +44,11 @@ export class StatusComponent implements ControlValueAccessor {
 
   handleChange(event: MatSelectChange): void {
     this.value = event.value;
-    this.onChange(event.value);
+
+    if (this.onChange)
+      this.onChange(event.value);
+
+    this.onUpdate.emit(this.value);
   }
 
 }
