@@ -1,0 +1,14 @@
+<div *ngIf="isLoad">Loader</div>
+<app-list [list]="list">
+  <app-card
+    *listIterator="let item of list; trackBy: trackBy"
+    class="card"
+    [item]="item"
+    [genres]="genres$ | async"
+    [isLibraryMode]="isLibraryMode$ | async"
+    (updateItem)="updateItem($event)"
+    (clickGenre)="onClickGenre($event)"
+    (deleteItem)="deleteItem(item)"
+    (addItem)="addItem(item)"
+  ></app-card>
+</app-list>

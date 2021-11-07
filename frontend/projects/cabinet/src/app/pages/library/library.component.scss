@@ -1,0 +1,11 @@
+:host {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card {
+  min-width: 400px;
+  width: 23%;
+  box-sizing: border-box;
+  margin: 10px 20px 10px 10px;
+}

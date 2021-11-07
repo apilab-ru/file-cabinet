@@ -8,10 +8,9 @@ export interface RowContext<T> {
   selector: '[listIterator][listIteratorOf]'
 })
 export class ListIteratorDirective<T> {
-
   @Input() listIterator: TrackByFunction<T>;
-
   @Input() listIteratorOf: T[];
+  @Input() listIteratorTrackBy: (index: number, item: T) => number;
 
   constructor(public template: TemplateRef<RowContext<T>>) {
   }

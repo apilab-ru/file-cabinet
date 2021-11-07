@@ -18,8 +18,8 @@ import {
   ISearchValue,
   SearchKeys,
   ICleverSearchKey,
-} from '../../../api';
-import { KeyListenerService } from '../../services/key-listener.service';
+} from '../../../../../models';
+import { KeyListenerService } from '../../../../services/key-listener.service';
 import { MatFormField } from '@angular/material/form-field';
 
 @Component({

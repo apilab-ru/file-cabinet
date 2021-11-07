@@ -1,13 +1,5 @@
-app-library {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.library {
-  min-width: 400px;
-  width: 25%;
+.card {
   box-sizing: border-box;
-  padding: 10px 20px 10px 10px;
   position: relative;
 
   &__genres {
@@ -15,10 +7,20 @@ app-library {
   }
 
   &__delete {
-    position: absolute !important;
+    position: absolute;
     top: 8px;
-    right: 10px;
-    color: #f44336;
+    right: -10px;
+    color: #bbb7b7;
+    border: none;
+    background: none;
+    font-size: 26px;
+    padding: 3px;
+    cursor: pointer;
+    transition: 0.3s;
+
+    &:hover {
+      color: #f44336;
+    }
   }
 
   &__info {
@@ -31,7 +33,6 @@ app-library {
     min-height: 2.69em;
     display: flex;
     align-items: center;
-    padding-right: 30px;
   }
 
   &__description {
@@ -76,4 +77,16 @@ app-library {
     align-items: center;
     padding-top: 10px;
   }
+
+  &__save {
+    position: absolute;
+    bottom: 0;
+    right: 15px;
+  }
+}
+
+.comment {
+  display: block;
+  width: 330px;
+  margin-top: 5px;
 }

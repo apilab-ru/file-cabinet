@@ -1,14 +1,21 @@
 import { Component, HostBinding, OnInit, ViewEncapsulation } from '@angular/core';
 import { filter, first, map, switchMap } from 'rxjs/operators';
-import { FilmsService } from './services/films.service';
-import { AnimeService } from './services/anime.service';
-import { NavigationService } from './services/navigation.service';
-import { LibraryService } from './services/library.service';
+import { FilmsService } from '../../services/films.service';
+import { AnimeService } from '../../services/anime.service';
+import { NavigationService } from '../../services/navigation.service';
+import { LibraryService } from '../../services/library.service';
 import { combineLatest, Observable } from 'rxjs';
-import { BASE_CLEVER_SEARCH_KEYS, deepCopy, ICleverSearchKeys, ISearchStatus, LibraryMode, Path } from '../api';
-import { SearchService } from './services/search.service';
+import {
+  BASE_CLEVER_SEARCH_KEYS,
+  deepCopy,
+  ICleverSearchKeys,
+  ISearchStatus,
+  LibraryMode,
+  Path,
+} from '../../../models';
+import { SearchService } from '../../services/search.service';
 import { NavigationEnd, Router } from '@angular/router';
-import { DataFactory } from './library/data-factory';
+import { DataFactory } from '../../services/data-factory';
 
 @Component({
   selector: 'app-root',

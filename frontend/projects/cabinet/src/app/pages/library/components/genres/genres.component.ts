@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Genre } from '../../../api';
+import { Genre } from '../../../../../models';
 
 const findName = (list, id): string => {
   const tag = list && list.find(g => g.id == id);

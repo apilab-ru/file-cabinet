@@ -1,0 +1,17 @@
+<div class="data">
+  <ng-template
+    *ngIf="(showData$ | async)?.length"
+    ngFor
+    [ngForOf]="showData$ | async"
+    [ngForTrackBy]="trackBy"
+    [ngForTemplate]="rowTemplate"
+  ></ng-template>
+</div>
+<div class="paginator">
+  <mat-paginator
+    [length]="(data$ | async)?.length"
+    [pageSize]="limit$ | async"
+    [pageSizeOptions]="limitList"
+    (page)="setPage($event)"
+  ></mat-paginator>
+</div>

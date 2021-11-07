@@ -1,30 +1,27 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Destructible } from '../shared/destructible';
-import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { LibraryService } from '../services/library.service';
-import { Genre, ISearchStatus, ItemType, LibraryItem, LibraryMode, Path } from '../../api';
-import { FilmsService } from '../services/films.service';
+import { map, switchMap, tap } from 'rxjs/operators';
+import { LibraryService } from '../../services/library.service';
+import { Genre, ISearchStatus, ItemType, LibraryItem, LibraryMode, Path } from '../../../models';
+import { FilmsService } from '../../services/films.service';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { AnimeService } from '../services/anime.service';
-import { DataFactory } from './data-factory';
-import { SearchService } from '../services/search.service';
-import { AddItemComponent } from '../components/add-item/add-item.component';
+import { AnimeService } from '../../services/anime.service';
+import { DataFactory } from '../../services/data-factory';
+import { SearchService } from '../../services/search.service';
+import { AddItemComponent } from '../../shared/components/add-item/add-item.component';
 import { MatDialog } from '@angular/material/dialog';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-library',
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.scss'],
-  encapsulation: ViewEncapsulation.None,
 })
-export class LibraryComponent extends Destructible implements OnInit {
+export class LibraryComponent implements OnInit {
   path: Path;
   list: LibraryItem<ItemType>[];
-
   dataFactory: DataFactory;
-
-  placeholder = 'assets/placeholder_180x270.jpg';
 
   get genres$(): Observable<Genre[]> {
     return this.dataFactory && this.dataFactory.genres$;
@@ -47,14 +44,13 @@ export class LibraryComponent extends Destructible implements OnInit {
     private searchService: SearchService,
     private dialog: MatDialog,
   ) {
-    super();
   }
 
   ngOnInit(): void {
     this.isLoad = true;
     this.activeRoute
       .data
-      .pipe(takeUntil(this.destroy$))
+      .pipe(untilDestroyed(this))
       .subscribe(data => {
         this.path = data.path;
         this.load();
@@ -72,7 +68,7 @@ export class LibraryComponent extends Destructible implements OnInit {
   }
 
   updateItem(item: LibraryItem<ItemType>): void {
-    this.libraryService.updateItem(this.path, item.item.id , item);
+    this.libraryService.updateItem(this.path, item.item.id, item);
   }
 
   deleteItem(item: LibraryItem<ItemType>): void {
@@ -81,11 +77,7 @@ export class LibraryComponent extends Destructible implements OnInit {
 
   onSetStars(star: number, item: LibraryItem<ItemType>): void {
     item.star = star;
-    this.libraryService.updateItem(this.path, item.item.id , item);
-  }
-
-  isShowStars(item: LibraryItem<ItemType>): boolean {
-    return item.status === 'complete' || item.status === 'process' || item.status === 'drop';
+    this.libraryService.updateItem(this.path, item.item.id, item);
   }
 
   addItem(item: LibraryItem<ItemType>): void {
@@ -93,16 +85,20 @@ export class LibraryComponent extends Destructible implements OnInit {
       data: {
         title: item.item.title,
         path: this.path,
-      }
+      },
     });
     dialog.afterClosed().subscribe(res => {
       this.libraryService.addItem(res.path, {
         item: item.item,
-        ...res.param
+        ...res.param,
       }).subscribe(() => {
         this.reload$.next();
       });
-    })
+    });
+  }
+
+  trackBy(index: number, item: LibraryItem<ItemType>): number {
+    return item.item.id;
   }
 
   private load(): void {
@@ -112,8 +108,8 @@ export class LibraryComponent extends Destructible implements OnInit {
       this.reload$.asObservable(),
     ]).pipe(
       tap(() => this.isLoad = true),
-      map(([search, mode]) => ({search, mode})),
-      switchMap(({search, mode}) => this.selectData(mode, search)),
+      map(([search, mode]) => ({ search, mode })),
+      switchMap(({ search, mode }) => this.selectData(mode, search)),
     ).subscribe(list => {
       this.list = list;
       this.isLoad = false;

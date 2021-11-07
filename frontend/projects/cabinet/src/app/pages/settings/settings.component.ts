@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { LibraryService } from '../services/library.service';
+import { LibraryService } from '../../services/library.service';
 import { first, map, mergeMap } from 'rxjs/operators';
 import { forkJoin, Observable, of } from 'rxjs';
-import { Anime, LibraryItem } from '../../api';
-import { AnimeService } from '../services/anime.service';
-import { saveData } from '../shared/save-data';
+import { Anime, LibraryItem } from '../../../models';
+import { AnimeService } from '../../services/anime.service';
+import { saveAsFile } from '../../helpers/save-as-file';
 
 @Component({
   selector: 'app-settings',
@@ -42,7 +42,7 @@ export class SettingsComponent {
       .pipe(first())
       .subscribe(store => {
         const data = JSON.stringify(store);
-        saveData(data, 'backup.json');
+        saveAsFile(data, 'backup.json');
       });
   }
 
