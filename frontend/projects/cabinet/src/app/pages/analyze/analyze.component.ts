@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ChromeApiService } from '../services/chrome-api.service';
+import { ChromeApiService } from '../../services/chrome-api.service';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { LibraryService } from '../services/library.service';
-import { AddItemComponent } from '../components/add-item/add-item.component';
+import { LibraryService } from '../../services/library.service';
+import { AddItemComponent } from '../../shared/components/add-item/add-item.component';
 import { filter, first, mergeMap, tap } from 'rxjs/operators';
 import BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
-import { saveData } from '../shared/save-data';
+import { saveAsFile } from '../../helpers/save-as-file';
 
 interface TreeItem extends BookmarkTreeNode {
   removed?: boolean;
@@ -85,7 +85,7 @@ export class AnalyzeComponent implements OnInit {
   exportNode(node: BookmarkTreeNode): void {
     console.log('export node', node);
     const html = this.chromeApiService.generateExportBookmarkHtml(node);
-    saveData(html, `bookmark-${node.title}.html`);
+    saveAsFile(html, `bookmark-${node.title}.html`);
   }
 
   handleError(error): void {

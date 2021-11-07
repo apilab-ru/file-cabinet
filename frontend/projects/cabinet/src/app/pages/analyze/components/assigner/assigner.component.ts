@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { NavigationService } from '../../services/navigation.service';
+import { NavigationService } from '../../../../services/navigation.service';
 import { Observable } from 'rxjs';
-import { NavigationItem } from '../../../api';
+import { NavigationItem } from '../../../../../models';
 
 @Component({
   selector: 'app-assigner',
