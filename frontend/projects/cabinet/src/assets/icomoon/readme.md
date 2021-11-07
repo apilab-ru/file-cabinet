@@ -1,0 +1,1 @@
+prefix /cabinet/assets/icomoon/
