@@ -1,4 +1,4 @@
-import { statusList } from './status-list';
+import { STATUS_LIST } from '@shared/const';
 
 export const BASE_CLEVER_SEARCH_KEYS = {
   genres: {
@@ -20,7 +20,7 @@ export const BASE_CLEVER_SEARCH_KEYS = {
   },
   status: {
     name: 'статус',
-    list: statusList.map(item => ({ name: item.name, id: item.status })),
+    list: STATUS_LIST.map(item => ({ name: item.name, id: item.status })),
   },
 };
 

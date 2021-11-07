@@ -3,10 +3,10 @@ import { first } from 'rxjs/operators';
 import { FilmsService } from './films.service';
 import { from, Observable, Subject } from 'rxjs';
 import { AnimeService } from './anime.service';
-import { Anime, Film, ISchema, ItemType, Library, LibraryItem, SearchRequestResult } from '../../api';
+import { Anime, Film, ISchema, ItemType, Library, LibraryItem, SearchRequestResult } from '../../models';
 import { ChromeApiService } from './chrome-api.service';
 import { MatDialog } from '@angular/material/dialog';
-import { FoundItemsComponent } from '../components/found-items/found-items.component';
+import { FoundItemsComponent } from '../shared/components/found-items/found-items.component';
 import { FileCab } from '@shared/services/file-cab';
 
 export interface ItemParams {

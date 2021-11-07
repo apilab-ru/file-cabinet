@@ -1,4 +1,4 @@
-import { ISchema, Status } from '../../cabinet/src/api';
+import { ISchema, Status } from '../../cabinet/src/models';
 
 export interface IFileCab {
   getStatusList: () => Promise<Status[]>;

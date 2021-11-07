@@ -1,15 +1,15 @@
 import { BehaviorSubject, from, Observable } from 'rxjs';
 import { STATUS_LIST } from '../const';
 import {
-  deepCopy,
+  deepCopy, Genre,
   ISchema,
   ItemType,
   LibraryItem,
   MetaData,
   NavigationItem,
   SearchRequestResult,
-} from '../../cabinet/src/api';
-import { shareReplay, switchMap, take, tap } from 'rxjs/operators';
+} from '../../cabinet/src/models';
+import { shareReplay, switchMap, tap } from 'rxjs/operators';
 import { fileCabApi } from './file-cab.api';
 
 const nameExp = /([a-zA-zа-яА-яёЁ\s0-9]*)/;
@@ -32,8 +32,9 @@ export class FileCab {
 
   statusList = STATUS_LIST;
   config$: Observable<typeof configData>;
-  initedData: Promise<typeof configData>;
   store$: Observable<typeof storeData> = this.store.asObservable();
+  filmGenres$: Observable<Genre[]>;
+  animeGenres$: Observable<Genre[]>;
 
   constructor() {
     this.config$ = from(this.init()).pipe(
@@ -41,12 +42,15 @@ export class FileCab {
       switchMap(() => this.config),
       shareReplay(1),
     );
-    this.initedData = this.config$.pipe(
-      take(1),
-    ).toPromise();
 
     this.updateStore(this.loadStore());
     this.listenChangeStore();
+    this.filmGenres$ = fileCabApi.loadFilmGenres().pipe(
+      shareReplay(1),
+    );
+    this.animeGenres$ = fileCabApi.loadAnimeGenres().pipe(
+      shareReplay(1),
+    );
   }
 
   searchData(path: string, name: string): Promise<SearchRequestResult<ItemType>> {
@@ -75,8 +79,6 @@ export class FileCab {
   }
 
   addItem(path: string, name: string, param: MetaData): Promise<ItemType> {
-    console.log('add item', path, name, param);
-
     return this.searchData(path, name)
       .then(res => this.checkResults(res))
       .then(item => this.checkUnique(path, item))
@@ -86,19 +88,17 @@ export class FileCab {
       });
   }
 
-  addItemLibToStore(path: string, item:  LibraryItem<ItemType>): Promise<void> {
+  addItemLibToStore(path: string, item: LibraryItem<ItemType>): Promise<void> {
     return this.checkUnique(path, item.item)
       .then(() => {
         const meta = deepCopy(item);
         delete meta.item;
 
         this.addItemToStore(path, item.item, meta);
-      })
+      });
   }
 
   addItemToStore(path: string, item: ItemType, param: MetaData): void {
-    console.log('add item to store', item, path, param);
-
     const { data } = this.store.getValue();
 
     if (!data[path]) {
@@ -192,7 +192,6 @@ export class FileCab {
 
   private listenChangeStore(): void {
     window.addEventListener('storage', event => {
-      console.log('storage change', event);
       if (event.key === keyStore) {
         const data = JSON.parse(event.newValue);
         this.updateStore(data);

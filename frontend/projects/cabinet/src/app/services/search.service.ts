@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ISearchStatus, ISearchValue, ItemType, LibraryItem, LibraryMode, SearchKeys } from '../../api';
+import { ISearchStatus, ISearchValue, ItemType, LibraryItem, LibraryMode, SearchKeys } from '../../models';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 

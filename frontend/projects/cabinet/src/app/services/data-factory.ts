@@ -1,13 +1,13 @@
 import { forkJoin, Observable } from 'rxjs';
-import { AnimeService } from '../services/anime.service';
-import { FilmsService } from '../services/films.service';
-import { ISearchStatus, ItemType, LibraryItem, Path, Genre, SearchRequestResult } from '../../api';
+import { AnimeService } from './anime.service';
+import { FilmsService } from './films.service';
+import { ISearchStatus, ItemType, LibraryItem, Path, Genre, SearchRequestResult } from '../../models';
 import { map, take } from 'rxjs/operators';
-import { LibraryService } from '../services/library.service';
+import { LibraryService } from './library.service';
 
 export class DataFactory {
-
   genres$: Observable<Genre[]>;
+
   private path: Path;
 
   constructor(
@@ -77,15 +77,15 @@ export class DataFactory {
   }
 
   private initTv() {
-    this.genres$ = this.filmsService.getGenres();
+    this.genres$ = this.filmsService.genres$;
   }
 
   private initFilms() {
-    this.genres$ = this.filmsService.getGenres();
+    this.genres$ = this.filmsService.genres$;
   }
 
   private initAnime() {
-    this.genres$ = this.animeService.getGenres();
+    this.genres$ = this.animeService.genres$;
   }
 
 }

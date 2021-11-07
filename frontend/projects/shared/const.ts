@@ -1,23 +1,32 @@
 import { StatusItem } from './models/status-item';
+
+export enum StatusList {
+  planned = 'planned',
+  complete = 'complete',
+  process = 'process',
+  drop = 'drop',
+  hide = 'hide'
+}
+
 export const STATUS_LIST: StatusItem[] = [
   {
     name: 'Запланировано',
-    status: 'planned'
+    status: StatusList.planned,
   },
   {
-    name: 'Просмотренно',
-    status: 'complete'
+    name: 'Просмотрено',
+    status: StatusList.complete,
   },
   {
     name: 'Смотрю',
-    status: 'process'
+    status: StatusList.process,
   },
   {
-    name: 'Брошенно',
-    status: 'drop'
+    name: 'Брошено',
+    status: StatusList.drop,
   },
   {
     name: 'Скрыть',
-    status: 'hide'
+    status: StatusList.hide,
   }
 ];

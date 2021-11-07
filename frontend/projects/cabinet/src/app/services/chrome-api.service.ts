@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
-import { ISchema, Status } from '../../api';
+import { ISchema, Status } from '../../models';
 
 @Injectable({
   providedIn: 'root'
@@ -57,10 +57,4 @@ export class ChromeApiService {
               '</DL><p>\n';
     return html;
   }
-}
-
-export interface FileCab {
-  getStatusList: () => Promise<Status[]>;
-  initedData: Promise<{schemas: ISchema[], types}>;
-  reload: () => Promise<{schemas: ISchema[], types}>;
 }

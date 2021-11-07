@@ -4,9 +4,8 @@ import { Anime, Film, Item } from '../../../../../server/src/api';
 export * from '../../../../../server/src/api';
 export * from './navigation';
 export * from './library';
-export * from './i-clever-search';
+export * from './clever-search';
 export * from '../../../shared/utils/utils';
-export * from './status-list';
 
 declare global {
   interface Window {

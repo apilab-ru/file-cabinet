@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject } from 'rxjs';
-import { NavigationItem } from '../../api';
-import { MENU_ITEMS } from '../menu-items';
+import { NavigationItem } from '../../models';
+import { MENU_ITEMS } from '../routing/menu-items';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NavigationService {
 
