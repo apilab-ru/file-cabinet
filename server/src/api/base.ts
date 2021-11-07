@@ -3,6 +3,11 @@ export interface Item {
   title: string;
   image: string;
   description: string;
+
+  genre_ids: number[];
+  original_title: string;
+  popularity: number;
+  year: number;
 }
 
 export interface Genre {

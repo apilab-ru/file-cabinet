@@ -1,11 +1,7 @@
 import { Item } from './base';
 
 export interface Anime extends Item {
-  genre_ids: number[];
-  original_title: string;
   type: AnimeType;
-  year: number;
-  popularity: number;
   episodes: number;
 }
 

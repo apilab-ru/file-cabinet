@@ -108,7 +108,7 @@ export class AnimeService {
         if (err) {
           reject(err);
         } else {
-          resolve();
+          resolve(true);
         }
       });
     });
