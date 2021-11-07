@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { CommonModule } from '@angular/common';
 import { FileCab } from '@shared/services/file-cab';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -12,6 +13,7 @@ import { FileCab } from '@shared/services/file-cab';
   imports: [
     BrowserModule,
     CommonModule,
+    MatInputModule,
   ],
   providers: [
     {

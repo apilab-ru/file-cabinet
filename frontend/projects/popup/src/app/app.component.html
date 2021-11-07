@@ -1,12 +1,15 @@
 <div class="load-box">
+
   <div class="progress-box">
     <div class="progress">
       <div class="indeterminate"></div>
     </div>
   </div>
-  <div class="info">
-    {{ statuses | json }}
+
+  <div>
+    <input matInput>
   </div>
+
   <div *ngIf="types$ | async as types" class="buttons">
     <button *ngFor="let type of types">
       {{ type.name }}
