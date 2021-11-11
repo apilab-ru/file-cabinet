@@ -1,5 +1,11 @@
 import { Status } from '@shared/models/status-item';
 
+export enum Types {
+  anime = 'anime',
+  films = 'films',
+  tv = 'tv'
+}
+
 export enum StatusList {
   planned = 'planned',
   complete = 'complete',

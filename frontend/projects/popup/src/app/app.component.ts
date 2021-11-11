@@ -11,7 +11,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators';
 import { FileCab } from '@shared/services/file-cab';
-import { STATUS_LIST } from '@shared/const';
+import { STATUS_LIST, Types } from '@shared/const';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BrowserApiService } from './services/browser-api.service';
 import { BehaviorSubject, combineLatest, from, Observable, of, ReplaySubject } from 'rxjs';
@@ -158,7 +158,7 @@ export class AppComponent implements OnInit {
         const name = trimTitle(title, currentScheme?.func);
 
         return {
-          type: currentScheme?.type || 'films',
+          type: currentScheme?.type || Types.films,
           name,
           url,
           domain,
