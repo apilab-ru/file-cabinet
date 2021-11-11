@@ -3,11 +3,12 @@ import { first } from 'rxjs/operators';
 import { FilmsService } from './films.service';
 import { from, Observable, Subject } from 'rxjs';
 import { AnimeService } from './anime.service';
-import { Anime, Film, ISchema, ItemType, Library, LibraryItem, SearchRequestResult } from '../../models';
+import { Anime, Film, SearchRequestResult } from '../../models';
 import { ChromeApiService } from './chrome-api.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FoundItemsComponent } from '../shared/components/found-items/found-items.component';
 import { FileCab } from '@shared/services/file-cab';
+import { ISchema, ItemType, Library, LibraryItem } from '@shared/models/library';
 
 export interface ItemParams {
   tags?: string[];
@@ -39,7 +40,7 @@ export class LibraryService {
   }
 
   addItemByName(path: string, name: string, params?: ItemParams): Observable<ItemType> {
-    return from(this.fileCab.addItem(path, name, params || {}));
+    return from(this.fileCab.addItemOld(path, name, params || {}));
   }
 
   findItem(path: string, name: string): Observable<SearchRequestResult<Film | Anime>> {

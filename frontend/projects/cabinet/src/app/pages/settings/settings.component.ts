@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { LibraryService } from '../../services/library.service';
 import { first, map, mergeMap } from 'rxjs/operators';
 import { forkJoin, Observable, of } from 'rxjs';
-import { Anime, LibraryItem } from '../../../models';
+import { Anime } from '../../../models';
 import { AnimeService } from '../../services/anime.service';
 import { saveAsFile } from '../../helpers/save-as-file';
+import { LibraryItem } from '@shared/models/library';
 
 @Component({
   selector: 'app-settings',

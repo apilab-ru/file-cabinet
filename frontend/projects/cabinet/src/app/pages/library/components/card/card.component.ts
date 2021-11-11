@@ -7,7 +7,8 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { deepCopy, Genre, ItemType, LibraryItem } from '../../../../../models';
+import { deepCopy, Genre } from '../../../../../models';
+import { ItemType, LibraryItem } from '@shared/models/library';
 
 @Component({
   selector: 'app-card',

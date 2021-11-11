@@ -1,42 +1,74 @@
-import { Component, EventEmitter, HostListener, Input, Output, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  forwardRef,
+  HostListener,
+  Input,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-stars',
   template: `
-    <span class="star" *ngFor="let star of list"
+    <span class="star"
+          *ngFor="let star of list"
+          [class.selected]="(currentStar$ | async) >= star"
+          [class.hovered]="(hoveredStar$ | async) >= star"
+          (click)="selectStar(star)"
           (mouseenter)="onHover(star)"
-          [class.selected]="checkSelected(star)"
-          [class.hovered]="checkHovered(star)"
-          (click)="selectStar(star)"></span>
-    <span class="counter">{{ star }} / 10</span>
+    ></span>
+    <span class="counter">{{ (currentStar$ | async) || 0 }} / 10</span>
   `,
   styleUrls: ['stars.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
+  providers: [
+    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => StarsComponent), multi: true },
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StarsComponent {
-
-  list = Array.from(Array(10).keys()).map(item => ++item);
+export class StarsComponent implements ControlValueAccessor {
+  @Input() set star(star: number) {
+    this.currentStar$.next(star);
+  };
 
   @Output() setStars = new EventEmitter<number>();
-  @Input() star = 0;
 
-  private hoveredStar = 0;
+  list = Array.from(Array(10).keys()).map(item => ++item);
+  currentStar$ = new BehaviorSubject<number>(0);
+  hoveredStar$ = new BehaviorSubject<number>(0);
+
+  private onChange?: (star: number) => void;
 
   @HostListener('mouseleave') onMouseLeave(): void {
-    this.hoveredStar = 0;
+    this.hoveredStar$.next(0);
+  }
+
+  writeValue(star: number): void {
+    this.currentStar$.next(star);
+  }
+
+  registerOnChange(fn: (star: number) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
   }
 
   onHover(star: number): void {
-    this.hoveredStar = star;
+    this.hoveredStar$.next(star);
   }
 
   selectStar(star: number): void {
-    this.star = star;
+    this.currentStar$.next(star);
     this.setStars.emit(star);
-  }
 
-  checkHovered(star): boolean {
-    return star <= this.hoveredStar;
+    if (this.onChange) {
+      this.onChange(star);
+    }
   }
 
   checkSelected(star: number): boolean {

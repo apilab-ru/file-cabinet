@@ -1,9 +1,10 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   ContentChild,
   Input,
-  OnChanges, OnInit, SimpleChanges,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
   TemplateRef,
   TrackByFunction,
 } from '@angular/core';
@@ -16,7 +17,7 @@ import { map } from 'rxjs/operators';
   selector: 'app-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListComponent<T> implements OnInit, OnChanges {
   @Input() list: T[];

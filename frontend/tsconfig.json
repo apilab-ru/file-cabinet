@@ -14,13 +14,18 @@
     "typeRoots": [
       "node_modules/@types"
     ],
+    "resolveJsonModule": true,
     "lib": [
       "es2018",
       "dom"
     ],
     "paths": {
-      "@server/api/*": ["../server/src/api/*"],
-      "@shared/*": ["projects/shared/*"]
+      "@server/api/*": [
+        "../server/src/api/*"
+      ],
+      "@shared/*": [
+        "projects/shared/*"
+      ]
     }
   }
 }

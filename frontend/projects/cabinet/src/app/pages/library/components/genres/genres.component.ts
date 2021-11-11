@@ -16,9 +16,7 @@ const findName = (list, id): string => {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GenresComponent {
-
   @Input() list: number[];
-
   @Input() genres: Genre[];
 
   @Output() clickGenre = new EventEmitter<number>();

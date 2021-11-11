@@ -3,13 +3,14 @@
   --star-color: #ffeb3b;
   --star-hover-color: #0091ea;
   --star-selected-color: #00c853;
-  --star-size: 12px;
+  --star-size: 11px;
   align-items: center;
   font-size: 16px;
 }
 
 .counter {
   margin-left: 1em;
+  white-space: nowrap;
 }
 
 .star {

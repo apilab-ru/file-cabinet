@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { LibraryService } from '../../services/library.service';
-import { Genre, ISearchStatus, ItemType, LibraryItem, LibraryMode, Path } from '../../../models';
+import { Genre, ISearchStatus, LibraryMode, Path } from '../../../models';
 import { FilmsService } from '../../services/films.service';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { AnimeService } from '../../services/anime.service';
@@ -11,6 +11,7 @@ import { SearchService } from '../../services/search.service';
 import { AddItemComponent } from '../../shared/components/add-item/add-item.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { ItemType, LibraryItem } from '@shared/models/library';
 
 @UntilDestroy()
 @Component({

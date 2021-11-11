@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ISearchStatus, ISearchValue, ItemType, LibraryItem, LibraryMode, SearchKeys } from '../../models';
+import { ISearchStatus, ISearchValue, LibraryMode, SearchKeys } from '../../models';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
+import { ItemType, LibraryItem } from '@shared/models/library';
 
 const BASE_STATE: ISearchStatus = {
   search: '',

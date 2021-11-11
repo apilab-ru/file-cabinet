@@ -1,0 +1,32 @@
+import { AppModule } from '../../app.module';
+import { moduleMetadata } from '@storybook/angular';
+import { foundList, genres } from './story.const';
+
+<Meta
+  title="Popup / Founded list"
+  decorators={[
+    moduleMetadata({
+      imports: [AppModule],
+    })
+    ]}
+/>
+
+<Preview>
+  <Story name="Default">
+    {{
+      template: `
+        <div class="box">
+          <app-founded-list
+            [list]="foundList"
+            [genres]="genres"
+          ></app-founded-list>
+        </div>
+        <style></style>
+      `,
+      props: {
+        foundList: foundList,
+        genres: genres,
+      }
+    }}
+  </Story>
+</Preview>

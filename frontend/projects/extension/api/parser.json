@@ -31,5 +31,8 @@
   "ivi.ru": {
     "func": "(title) => title.substr(6).split('(')[0].trim()",
     "type": "films"
+  },
+  "animego.org": {
+    "type": "anime"
   }
 }

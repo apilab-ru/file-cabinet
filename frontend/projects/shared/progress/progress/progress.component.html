@@ -1,0 +1,8 @@
+<mat-form-field class="box">
+  <mat-label>Прогресс</mat-label>
+  <input [(ngModel)]="value" (ngModelChange)="updateValue($event)" matInput>
+</mat-form-field>
+
+<div *ngIf="item?.episodes" class="total">
+  / {{ item.episodes }}
+</div>

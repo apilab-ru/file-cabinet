@@ -1,4 +1,4 @@
-import { StatusItem } from './models/status-item';
+import { Status } from '@shared/models/status-item';
 
 export enum StatusList {
   planned = 'planned',
@@ -8,7 +8,7 @@ export enum StatusList {
   hide = 'hide'
 }
 
-export const STATUS_LIST: StatusItem[] = [
+export const STATUS_LIST: Status[] = [
   {
     name: 'Запланировано',
     status: StatusList.planned,
@@ -28,5 +28,9 @@ export const STATUS_LIST: StatusItem[] = [
   {
     name: 'Скрыть',
     status: StatusList.hide,
-  }
+  },
+  {
+    name: 'Нет',
+    status: null,
+  },
 ];

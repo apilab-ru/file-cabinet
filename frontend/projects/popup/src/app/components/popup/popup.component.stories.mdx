@@ -1,0 +1,46 @@
+import { AppModule } from '../../app.module';
+import { moduleMetadata } from '@storybook/angular';
+import { types } from './story.helper';
+import { STATUS_LIST } from '../../../../../shared/const';
+
+<Meta
+  title="Popup / Popup"
+  decorators={[
+    moduleMetadata({
+      imports: [AppModule],
+    })
+    ]}
+/>
+
+<Preview>
+  <Story name="Default">
+    {{
+      template: `
+        <div class="box">
+          <app-popup
+            [types]="types"
+            selectedType="films"
+            [name]="name"
+            [statuses]="statuses"
+            [item]="item"
+          ></app-popup>
+        </div>
+        <style>
+            .box {
+                background: #ccc;
+            }
+        </style>
+      `,
+      props: {
+        types: types,
+        name: 'Пил Харбор',
+        statuses: STATUS_LIST,
+        item: {
+          comment: 'Test',
+          status: 'planned',
+          item: { episodes: 10 }
+        }
+      }
+    }}
+  </Story>
+</Preview>

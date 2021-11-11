@@ -1,0 +1,78 @@
+<div class="root" [formGroup]="formGroup">
+  <div class="load-box">
+    <mat-form-field class="input-box">
+      <mat-label>Название материала</mat-label>
+      <input matInput formControlName="name">
+    </mat-form-field>
+
+    <div class="buttons">
+      <button
+        *ngFor="let type of types"
+        class="button"
+        mat-raised-button
+        [color]="type.path === selectedType ? 'accent' : 'primary'"
+        (click)="selectType(type.path)"
+      >
+        {{ type.name }}
+      </button>
+    </div>
+
+    <mat-form-field class="status-box">
+      <mat-label>Статус</mat-label>
+      <mat-select formControlName="status">
+        <mat-option *ngFor="let status of statuses" [value]="status.status">
+          {{ status.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <app-stars
+      *ngIf="isShowStar$ | async"
+      class="app-stars"
+      formControlName="star"
+    ></app-stars>
+
+    <app-progress
+      *ngIf="isShowProgress$ | async"
+      class="progress"
+      [item]="item?.item"
+      formControlName="progress"
+    ></app-progress>
+  </div>
+  <div class="controls">
+    <a mat-raised-button color="primary" href="/cabinet/index.html" target="_blank">
+      Библиотека
+    </a>
+
+    <button
+      class="save-btn"
+      mat-raised-button
+      color="primary"
+      (click)="save()"
+    >
+      Сохранить
+    </button>
+  </div>
+
+  <mat-form-field class="textarea-box">
+    <mat-label>Коммент</mat-label>
+    <textarea matInput formControlName="comment"></textarea>
+  </mat-form-field>
+</div>
+
+
+<!--div class="line js-sub-actions"></div>
+<div id="more-films" class="modal">
+  <div class="found__list">
+    <div class='found__item'>
+      <img class="found__image" src="${item.image}">
+      <div class="found__info">
+        <div class="found__date">${item.date}</div>
+        <div class="found__name">${item.title} / ${item.original_title}</div>
+        <div class="found__description">${item.description}</div>
+      </div>
+    </div>
+  </div>
+  <div-- class="modal-footer">
+    <a class="modal-close waves-effect waves-green btn-flat">Отмена</a>
+  </div-->

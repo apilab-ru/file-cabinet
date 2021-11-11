@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { LibraryService } from '../../../services/library.service';
-import { Status } from '../../../../models';
 import { MatSelectChange } from '@angular/material/select';
-import { FileCab } from '@shared/services/file-cab';
+import { Status } from '@shared/models/status-item';
+import { STATUS_LIST } from '@shared/const';
 
 @Component({
   selector: 'app-status',
@@ -18,14 +18,12 @@ export class StatusComponent implements ControlValueAccessor {
   @Output() onUpdate = new EventEmitter<string>();
 
   onChange?: (status: string) => void;
-  statusList: Status[];
+  statusList: Status[] = STATUS_LIST;
 
   constructor(
     private libraryService: LibraryService,
     private changeDetector: ChangeDetectorRef,
-    private fileCab: FileCab,
   ) {
-    this.statusList = this.fileCab.statusList;
   }
 
   writeValue(status: string): void {

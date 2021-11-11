@@ -1,0 +1,17 @@
+<div appHorizontalScroll class="root">
+  <div class="list">
+    <div *ngFor="let item of list; trackBy:trackBy" class="item">
+      <div class="title" [matTooltip]="item.description">
+        {{ item.title }} {{ item.year }}
+      </div>
+      <div class="genres">
+        {{ getGenres(genres, item.genre_ids) }}
+
+        <button class="button" mat-raised-button (click)="select(item.id)">
+          Выбрать
+        </button>
+      </div>
+      <img class="image" [src]="item.image">
+    </div>
+  </div>
+</div>

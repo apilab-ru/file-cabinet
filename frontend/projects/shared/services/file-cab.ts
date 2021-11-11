@@ -1,36 +1,27 @@
-import { BehaviorSubject, from, Observable } from 'rxjs';
-import { STATUS_LIST } from '../const';
-import {
-  deepCopy, Genre,
-  ISchema,
-  ItemType,
-  LibraryItem,
-  MetaData,
-  NavigationItem,
-  SearchRequestResult,
-} from '../../cabinet/src/models';
-import { shareReplay, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, from, Observable, throwError } from 'rxjs';
+import { deepCopy, Genre, NavigationItem, SearchRequestResult } from '../../cabinet/src/models';
+import { map, pluck, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { fileCabApi } from './file-cab.api';
+import { MetaData } from '@shared/models/meta-data';
+import { ISchema, ItemType, LibraryItem } from '@shared/models/library';
+import { Tag } from '@shared/models/tag';
 
-const nameExp = /([a-zA-zа-яА-яёЁ\s0-9]*)/;
 const keyStore = 'store';
 
 const configData = {
-  schemas: [] as ISchema[],
+  schemas: {} as Record<string, ISchema>,
   types: [] as NavigationItem[],
 };
 
 const storeData = {
-  tags: [],
+  tags: [] as Tag[],
   data: {} as Record<string, LibraryItem<ItemType>[]>,
 };
 
 export class FileCab {
   private store = new BehaviorSubject<typeof storeData>(storeData);
   private config = new BehaviorSubject<typeof configData>(configData);
-  private popup: any = null;
 
-  statusList = STATUS_LIST;
   config$: Observable<typeof configData>;
   store$: Observable<typeof storeData> = this.store.asObservable();
   filmGenres$: Observable<Genre[]>;
@@ -39,9 +30,11 @@ export class FileCab {
   constructor() {
     this.config$ = from(this.init()).pipe(
       tap(data => this.config.next(data)),
-      switchMap(() => this.config),
+      switchMap(() => this.config.asObservable()),
       shareReplay(1),
     );
+
+    this.config$.subscribe();
 
     this.updateStore(this.loadStore());
     this.listenChangeStore();
@@ -53,21 +46,36 @@ export class FileCab {
     );
   }
 
-  searchData(path: string, name: string): Promise<SearchRequestResult<ItemType>> {
-    name = this.trimName(name);
+  selectGenres(type: string): Observable<Genre[]> {
+    return type === 'anime' ? this.animeGenres$ : this.filmGenres$;
+  }
 
+  searchInStore(
+    path: string,
+    name: string,
+    url?: string,
+  ): Observable<LibraryItem<ItemType> | null> {
+    return this.store$.pipe(
+      pluck('data', path),
+      map(list => list?.find(
+        item => item.item.title === name || item.url === url || item.name === name,
+      ) || null),
+    );
+  }
+
+  searchApi(path: string, name: string): Observable<SearchRequestResult<ItemType>> {
     switch (path) {
       case 'anime':
-        return fileCabApi.searchAnime(name).toPromise();
+        return fileCabApi.searchAnime(name);
 
       case 'films':
-        return fileCabApi.searchFilm(name).toPromise();
+        return fileCabApi.searchFilm(name);
 
       case 'tv':
-        return fileCabApi.searchTv(name).toPromise();
+        return fileCabApi.searchTv(name);
 
       default:
-        return new Promise((reolve, rejected) => rejected(`path ${name} not support`));
+        return throwError(`path ${name} not support`);
     }
   }
 
@@ -78,8 +86,8 @@ export class FileCab {
     });
   }
 
-  addItem(path: string, name: string, param: MetaData): Promise<ItemType> {
-    return this.searchData(path, name)
+  addItemOld(path: string, name: string, param: MetaData): Promise<ItemType> {
+    return this.searchApi(path, name).toPromise()
       .then(res => this.checkResults(res))
       .then(item => this.checkUnique(path, item))
       .then(item => {
@@ -98,8 +106,30 @@ export class FileCab {
       });
   }
 
+  addOrUpdate(path: string, item: ItemType, metaData: MetaData): Observable<void> {
+    return this.checkExisted(path, item).pipe(
+      map(isExisted => isExisted ? this.updateItem(path, item.id, {
+        ...metaData,
+        item,
+      }) : this.addItemToStore(path, item, metaData)),
+      tap(isExisted => console.log(
+        'xxx save',
+        isExisted,
+        this.store.getValue(),
+      )),
+    );
+  }
+
+  checkExisted(path: string, item: ItemType): Observable<boolean> {
+    return this.store.asObservable().pipe(
+      pluck('data', path),
+      take(1),
+      map(list => !!list.find(it => it.item.id === item.id)),
+    );
+  }
+
   addItemToStore(path: string, item: ItemType, param: MetaData): void {
-    const { data } = this.store.getValue();
+    const data = deepCopy(this.store.getValue().data);
 
     if (!data[path]) {
       data[path] = [];
@@ -114,17 +144,19 @@ export class FileCab {
       ...this.store.getValue(),
       data,
     });
+
+    console.log('xxx update store', this.store.getValue());
   }
 
   checkResults(res: SearchRequestResult<ItemType>) {
     if (res.total_results === 1) {
       return Promise.resolve(res.results[0]);
     } else {
-      if (!this.popup) {
+      /*if (!this.popup) {
         console.error('popup null', this);
         return Promise.reject({ code: 'popupNull' });
       }
-      return this.popup.showModal(res.results);
+      return this.popup.showModal(res.results);*/
     }
   }
 
@@ -197,10 +229,6 @@ export class FileCab {
         this.updateStore(data);
       }
     });
-  }
-
-  private trimName(fullName: string): string {
-    return fullName.match(nameExp)[0].trim();
   }
 
   private init(): Promise<typeof configData> {
