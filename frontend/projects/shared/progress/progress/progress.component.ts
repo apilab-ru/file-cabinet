@@ -23,7 +23,7 @@ export class ProgressComponent implements ControlValueAccessor {
 
   updateValue(value: number): void {
     if (this.onChange)
-      this.onChange(++value || 0);
+      this.onChange(+value || 0);
   }
 
   registerOnChange(fn: (value: number) => void): void {

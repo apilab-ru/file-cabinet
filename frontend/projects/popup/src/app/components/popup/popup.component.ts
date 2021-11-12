@@ -3,12 +3,11 @@ import { Status } from '@shared/models/status-item';
 import { NavigationItem } from '@shared/models/navigation';
 import { checkIsShowStar } from '@shared/utils/check-is-show-star';
 import { FormControl, FormGroup } from '@angular/forms';
-
 import { Observable } from 'rxjs';
-import { map, startWith, tap } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { ItemType, LibraryItem } from '@shared/models/library';
-import { StatusList } from '@shared/const';
 import { CardData } from '../../models/card-data';
+import { checkIsShowProgress } from '@shared/utils/check-is-show-progress';
 
 @Component({
   selector: 'app-popup',
@@ -43,7 +42,7 @@ export class PopupComponent implements OnChanges, OnInit {
     );
     this.isShowProgress$ = this.formGroup.valueChanges.pipe(
       startWith(this.formGroup.getRawValue()),
-      map(({ status }) => status === StatusList.process),
+      map(({ status }) => checkIsShowProgress(status)),
     );
   }
 

@@ -13,5 +13,9 @@
       </div>
       <img class="image" [src]="item.image">
     </div>
+
+    <div *ngIf="!list.length" class="empty">
+      Empty
+    </div>
   </div>
 </div>

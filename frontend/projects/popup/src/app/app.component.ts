@@ -14,11 +14,13 @@ import { FileCab } from '@shared/services/file-cab';
 import { STATUS_LIST, Types } from '@shared/const';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BrowserApiService } from './services/browser-api.service';
-import { BehaviorSubject, combineLatest, from, Observable, of, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { ItemType, LibraryItem } from '@shared/models/library';
 import { CardData } from './models/card-data';
 import { trimTitle } from '@shared/utils/trim-title';
 import { Genre } from '@server/api/base';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MetaData } from '@shared/models/meta-data';
 
 interface BaseInfo {
   name: string;
@@ -58,10 +60,12 @@ export class AppComponent implements OnInit {
   foundedList$: Observable<ItemType[]>;
 
   private itemId = new BehaviorSubject<number | null>(null);
+  private saveEvent = new Subject<{ type: string, metaData: MetaData }>();
 
   constructor(
     private fileCab: FileCab,
     private browserApiService: BrowserApiService,
+    private matSnackBar: MatSnackBar,
   ) {
   }
 
@@ -120,14 +124,26 @@ export class AppComponent implements OnInit {
       }),
       filter(item => !!item),
     );
+
+    this.saveEvent.asObservable().pipe(
+      switchMap(({ type, metaData }) => this.updateItem(type, metaData)),
+      untilDestroyed(this),
+    ).subscribe(() => {
+      this.matSnackBar.open('Сохранено', undefined, {
+        duration: 2000,
+      });
+    });
   }
 
   onUpdate(cardData: CardData): void {
     const { type, name, ...metaData } = cardData;
 
     this.searchData.next({ type, name });
+    this.saveEvent.next({ type, metaData });
+  }
 
-    this.item$.pipe(
+  private updateItem(type: string, metaData: MetaData): Observable<void> {
+    return this.item$.pipe(
       take(1),
       withLatestFrom(this.baseInfo$),
       map(([item, baseInfo]) => ({
@@ -138,8 +154,7 @@ export class AppComponent implements OnInit {
         },
       })),
       switchMap(({ item, metaData }) => this.fileCab.addOrUpdate(type, item, metaData)),
-      untilDestroyed(this),
-    ).subscribe();
+    );
   }
 
   selectItemId(itemId: number): void {

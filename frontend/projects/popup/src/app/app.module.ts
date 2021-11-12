@@ -16,6 +16,7 @@ import { ProgressModule } from '@shared/progress/progress.module';
 import { FoundedListComponent } from './components/founded-list/founded-list.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HorizontalScrollDirective } from './directives/horizontal-scroll.directive';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -25,17 +26,18 @@ import { HorizontalScrollDirective } from './directives/horizontal-scroll.direct
     HorizontalScrollDirective,
   ],
   imports: [
-    BrowserModule,
     BrowserAnimationsModule,
+    BrowserModule,
     CommonModule,
-    MatInputModule,
     MatButtonModule,
-    MatSelectModule,
     MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+    ProgressModule,
     ReactiveFormsModule,
     StarsModule,
-    ProgressModule,
-    MatTooltipModule,
   ],
   exports: [
     PopupComponent,

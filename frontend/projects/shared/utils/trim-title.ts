@@ -1,4 +1,4 @@
-const nameExp = /([a-zA-zа-яА-яёЁ\s0-9:]*)/;
+const nameExp = /([a-zA-zа-яА-яёЁ\s0-9:,.-]*)/;
 
 export function trimTitle(title: string, func?: string): string {
   if (func) {

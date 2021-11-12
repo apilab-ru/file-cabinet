@@ -33,6 +33,11 @@
     "type": "films"
   },
   "animego.org": {
-    "type": "anime"
+    "type": "anime",
+    "func": "(title) => title.replace('смотреть онлайн', '').replace('— Аниме', '')"
+  },
+  "shikimori.one": {
+    "type": "anime",
+    "title": "document.querySelector('h1').textContent.split('/')[0]"
   }
 }
