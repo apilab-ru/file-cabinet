@@ -1,15 +1,6 @@
-<div *ngIf="fullName">{{ fullName }}</div>
-<mat-form-field class="line">
-  <input matInput [(ngModel)]="title"/>
-</mat-form-field>
-<mat-form-field class="line" *ngIf="data.url">
-  <input matInput [(ngModel)]="data.url" title="Ссылка"/>
-</mat-form-field>
-<app-status class="status" [(ngModel)]="data.status"></app-status>
-<app-stars *ngIf="isShowStar" [star]="data.star" (setStars)="data.star = $event"></app-stars>
-<mat-form-field class="line">
-  <textarea matInput [(ngModel)]="data.comment" placeholder="Комментарий"></textarea>
-</mat-form-field>
-<div class="submit-line">
-  <button mat-raised-button color="primary" (click)="send()">Добавить</button>
-</div>
+<app-card-edit
+  [isShowLibrary]="false"
+  [isSearchMode]="false"
+  [item]="item"
+  (update)="send($event)"
+></app-card-edit>

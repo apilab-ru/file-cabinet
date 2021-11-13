@@ -8,17 +8,24 @@ import { MatIconModule } from '@angular/material/icon';
 import { LinkComponent } from './components/link/link.component';
 import { SharedModule } from '../../shared/shared.module';
 import { StarsModule } from '@shared/stars/stars.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { MatButtonModule } from '@angular/material/button';
 import { CardComponent } from './components/card/card.component';
+import { CleverSearchComponent } from './components/clever-search/clever-search.component';
+import { LoaderModule } from '@shared/loader/loader.module';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
-    LibraryComponent,
-    GenresComponent,
-    LinkComponent,
     CardComponent,
+    CleverSearchComponent,
+    GenresComponent,
+    LibraryComponent,
+    LinkComponent,
   ],
   imports: [
     RouterModule.forChild([
@@ -28,13 +35,19 @@ import { CardComponent } from './components/card/card.component';
       },
     ]),
     CommonModule,
+    FormsModule,
     LazyLoadImageModule,
     ListModule,
+    LoaderModule,
     MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
+    ReactiveFormsModule,
     SharedModule,
     StarsModule,
-    FormsModule,
+    MatSnackBarModule,
   ],
 })
 export class LibraryModule {

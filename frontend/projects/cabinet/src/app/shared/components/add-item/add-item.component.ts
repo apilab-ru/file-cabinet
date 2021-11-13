@@ -1,14 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MetaData } from '@shared/models/meta-data';
-import { ItemType } from '@shared/models/library';
-
-interface ItemData extends MetaData {
-  title?: string;
-  fullName?: string;
-  item?: ItemType;
-  path: string;
-}
+import { ItemType, LibraryItem } from '@shared/models/library';
+import { CardData } from '@shared/popup-add-item/models/card-data';
 
 @Component({
   selector: 'app-add-item',
@@ -17,36 +10,15 @@ interface ItemData extends MetaData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddItemComponent {
-
-  data: MetaData;
-  title: string;
-  fullName: string;
-  path: string;
-
   constructor(
     private dialogRef: MatDialogRef<AddItemComponent>,
-    @Inject(MAT_DIALOG_DATA) data: ItemData,
+    @Inject(MAT_DIALOG_DATA) public item: LibraryItem<ItemType>,
   ) {
-    const {path, title, fullName, ...item} = data;
-    this.data = {
-      ...item,
-      status: item.status || 'planned'
-    };
-    this.title = title;
-    this.path = path;
-    this.fullName = fullName;
   }
 
-  get isShowStar(): boolean {
-    return this.data.status === 'complete' || this.data.status === 'process' || this.data.status === 'drop';
-  }
-
-  send(): void {
-    this.dialogRef.close({
-      path: this.path,
-      title: this.title,
-      param: this.data
-    });
+  send(cardData: CardData): void {
+    const { type, name, ...metaData } = cardData;
+    this.dialogRef.close(metaData);
   }
 
 }

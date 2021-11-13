@@ -9,6 +9,7 @@ import { AddItemPopupComponent } from './components/add-item-popup/add-item-popu
 import { PopupAddItemModule } from '@shared/popup-add-item/popup-add-item.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     PopupAddItemModule,
     MatTooltipModule,
     MatDialogModule,
+    MatSnackBarModule,
   ],
 })
 export class AnalyzeModule {

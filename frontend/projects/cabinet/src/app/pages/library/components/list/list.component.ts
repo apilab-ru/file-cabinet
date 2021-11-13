@@ -1,9 +1,12 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ContentChild,
+  EventEmitter,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChanges,
   TemplateRef,
   TrackByFunction,
@@ -17,11 +20,13 @@ import { map } from 'rxjs/operators';
   selector: 'app-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListComponent<T> implements OnInit, OnChanges {
   @Input() list: T[];
   @Input() page = 1;
+
+  @Output() pageChange = new EventEmitter<number>();
 
   data$ = new ReplaySubject<T[]>(1);
   showData$: Observable<T[]>;
@@ -48,6 +53,7 @@ export class ListComponent<T> implements OnInit, OnChanges {
       this.data$.next(this.list);
     }
     if (changes.page) {
+      console.log('xxx next', this.page);
       this.page$.next(this.page);
     }
   }
@@ -62,6 +68,7 @@ export class ListComponent<T> implements OnInit, OnChanges {
 
   setPage(page: PageEvent): void {
     this.page$.next(page.pageIndex + 1);
+    this.pageChange.emit(page.pageIndex + 1);
     this.limit$.next(page.pageSize);
   }
 
@@ -70,5 +77,4 @@ export class ListComponent<T> implements OnInit, OnChanges {
     const end = page * limit;
     return data.slice(start, end);
   }
-
 }

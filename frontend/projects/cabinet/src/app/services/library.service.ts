@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
-import { first } from 'rxjs/operators';
 import { FilmsService } from './films.service';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AnimeService } from './anime.service';
 import { Anime, Film, SearchRequestResult } from '../../models';
 import { ChromeApiService } from './chrome-api.service';
-import { MatDialog } from '@angular/material/dialog';
-import { FoundItemsComponent } from '../shared/components/found-items/found-items.component';
 import { ItemType, Library, LibraryItem } from '@shared/models/library';
 import { FileCabService } from '@shared/services/file-cab.service';
 
@@ -21,13 +18,11 @@ export interface ItemParams {
 })
 export class LibraryService {
   data$ = this.fileCabService.data$;
-  tags$ = this.fileCabService.tags$;
 
   constructor(
     private filmsService: FilmsService,
     private animeService: AnimeService,
     private chromeApi: ChromeApiService,
-    private dialog: MatDialog,
     private fileCabService: FileCabService,
   ) {
   }
@@ -63,20 +58,5 @@ export class LibraryService {
 
   updateStore(store: Partial<Library>): void {
     console.log('xxx store', store);
-  }
-
-  private showModalSelectItem(list: (Anime | Film)[]): Observable<Anime | Film> {
-    const subject = new Subject<Anime | Film>();
-    const dialog = this.dialog.open(FoundItemsComponent, {
-      data: list,
-    });
-    dialog.afterClosed().subscribe((item) => {
-      if (item) {
-        subject.next(item);
-      } else {
-        subject.error({ code: 'notSelected' });
-      }
-    });
-    return subject.asObservable().pipe(first());
   }
 }

@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src: url('/cabinet/assets/icomoon/fonts/icomoon.eot?xl7va5');
-  src: url('/cabinet/assets/icomoon/fonts/icomoon.eot?xl7va5#iefix') format('embedded-opentype'),
-  url('/cabinet/assets/icomoon/fonts/icomoon.ttf?xl7va5') format('truetype'),
-  url('/cabinet/assets/icomoon/fonts/icomoon.woff?xl7va5') format('woff'),
-  url('/cabinet/assets/icomoon/fonts/icomoon.svg?xl7va5#icomoon') format('svg');
+  src: url('/cabinet/assets/icomoon/fonts/icomoon.eot?5wkn68');
+  src: url('/cabinet/assets/icomoon/fonts/icomoon.eot?5wkn68#iefix') format('embedded-opentype'),
+  url('/cabinet/assets/icomoon/fonts/icomoon.ttf?5wkn68') format('truetype'),
+  url('/cabinet/assets/icomoon/fonts/icomoon.woff?5wkn68') format('woff'),
+  url('/cabinet/assets/icomoon/fonts/icomoon.svg?5wkn68#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,18 +25,20 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-navigate:before {
-  content: "\e903";
+.icon-folder:before {
+  content: "\e92f";
+}
+
+.icon-search:before {
+  content: "\e986";
 }
 
 .icon-close:before {
   content: "\e902";
 }
-
 .icon-arrow-up:before {
   content: "\e901";
 }
-
 .icon-delete:before {
   content: "\e900";
 }

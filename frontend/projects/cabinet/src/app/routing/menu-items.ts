@@ -1,5 +1,4 @@
 import { Route } from '@angular/router';
-import { SettingsComponent } from '../pages/settings/settings.component';
 
 export const MENU_ITEMS: (Route & { name: string })[] = [
   {
@@ -28,7 +27,7 @@ export const MENU_ITEMS: (Route & { name: string })[] = [
   },
   {
     path: 'settings',
-    component: SettingsComponent,
+    loadChildren: () => import('../pages/settings/settings.module').then(res => res.SettingsModule),
     name: 'Настройки',
   },
   {

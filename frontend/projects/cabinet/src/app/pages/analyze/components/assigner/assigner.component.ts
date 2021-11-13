@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
-import { NavigationService } from '../../../../services/navigation.service';
 import { structList } from 'projects/cabinet/src/app/routing/routes';
 
 @Component({

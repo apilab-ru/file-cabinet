@@ -38,8 +38,12 @@
   &__description {
     padding-left: 10px;
     max-height: 271px;
-    overflow: auto;
+    overflow: hidden;
     flex: 1;
+
+    &:hover {
+      overflow: auto;
+    }
   }
 
   &__image {

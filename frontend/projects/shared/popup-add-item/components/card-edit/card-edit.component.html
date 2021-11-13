@@ -1,11 +1,11 @@
 <div class="root" [formGroup]="formGroup">
   <div class="load-box">
-    <mat-form-field class="input-box">
+    <mat-form-field *ngIf="isSearchMode" class="input-box">
       <mat-label>Название материала</mat-label>
       <input matInput formControlName="name">
     </mat-form-field>
 
-    <div class="buttons">
+    <div *ngIf="isSearchMode" class="buttons">
       <button
         *ngFor="let type of types"
         class="button"
@@ -65,20 +65,3 @@
     <textarea matInput formControlName="comment"></textarea>
   </mat-form-field>
 </div>
-
-
-<!--div class="line js-sub-actions"></div>
-<div id="more-films" class="modal">
-  <div class="found__list">
-    <div class='found__item'>
-      <img class="found__image" src="${item.image}">
-      <div class="found__info">
-        <div class="found__date">${item.date}</div>
-        <div class="found__name">${item.title} / ${item.original_title}</div>
-        <div class="found__description">${item.description}</div>
-      </div>
-    </div>
-  </div>
-  <div-- class="modal-footer">
-    <a class="modal-close waves-effect waves-green btn-flat">Отмена</a>
-  </div-->

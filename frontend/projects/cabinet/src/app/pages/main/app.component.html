@@ -1,28 +1,6 @@
-<div class="search">
-  <mat-radio-group
-    aria-labelledby="example-radio-group-label"
-    class="search__setting"
-    [ngModel]="modeChanges() | async"
-    (ngModelChange)="changeMode($event)">
-    <mat-radio-button value="search" class="search__setting-item">
-      Поиск
-    </mat-radio-button>
-    <mat-radio-button value="library">
-      Библиотека
-    </mat-radio-button>
-  </mat-radio-group>
-
-  <app-clever-search
-    class="search__input"
-    [keys]="searchKeys"
-    [status]="searchStatus$ | async"
-    (statusChanges)="updateSearch($event)"
-  ></app-clever-search>
-</div>
-
-<nav mat-tab-nav-bar backgroundColor="primary">
+<nav class="navigations" mat-tab-nav-bar backgroundColor="primary">
   <a
-    *ngFor="let link of (navLinks$ | async)"
+    *ngFor="let link of navLinks"
     mat-tab-link
     [routerLink]="link.path"
     routerLinkActive
@@ -33,4 +11,7 @@
   </a>
 </nav>
 
-<router-outlet></router-outlet>
+<div class="router-content">
+  <router-outlet></router-outlet>
+</div>
+

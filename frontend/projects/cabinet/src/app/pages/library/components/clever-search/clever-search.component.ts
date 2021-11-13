@@ -1,8 +1,10 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input, NgZone,
+  Input,
+  NgZone,
   OnChanges,
   OnInit,
   Output,
@@ -12,12 +14,11 @@ import {
 import { FormControl } from '@angular/forms';
 import { debounceTime, map } from 'rxjs/operators';
 import {
-  ISearchStatus,
   BASE_CLEVER_SEARCH_KEYS,
-  ICleverSearchKeys,
-  ISearchValue,
-  SearchKeys,
   ICleverSearchKey,
+  ICleverSearchKeys,
+  ISearchStatus,
+  ISearchValue,
 } from '../../../../../models';
 import { KeyListenerService } from '../../../../services/key-listener.service';
 import { MatFormField } from '@angular/material/form-field';
@@ -26,24 +27,22 @@ import { MatFormField } from '@angular/material/form-field';
   selector: 'app-clever-search',
   templateUrl: './clever-search.component.html',
   styleUrls: ['./clever-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
-
   @Input() keys: ICleverSearchKeys = BASE_CLEVER_SEARCH_KEYS;
 
   @Input() status: ISearchStatus;
   @Output() statusChanges = new EventEmitter<ISearchStatus>();
 
-  @ViewChild(MatFormField, {static: false}) private field: MatFormField;
+  @ViewChild(MatFormField, { static: true }) private field: MatFormField;
 
   isShowAdvanced = false;
-  private isIgnoreHover = false;
-
   separator = '?';
-
   inputControl = new FormControl();
-
   debounceTime = 500;
+
+  private isIgnoreHover = false;
 
   constructor(
     private keyListenerService: KeyListenerService,
@@ -51,7 +50,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.inputControl
       .valueChanges
       .pipe(
@@ -71,7 +70,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
             this.isShowAdvanced = true;
           });
         }
-      }
+      };
     });
   }
 
@@ -155,7 +154,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
     if (!this.status) {
       this.status = {
         search: '',
-        options: {}
+        options: {},
       };
     }
   }

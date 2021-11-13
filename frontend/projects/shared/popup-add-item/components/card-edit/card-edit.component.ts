@@ -8,7 +8,6 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { Status } from '@shared/models/status-item';
 import { NavigationItem } from '@shared/models/navigation';
 import { checkIsShowStar } from '@shared/utils/check-is-show-star';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -31,6 +30,7 @@ export class CardEditComponent implements OnChanges, OnInit {
   @Input() item: LibraryItem<ItemType>;
   @Input() name: string;
   @Input() isShowLibrary = true;
+  @Input() isSearchMode = true;
 
   @Output() update = new EventEmitter<CardData>();
 

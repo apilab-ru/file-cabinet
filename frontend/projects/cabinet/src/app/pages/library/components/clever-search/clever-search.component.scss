@@ -5,6 +5,7 @@
 
 .field {
   width: 100%;
+  margin-bottom: -1.25rem;
 }
 
 .key {
@@ -44,9 +45,11 @@
   overflow: hidden;
   max-height: 0;
   transition: 0.5s;
+  margin-top: 0;
 
   &.-show {
     max-height: 500px;
+    margin-top: 10px;
   }
 }
 
@@ -56,6 +59,7 @@
   cursor: pointer;
   background-color: #3f51b5;
   color: #fff;
+  border-radius: 4px;
 }
 
 .toggle {
@@ -72,7 +76,7 @@
 .clear {
   position: absolute;
   top: 0;
-  right: 40px;
+  right: 35px;
 }
 
 .help {

@@ -1,67 +1,79 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { LibraryService } from '../../services/library.service';
-import { Genre, ISearchStatus, LibraryMode, Path } from '../../../models';
-import { FilmsService } from '../../services/films.service';
-import { combineLatest, Observable, Subject } from 'rxjs';
-import { AnimeService } from '../../services/anime.service';
-import { DataFactory } from '../../services/data-factory';
+import { ISearchStatus, LibraryMode, Path } from '../../../models';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { DataFactoryService } from './services/data-factory.service';
 import { SearchService } from '../../services/search.service';
 import { AddItemComponent } from '../../shared/components/add-item/add-item.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ItemType, LibraryItem } from '@shared/models/library';
+import { StatusList } from '@shared/const';
+import { MetaData } from '@shared/models/meta-data';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @UntilDestroy()
 @Component({
   selector: 'app-library',
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.scss'],
+  providers: [
+    SearchService,
+    DataFactoryService,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LibraryComponent implements OnInit {
-  path: Path;
-  list: LibraryItem<ItemType>[];
-  dataFactory: DataFactory;
+  mode$ = this.searchService.mode$;
+  list$: Observable<LibraryItem<ItemType>[]>;
+  genres$ = this.dataFactoryService.genres$;
+  searchStatus$ = this.searchService.status$;
+  page$ = this.searchService.page$;
+  searchKeys$ = this.searchService.searchKeys$;
+  isLoad$ = new BehaviorSubject(false);
+  LibraryMode = LibraryMode;
 
-  get genres$(): Observable<Genre[]> {
-    return this.dataFactory && this.dataFactory.genres$;
-  }
-
-  get isLibraryMode$(): Observable<boolean> {
-    return this.searchService.modeChanges()
-      .pipe(map(mode => mode === LibraryMode.library));
-  }
-
-  isLoad = false;
-
-  private reload$ = new Subject<void>();
+  private path: Path;
 
   constructor(
     private activeRoute: ActivatedRoute,
     private libraryService: LibraryService,
-    private filmsService: FilmsService,
-    private animeService: AnimeService,
     private searchService: SearchService,
+    private dataFactoryService: DataFactoryService,
+    private matSnackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
   }
 
   ngOnInit(): void {
-    this.isLoad = true;
     this.activeRoute
       .data
       .pipe(untilDestroyed(this))
       .subscribe(data => {
         this.path = data.path;
-        this.load();
-        this.dataFactory = new DataFactory(
-          this.animeService,
-          this.filmsService,
-          this.libraryService,
-        ).setPath(this.path);
-        this.reload$.next();
+        this.dataFactoryService.setPath(data.path);
+        this.searchService.setPath(data.path);
       });
+
+    this.list$ = combineLatest([
+      this.searchService.status$,
+      this.searchService.mode$,
+    ]).pipe(
+      tap(() => this.isLoad$.next(true)),
+      switchMap(([status, mode]) => this.selectData(mode, status)),
+      tap(() => this.isLoad$.next(false)),
+      shareReplay({ refCount: true, bufferSize: 1 }),
+    );
+  }
+
+  updateSearch(status: ISearchStatus): void {
+    this.searchService.update(status);
+  }
+
+  changeMode(mode: LibraryMode): void {
+    this.searchService.setMode(mode);
   }
 
   onClickGenre(genre: number): void {
@@ -76,51 +88,38 @@ export class LibraryComponent implements OnInit {
     this.libraryService.deleteItem(this.path, item.item.id);
   }
 
-  onSetStars(star: number, item: LibraryItem<ItemType>): void {
-    item.star = star;
-    this.libraryService.updateItem(this.path, item.item.id, item);
-  }
-
-  addItem(item: LibraryItem<ItemType>): void {
-    const dialog = this.dialog.open(AddItemComponent, {
+  addItem(libraryItem: LibraryItem<ItemType>): void {
+    const dialog = this.dialog.open<void, MetaData, LibraryItem<ItemType>>(AddItemComponent, {
       data: {
-        title: item.item.title,
-        path: this.path,
+        ...libraryItem,
+        status: StatusList.planned,
       },
     });
-    dialog.afterClosed().subscribe(res => {
-      this.libraryService.addItem(res.path, {
-        item: item.item,
-        ...res.param,
-      }).subscribe(() => {
-        this.reload$.next();
+    dialog.afterClosed()
+      .pipe(
+        take(1),
+        filter(metaData => !!metaData),
+        switchMap(metaData => this.libraryService.addItem(this.path, {
+          ...libraryItem,
+          ...metaData,
+        })),
+        untilDestroyed(this),
+      )
+      .subscribe(() => {
+        this.matSnackBar.open('Сохранено', undefined, {
+          duration: 2000,
+        });
       });
-    });
   }
 
   trackBy(index: number, item: LibraryItem<ItemType>): number {
     return item.item.id;
   }
 
-  private load(): void {
-    combineLatest([
-      this.searchService.statusChanges(),
-      this.searchService.modeChanges(),
-      this.reload$.asObservable(),
-    ]).pipe(
-      tap(() => this.isLoad = true),
-      map(([search, mode]) => ({ search, mode })),
-      switchMap(({ search, mode }) => this.selectData(mode, search)),
-    ).subscribe(list => {
-      this.list = list;
-      this.isLoad = false;
-    });
-  }
-
   private selectData(mode: LibraryMode, state: ISearchStatus): Observable<LibraryItem<ItemType>[]> {
     return (mode === LibraryMode.library
-      ? this.dataFactory.getFromLibrary()
-      : this.dataFactory.search(state))
+      ? this.dataFactoryService.getFromLibrary()
+      : this.dataFactoryService.search(state))
       .pipe(
         map(list => this.searchService.filterByState(list, state)),
       );

@@ -3,6 +3,7 @@
 </mat-form-field>
 <span class="toggle button icon-arrow-up" [class.-show]="isShowAdvanced" (click)="toggle()"></span>
 <span class="clear button icon-close" (click)="clear()"></span>
+
 <div class="available" [class.-show]="isShowAdvanced">
   <span class="key" *ngFor="let item of keys | keyvalue; let key=index">
     <span class="section" [class.-selected]="isSectionSelected(item.key)" (click)="setSection(item.key)">

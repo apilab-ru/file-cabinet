@@ -1,27 +1,54 @@
 import { Injectable } from '@angular/core';
-import { ISearchStatus, ISearchValue, LibraryMode, SearchKeys } from '../../models';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
+import {
+  BASE_CLEVER_SEARCH_KEYS,
+  deepCopy,
+  Genre,
+  ICleverSearchKeys,
+  ISearchStatus,
+  ISearchValue,
+  LibraryMode,
+  Path,
+  SearchKeys,
+} from '../../models';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { ItemType, LibraryItem } from '@shared/models/library';
+import { StatusList } from '@shared/const';
+import { map, switchMap } from 'rxjs/operators';
+import { FileCabService } from '@shared/services/file-cab.service';
+import { Tag } from '@shared/models/tag';
 
 const BASE_STATE: ISearchStatus = {
   search: '',
   options: {
-    status: [{ value: 'planned', positive: true }],
+    status: [{ value: StatusList.process, positive: true }],
   },
 };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class SearchService {
+  private status = new BehaviorSubject<ISearchStatus>(BASE_STATE);
+  private mode = new BehaviorSubject<LibraryMode>(LibraryMode.library);
+  private path$ = new BehaviorSubject<Path | null>(null);
+  private page = new BehaviorSubject(1);
 
-  private status$ = new BehaviorSubject<ISearchStatus>(BASE_STATE);
-  private mode$ = new BehaviorSubject<LibraryMode>(LibraryMode.library);
+  page$ = this.page.asObservable();
+  mode$ = this.mode.asObservable();
+  status$ = this.status.asObservable();
+  searchKeys$: Observable<ICleverSearchKeys>;
+
+  constructor(
+    private fileCabService: FileCabService,
+  ) {
+    this.searchKeys$ = this.createSearchKeys();
+  }
+
+  setPath(path: Path): void {
+    this.path$.next(path);
+  }
 
   selectGenre(genre: number): void {
-    const status = this.status$.getValue() || { options: {}, search: '' };
-    this.status$.next({
+    const status = this.status.getValue() || { options: {}, search: '' };
+    this.status.next({
       ...status,
       options: {
         ...status.options,
@@ -31,20 +58,11 @@ export class SearchService {
   }
 
   update(status: ISearchStatus): void {
-    this.status$.next(status);
-  }
-
-  statusChanges(): Observable<ISearchStatus> {
-    return this.status$.asObservable();
-  }
-
-  modeChanges(): Observable<LibraryMode> {
-    return this.mode$.asObservable().pipe(shareReplay(1));
+    this.status.next(status);
   }
 
   setMode(mode: LibraryMode): void {
-    console.log('set mode', mode);
-    this.mode$.next(mode);
+    this.mode.next(mode);
   }
 
   filterByState(data: LibraryItem<ItemType>[], state: ISearchStatus): LibraryItem<ItemType>[] {
@@ -56,7 +74,21 @@ export class SearchService {
     }
   }
 
-  itemToStateCompare(item: LibraryItem<ItemType>, state: ISearchStatus): boolean {
+  private createSearchKeys(): Observable<ICleverSearchKeys> {
+    const genres$ = this.path$.pipe(
+      switchMap(path => this.fileCabService.selectGenres(path)),
+    );
+
+    return combineLatest([
+      this.mode$,
+      this.fileCabService.tags$,
+      genres$,
+    ]).pipe(
+      map(([mode, tags, genres]) => this.loadKeys(mode, genres, tags)),
+    );
+  }
+
+  private itemToStateCompare(item: LibraryItem<ItemType>, state: ISearchStatus): boolean {
     let isCompare = true;
     if (state.search) {
       isCompare = item.item.title.toLocaleLowerCase().search(state.search) > -1;
@@ -102,7 +134,7 @@ export class SearchService {
     }
   }
 
-  compareList(itemValue: (string | number)[], searchSeparate: ISearchValueSeparate): ICompareList {
+  private compareList(itemValue: (string | number)[], searchSeparate: ISearchValueSeparate): ICompareList {
     return {
       positive: searchSeparate.positive.map(s => (itemValue.indexOf(s.value) > -1) === s.positive),
       negative: searchSeparate.negative.map(s => (itemValue.indexOf(s.value) > -1) === s.positive),
@@ -114,6 +146,21 @@ export class SearchService {
       positive: search.filter(value => value.positive),
       negative: search.filter(value => !value.positive),
     };
+  }
+
+  private loadKeys(mode: LibraryMode, genres: Genre[], tags: Tag[]): ICleverSearchKeys {
+    const keys = deepCopy(BASE_CLEVER_SEARCH_KEYS);
+    keys.genres.list = genres;
+    keys.tags.list = tags;
+
+    if (mode === LibraryMode.search) {
+      delete keys.status;
+      delete keys.ratingFrom;
+      delete keys.ratingTo;
+      delete keys.tags;
+    }
+
+    return keys;
   }
 }
 

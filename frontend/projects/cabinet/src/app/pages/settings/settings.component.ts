@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LibraryService } from '../../services/library.service';
 import { first, map, mergeMap } from 'rxjs/operators';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -12,6 +12,7 @@ import { FileCabService } from '@shared/services/file-cab.service';
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent {
   constructor(

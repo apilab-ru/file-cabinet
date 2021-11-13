@@ -28,7 +28,6 @@ import { LoaderModule } from '@shared/loader/loader.module';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatSnackBarModule,
     MatTooltipModule,
     ProgressModule,
     ReactiveFormsModule,
@@ -37,6 +36,7 @@ import { LoaderModule } from '@shared/loader/loader.module';
   ],
   exports: [
     PopupComponent,
+    CardEditComponent,
   ],
 })
 export class PopupAddItemModule {
