@@ -6,14 +6,14 @@ import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { LibraryService } from '../../services/library.service';
 import { saveAsFile } from '../../helpers/save-as-file';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { filter, map, switchMap, take } from 'rxjs/operators';
+import { filter, switchMap, take } from 'rxjs/operators';
 import { AddItemPopupComponent } from './components/add-item-popup/add-item-popup.component';
 import { BaseInfo } from '@shared/popup-add-item/models/base-info';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
 import { getDomain } from '@shared/utils/get-domain';
 import { trimTitle } from '@shared/utils/trim-title';
 import { FileCabService } from '@shared/services/file-cab.service';
+import BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
 
 interface TreeItem extends BookmarkTreeNode {
   removed?: boolean;

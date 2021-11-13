@@ -7,13 +7,14 @@ import { CommonModule } from '@angular/common';
     CommonModule,
   ],
   declarations: [
-    StarsComponent
+    StarsComponent,
   ],
   exports: [
-    StarsComponent
+    StarsComponent,
   ],
   entryComponents: [
-    StarsComponent
-  ]
+    StarsComponent,
+  ],
 })
-export class StarsModule {}
+export class StarsModule {
+}

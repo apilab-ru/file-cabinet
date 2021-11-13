@@ -16,6 +16,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
   imports: [
     CommonModule,
     MatPaginatorModule,
-  ]
+  ],
 })
-export class ListModule { }
+export class ListModule {
+}

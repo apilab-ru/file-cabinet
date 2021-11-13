@@ -1,12 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-link',
   templateUrl: './link.component.html',
-  styleUrls: ['./link.component.scss']
+  styleUrls: ['./link.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkComponent {
-
   name: string;
 
   @Input()
@@ -14,6 +14,7 @@ export class LinkComponent {
     this._link = link;
     this.name = this.getName(link);
   }
+
   get link(): string {
     return this._link;
   }

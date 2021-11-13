@@ -5,7 +5,7 @@ const KEY_CTRL = 'Control';
 const KEY_ALT = 'Alt';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class KeyListenerService {
 
@@ -35,6 +35,6 @@ export class KeyListenerService {
       this.document.addEventListener('keyup', (event) => {
         this.pressedKeyMap.set(event.key, false);
       });
-    })
+    });
   }
 }

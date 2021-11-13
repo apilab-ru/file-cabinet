@@ -4,7 +4,7 @@ import { Genre } from '../../../../../models';
 const findName = (list, id): string => {
   const tag = list && list.find(g => g.id == id);
   if (!tag && list) {
-    console.error('not found tag', id, list)
+    console.error('not found tag', id, list);
   }
   return tag && tag.name;
 };

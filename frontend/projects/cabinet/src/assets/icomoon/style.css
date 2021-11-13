@@ -36,9 +36,11 @@
 .icon-close:before {
   content: "\e902";
 }
+
 .icon-arrow-up:before {
   content: "\e901";
 }
+
 .icon-delete:before {
   content: "\e900";
 }

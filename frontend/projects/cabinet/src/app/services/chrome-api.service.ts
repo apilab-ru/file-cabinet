@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import BookmarkTreeNode = chrome.bookmarks.BookmarkTreeNode;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChromeApiService {
 
@@ -12,17 +12,17 @@ export class ChromeApiService {
         window.chrome.bookmarks.getTree(list => {
           resolve(list);
         });
-      }catch (e) {
+      } catch (e) {
         reject(e);
       }
-    })
+    });
   }
 
   removeBookmark(id: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       try {
         window.chrome.bookmarks.remove(id, resolve);
-      }catch (e) {
+      } catch (e) {
         reject(e);
       }
     });
@@ -49,11 +49,11 @@ export class ChromeApiService {
       if (child.children) {
         html += this.renderBookmark(child);
       } else {
-        html += `<DT><A HREF="${child.url}" ADD_DATE="${child.dateAdded}" ICON="">${child.title}</A>\n`
+        html += `<DT><A HREF="${child.url}" ADD_DATE="${child.dateAdded}" ICON="">${child.title}</A>\n`;
       }
     });
     html += '</DL><p>\n' +
-              '</DL><p>\n';
+      '</DL><p>\n';
     return html;
   }
 }

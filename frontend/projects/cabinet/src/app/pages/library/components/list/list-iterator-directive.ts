@@ -5,7 +5,7 @@ export interface RowContext<T> {
 }
 
 @Directive({
-  selector: '[listIterator][listIteratorOf]'
+  selector: '[listIterator][listIteratorOf]',
 })
 export class ListIteratorDirective<T> {
   @Input() listIterator: TrackByFunction<T>;

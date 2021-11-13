@@ -17,7 +17,7 @@ interface CacheItem<T> {
 type CacheCallback<T> = (params?: any) => Observable<T>;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CacheService {
 
@@ -45,7 +45,7 @@ export class CacheService {
 
     this.dataMap.set(key, {
       data: result$,
-      timeExpired: now + cacheSubject.timeLive
+      timeExpired: now + cacheSubject.timeLive,
     });
 
     cacheSubject
@@ -56,7 +56,7 @@ export class CacheService {
           result$.error(error);
           result$.complete();
           this.dataMap.set(key, null);
-        }
+        },
       );
 
     return result$.asObservable()

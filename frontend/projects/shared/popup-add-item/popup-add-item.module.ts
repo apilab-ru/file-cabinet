@@ -8,7 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProgressModule } from '@shared/progress/progress.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { StarsModule } from '@shared/stars/stars.module';

@@ -4,6 +4,7 @@ import { Observable, timer } from 'rxjs';
 import { delayWhen, map, retryWhen, tap } from 'rxjs/operators';
 
 const apiUrl = environment.apiUrl;
+
 function fetchObservable<T>(path: string): Observable<T> {
   return new Observable<T>((observer) => {
     const controller = new AbortController();
