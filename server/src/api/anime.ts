@@ -2,7 +2,6 @@ import { Item } from './base';
 
 export interface Anime extends Item {
   type: AnimeType;
-  episodes: number;
 }
 
 export interface AnimeRequestResponse {

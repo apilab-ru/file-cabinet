@@ -4,6 +4,7 @@ export interface Item {
   image: string;
   description: string;
 
+  episodes?: number;
   genre_ids: number[];
   original_title: string;
   popularity: number;
