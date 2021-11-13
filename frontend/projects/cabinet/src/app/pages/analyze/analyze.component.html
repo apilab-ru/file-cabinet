@@ -15,7 +15,7 @@
           Удалить
         </button>
 
-        <app-assigner (assign)="onAssign($event, node)"></app-assigner>
+        <app-assigner class="assigner" (assign)="onAssign($event, node)"></app-assigner>
       </li>
     </mat-tree-node>
   </ng-container>
@@ -23,13 +23,15 @@
   <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
     <li *ngIf="!node.removed">
       <div class="mat-tree-node">
-        <button mat-icon-button matTreeNodeToggle
-                [attr.aria-label]="'toggle ' + node.name">
-          <mat-icon class="mat-icon-rtl-mirror">
-            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-          </mat-icon>
+        <button
+          class="button-toggle"
+          [class.-expanded]="treeControl.isExpanded(node)"
+          matTreeNodeToggle
+          [attr.aria-label]="'toggle ' + node.name"
+        >
+          <span class="icon-arrow-up"></span>
         </button>
-        Папка: {{ node.title || 'Базовая' }}
+        <span class="node-name">Папка: {{ node.title || 'Базовая' }}</span>
         <button mat-stroked-button (click)="removeFolder(node)">
           Удалить
         </button>

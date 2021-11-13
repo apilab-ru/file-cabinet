@@ -106,17 +106,12 @@ export class FileCab {
       });
   }
 
-  addOrUpdate(path: string, item: ItemType, metaData: MetaData): Observable<void> {
+  addOrUpdate(path: string, item: ItemType, metaData: MetaData): Observable<LibraryItem<ItemType>> {
     return this.checkExisted(path, item).pipe(
       map(isExisted => isExisted ? this.updateItem(path, item.id, {
         ...metaData,
         item,
       }) : this.addItemToStore(path, item, metaData)),
-      tap(isExisted => console.log(
-        'xxx save',
-        isExisted,
-        this.store.getValue(),
-      )),
     );
   }
 
@@ -128,17 +123,19 @@ export class FileCab {
     );
   }
 
-  addItemToStore(path: string, item: ItemType, param: MetaData): void {
+  addItemToStore(path: string, item: ItemType, param: MetaData): LibraryItem<ItemType> {
     const data = deepCopy(this.store.getValue().data);
 
     if (!data[path]) {
       data[path] = [];
     }
 
-    data[path].push({
+    const itemRes = {
       item,
       ...param,
-    });
+    };
+
+    data[path].push(itemRes);
 
     this.updateStore({
       ...this.store.getValue(),
@@ -146,6 +143,8 @@ export class FileCab {
     });
 
     console.log('xxx update store', this.store.getValue());
+
+    return itemRes;
   }
 
   checkResults(res: SearchRequestResult<ItemType>) {
@@ -173,7 +172,7 @@ export class FileCab {
   }
 
 
-  updateItem(path: string, id: number, item: LibraryItem<ItemType>): void {
+  updateItem(path: string, id: number, item: LibraryItem<ItemType>): LibraryItem<ItemType> {
     const { data } = deepCopy(this.store.getValue());
 
     if (!data[path]) {
@@ -184,6 +183,8 @@ export class FileCab {
     data[path][index] = item;
 
     this.updateStore({ ...this.store.getValue(), data });
+
+    return item;
   }
 
   deleteItem(path: string, id: number): void {

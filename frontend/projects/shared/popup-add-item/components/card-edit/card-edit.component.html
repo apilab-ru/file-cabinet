@@ -40,7 +40,13 @@
     ></app-progress>
   </div>
   <div class="controls">
-    <a mat-raised-button color="primary" href="/cabinet/index.html" target="_blank">
+    <a
+      *ngIf="isShowLibrary"
+      mat-raised-button
+      color="primary"
+      [href]="'/cabinet/index.html?/' + selectedType"
+      target="_blank"
+    >
       Библиотека
     </a>
 

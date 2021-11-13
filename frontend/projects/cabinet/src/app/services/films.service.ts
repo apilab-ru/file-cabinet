@@ -1,22 +1,23 @@
 import { Injectable } from '@angular/core';
 import { CacheService } from './cache.service';
-import { Film, Genre, SearchRequestResult } from '../../models';
+import { Film, SearchRequestResult } from '../../models';
 import { Observable } from 'rxjs';
 import { fileCabApi } from '@shared/services/file-cab.api';
-import { FileCab } from '@shared/services/file-cab';
+import { FileCabService } from '@shared/services/file-cab.service';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class FilmsService {
-  genres$ = this.fileCab.filmGenres$;
+  genres$ = this.fileCabService.filmGenres$;
 
   private readonly keyMovie = 'cache_movie';
   private readonly keyTv = 'cache_tv';
 
   constructor(
     private cache: CacheService,
-    private fileCab: FileCab,
+    private fileCabService: FileCabService,
   ) {
     this.cache.register<SearchRequestResult<Film>>(
       this.keyMovie,

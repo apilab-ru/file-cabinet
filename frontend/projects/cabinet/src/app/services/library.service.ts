@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { FilmsService } from './films.service';
-import { from, Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { AnimeService } from './anime.service';
 import { Anime, Film, SearchRequestResult } from '../../models';
 import { ChromeApiService } from './chrome-api.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FoundItemsComponent } from '../shared/components/found-items/found-items.component';
-import { FileCab } from '@shared/services/file-cab';
-import { ISchema, ItemType, Library, LibraryItem } from '@shared/models/library';
+import { ItemType, Library, LibraryItem } from '@shared/models/library';
+import { FileCabService } from '@shared/services/file-cab.service';
 
 export interface ItemParams {
   tags?: string[];
@@ -20,27 +20,24 @@ export interface ItemParams {
   providedIn: 'root',
 })
 export class LibraryService {
-  private readonly nameExp = /([a-zA-zа-яА-яёЁ\s0-9]*)/;
-  private schemas: ISchema[];
-
-  store$: Observable<Library>;
+  data$ = this.fileCabService.data$;
+  tags$ = this.fileCabService.tags$;
 
   constructor(
     private filmsService: FilmsService,
     private animeService: AnimeService,
     private chromeApi: ChromeApiService,
     private dialog: MatDialog,
-    private fileCab: FileCab,
+    private fileCabService: FileCabService,
   ) {
-    this.store$ = this.fileCab.store$;
   }
 
   addItem(path: string, item: LibraryItem<ItemType>): Observable<any> {
-    return from(this.fileCab.addItemLibToStore(path, item));
+    return this.fileCabService.addItemLibToStore(path, item);
   }
 
   addItemByName(path: string, name: string, params?: ItemParams): Observable<ItemType> {
-    return from(this.fileCab.addItemOld(path, name, params || {}));
+    return this.fileCabService.addItemOld(path, name, params || {});
   }
 
   findItem(path: string, name: string): Observable<SearchRequestResult<Film | Anime>> {
@@ -56,36 +53,17 @@ export class LibraryService {
     }
   }
 
-  findName(fullName: string, url?: string): string {
-    const host = url && this.getHost(url);
-    const schema = this.schemas[host];
-    if (schema) {
-      return eval(schema.func)(fullName);
-    } else {
-      return fullName.match(this.nameExp)[0].trim();
-    }
-  }
-
-  getHost(url: string): string {
-    let host = url.split('/')[2];
-    if (host.substr(0, 4) === 'www.') {
-      host = host.substr(4);
-    }
-    return host;
-  }
-
   deleteItem(path: string, id: number): void {
-    this.fileCab.deleteItem(path, id);
+    this.fileCabService.deleteItem(path, id);
   }
 
   updateItem(path: string, id: number, item): void {
-    this.fileCab.updateItem(path, id, item);
+    this.fileCabService.updateItem(path, id, item);
   }
 
-  updateStore(store: Library): void {
+  updateStore(store: Partial<Library>): void {
     console.log('xxx store', store);
   }
-
 
   private showModalSelectItem(list: (Anime | Film)[]): Observable<Anime | Film> {
     const subject = new Subject<Anime | Film>();

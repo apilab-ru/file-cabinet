@@ -6,6 +6,7 @@ import { Anime } from '../../../models';
 import { AnimeService } from '../../services/anime.service';
 import { saveAsFile } from '../../helpers/save-as-file';
 import { LibraryItem } from '@shared/models/library';
+import { FileCabService } from '@shared/services/file-cab.service';
 
 @Component({
   selector: 'app-settings',
@@ -13,20 +14,21 @@ import { LibraryItem } from '@shared/models/library';
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent {
-
   constructor(
     private libraryService: LibraryService,
     private animeService: AnimeService,
+    private fileCabService: FileCabService,
   ) {
   }
 
   prepareFilms(): void {
-    this.libraryService.store$
+    this.libraryService.data$
       .pipe(first())
-      .subscribe(store => {
-        this.prepareYear(store.data.films);
-        this.prepareYear(store.data.tv);
-        this.libraryService.updateStore(store);
+      .subscribe(data => {
+        this.prepareYear(data.films);
+        this.prepareYear(data.tv);
+
+        this.libraryService.updateStore({ data });
       });
   }
 
@@ -39,7 +41,7 @@ export class SettingsComponent {
   }
 
   backup(): void {
-    this.libraryService.store$
+    this.fileCabService.store$
       .pipe(first())
       .subscribe(store => {
         const data = JSON.stringify(store);
@@ -48,7 +50,7 @@ export class SettingsComponent {
   }
 
   prepareAnime(): void {
-    this.libraryService.store$
+    this.fileCabService.store$
       .pipe(
         first(),
         mergeMap(store => forkJoin(
@@ -69,7 +71,7 @@ export class SettingsComponent {
   }
 
   fixStatusAnime() {
-    this.libraryService.store$
+    /*this.libraryService.store$
       .pipe(first()).subscribe(store => {
       store.data.anime.forEach(item => {
         if (item.status === 'completed') {
@@ -77,11 +79,11 @@ export class SettingsComponent {
         }
       });
       this.libraryService.updateStore(store);
-    });
+    });*/
   }
 
   restoreAnime() {
-    this.libraryService.store$
+    this.fileCabService.store$
       .pipe(first())
       .subscribe(store => {
         store.data.anime.forEach(item => {

@@ -57,17 +57,24 @@ export class AppComponent implements OnInit {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         const item = this.router.config.find(it => it.path === event.url.substr(1));
-        this.navigationService.setPath(item.path);
+
+        if (item?.path) {
+          this.navigationService.setPath(item.path);
+        } else {
+          console.log('xxx empty item', item);
+        }
+
       });
 
     let lastMode: LibraryMode;
+
     combineLatest(
       this.navigationService.path$,
       this.searchService.modeChanges(),
     ).pipe(
       map(([path, mode]) => ({ path, mode })),
       switchMap(({ path, mode }) => combineLatest(
-        this.libraryService.store$.pipe(map(store => store.tags)),
+        this.libraryService.tags$,
         this.loadKeys(path as Path, mode),
         ).pipe(map(([tags, set]) => ({ tags, set, path, mode }))),
       ),

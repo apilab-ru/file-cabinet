@@ -1,28 +1,19 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 import { NavigationService } from '../../../../services/navigation.service';
-import { Observable } from 'rxjs';
-import { NavigationItem } from '../../../../../models';
+import { structList } from 'projects/cabinet/src/app/routing/routes';
 
 @Component({
   selector: 'app-assigner',
   templateUrl: './assigner.component.html',
   styleUrls: ['./assigner.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignerComponent {
-
   @Output() assign = new EventEmitter<string>();
 
-  get structList$(): Observable<NavigationItem[]> {
-    return this.navigationService.getStruct();
-  }
-
-  constructor(
-    private navigationService: NavigationService,
-  ) {
-  }
+  structList = structList;
 
   toStruct(patch: string): void {
     this.assign.next(patch);
   }
-
 }

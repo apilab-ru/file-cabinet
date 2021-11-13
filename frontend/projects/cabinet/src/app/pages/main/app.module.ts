@@ -8,7 +8,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StarsModule } from '@shared/stars/stars.module';
 import { SettingsComponent } from '../settings/settings.component';
 import { CleverSearchComponent } from './components/clever-search/clever-search.component';
-import { FileCab } from '@shared/services/file-cab';
 import { RouterModule } from '@angular/router';
 import { MAIN_ROUTES } from '../../routing/routes';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -38,12 +37,6 @@ import { MatRadioModule } from '@angular/material/radio';
     MatButtonModule,
     MatDialogModule,
     MatRadioModule,
-  ],
-  providers: [
-    {
-      provide: FileCab,
-      useFactory: () => window.chrome.extension.getBackgroundPage()['fileCab'],
-    },
   ],
   bootstrap: [AppComponent],
 })

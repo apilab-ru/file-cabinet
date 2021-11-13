@@ -5,11 +5,16 @@ import { RouterModule } from '@angular/router';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatButtonModule } from '@angular/material/button';
 import { AssignerComponent } from './components/assigner/assigner.component';
+import { AddItemPopupComponent } from './components/add-item-popup/add-item-popup.component';
+import { PopupAddItemModule } from '@shared/popup-add-item/popup-add-item.module';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
     AnalyzeComponent,
     AssignerComponent,
+    AddItemPopupComponent,
   ],
   imports: [
     CommonModule,
@@ -21,6 +26,9 @@ import { AssignerComponent } from './components/assigner/assigner.component';
     ]),
     MatTreeModule,
     MatButtonModule,
+    PopupAddItemModule,
+    MatTooltipModule,
+    MatDialogModule,
   ],
 })
 export class AnalyzeModule {

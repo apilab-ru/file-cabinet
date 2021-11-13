@@ -1,18 +1,17 @@
 <app-popup
-  *ngIf="baseInfo$ | async as baseInfo"
-  [types]="types$ | async"
-  [statuses]="statuses"
-  [selectedType]="baseInfo.type"
-  [name]="baseInfo.name"
-  [item]="libraryItem$ | async"
-  (update)="onUpdate($event)"
+  *ngIf="baseInfo$ | async as baseInfo; else empty"
+  [baseInfo]="baseInfo"
+  (onSaveEvent)="onSave()"
 ></app-popup>
 
-<ng-container *ngIf="!(item$ | async)">
-  <app-founded-list
-    *ngIf="foundedList$ | async as foundedList"
-    [list]="foundedList"
-    [genres]="genres$ | async"
-    (selectedChange)="selectItemId($event)"
-  ></app-founded-list>
-</ng-container>
+<ng-template #empty>
+  <a
+    mat-raised-button
+    color="primary"
+    [href]="'/cabinet/index.html?/'"
+    target="_blank"
+  >
+    Библиотека
+  </a>
+</ng-template>
+

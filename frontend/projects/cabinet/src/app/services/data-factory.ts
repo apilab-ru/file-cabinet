@@ -32,13 +32,17 @@ export class DataFactory {
       case Path.anime:
         this.initAnime();
         break;
+
+      default:
+        this.genres$ = of([]);
+        break;
     }
     return this;
   }
 
   getFromLibrary(): Observable<LibraryItem<ItemType>[]> {
-    return this.libraryService.store$.pipe(
-      map(store => store.data[this.path] as LibraryItem<ItemType>[]),
+    return this.libraryService.data$.pipe(
+      map(data => data[this.path] as LibraryItem<ItemType>[]),
     );
   }
 

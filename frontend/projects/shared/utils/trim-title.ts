@@ -5,5 +5,9 @@ export function trimTitle(title: string, func?: string): string {
     return eval(func)(title);
   }
 
-  return title.match(nameExp)[0].replace('фильм', '').trim();
+  return title.match(nameExp)[0]
+    .replace('фильм', '')
+    .replace('аниме', '')
+    .replace('смотреть онлайн', '')
+    .trim();
 }

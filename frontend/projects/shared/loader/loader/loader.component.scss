@@ -1,0 +1,27 @@
+:host {
+  position: relative;
+  height: 10px;
+  display: block;
+  background: rgb(63 81 181 / 30%);
+}
+
+.progress {
+  position: absolute;
+  height: 100%;
+  width: 30%;
+  background: #3f51b5;
+  opacity: 0.3;
+  animation-duration: 4s;
+  animation-name: loader;
+  animation-iteration-count: infinite;
+}
+
+@keyframes loader {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}

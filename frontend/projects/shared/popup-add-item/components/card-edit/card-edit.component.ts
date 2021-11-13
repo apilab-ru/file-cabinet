@@ -1,4 +1,13 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { Status } from '@shared/models/status-item';
 import { NavigationItem } from '@shared/models/navigation';
 import { checkIsShowStar } from '@shared/utils/check-is-show-star';
@@ -8,24 +17,27 @@ import { map, startWith } from 'rxjs/operators';
 import { ItemType, LibraryItem } from '@shared/models/library';
 import { CardData } from '../../models/card-data';
 import { checkIsShowProgress } from '@shared/utils/check-is-show-progress';
+import { STATUS_LIST } from '@shared/const';
 
 @Component({
-  selector: 'app-popup',
-  templateUrl: './popup.component.html',
-  styleUrls: ['./popup.component.scss'],
+  selector: 'app-card-edit',
+  templateUrl: './card-edit.component.html',
+  styleUrls: ['./card-edit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PopupComponent implements OnChanges, OnInit {
+export class CardEditComponent implements OnChanges, OnInit {
   @Input() types: NavigationItem[];
-  @Input() statuses: Status[];
   @Input() selectedType: string;
   @Input() item: LibraryItem<ItemType>;
   @Input() name: string;
+  @Input() isShowLibrary = true;
 
   @Output() update = new EventEmitter<CardData>();
 
   isShowStar$: Observable<boolean>;
   isShowProgress$: Observable<boolean>;
 
+  statuses = STATUS_LIST;
   formGroup = new FormGroup({
     name: new FormControl(''),
     status: new FormControl(''),

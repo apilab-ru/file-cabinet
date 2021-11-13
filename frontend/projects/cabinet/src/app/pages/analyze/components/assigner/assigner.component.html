@@ -1,5 +1,8 @@
-<button class="assigner__button" mat-raised-button
-        *ngFor="let item of (structList$ | async)"
-        (click)="toStruct(item.path)">
+<button
+  *ngFor="let item of structList"
+  class="assigner__button"
+  mat-raised-button
+  (click)="toStruct(item.path)"
+>
   {{ item.name }}
 </button>

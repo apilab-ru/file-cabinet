@@ -8,6 +8,10 @@ export class BrowserApiService {
   getActiveTabTitle(schemas: Record<string, ISchema>): Promise<string> {
     return this.getActiveTab()
       .then(tab => {
+        if (tab.url.includes('chrome://extensions')) {
+          return Promise.reject('permissions');
+        }
+
         const host = this.getTabDomain(tab);
         const code = this.getCodeGetterTitle(host, schemas);
 

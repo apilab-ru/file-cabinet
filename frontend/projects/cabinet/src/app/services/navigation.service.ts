@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { NavigationItem } from '../../models';
 import { MENU_ITEMS } from '../routing/menu-items';
+import { structList } from '../routing/routes';
 
 @Injectable({
   providedIn: 'root',
@@ -10,24 +11,7 @@ export class NavigationService {
 
   private items$ = new ReplaySubject<NavigationItem[]>(1);
   private pathSubject = new ReplaySubject<string>(1);
-  private structItems = [
-    {
-      name: 'Аниме',
-      path: 'anime'
-    },
-    {
-      name: 'Фильмы',
-      path: 'films'
-    },
-    {
-      name: 'Сериалы',
-      path: 'tv'
-    },
-    {
-      name: 'Статьи',
-      path: 'articles'
-    }
-  ];
+  private structItems = structList;
 
   constructor() {
     this.items$.next(MENU_ITEMS);

@@ -1,0 +1,23 @@
+<app-card-edit
+  *ngIf="baseInfo$ | async as baseInfo"
+  [types]="types$ | async"
+  [selectedType]="baseInfo.type"
+  [name]="baseInfo.name"
+  [item]="libraryItem$ | async"
+  [isShowLibrary]="isShowLibrary"
+  (update)="onUpdate($event)"
+></app-card-edit>
+
+<ng-container *ngIf="!(item$ | async)">
+  <app-founded-list
+    *ngIf="foundedList$ | async as foundedList"
+    [list]="foundedList"
+    [genres]="genres$ | async"
+    (selectedChange)="selectItemId($event)"
+  ></app-founded-list>
+</ng-container>
+
+<app-loader
+  *ngIf="isLoading$ | async"
+  class="loader"
+></app-loader>

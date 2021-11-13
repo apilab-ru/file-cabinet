@@ -1,7 +1,7 @@
 <mat-form-field class="field" #field>
   <input matInput placeholder="Поиск" [formControl]="inputControl"/>
 </mat-form-field>
-<span class="toggle button icon-arrow_up" [class.-show]="isShowAdvanced" (click)="toggle()"></span>
+<span class="toggle button icon-arrow-up" [class.-show]="isShowAdvanced" (click)="toggle()"></span>
 <span class="clear button icon-close" (click)="clear()"></span>
 <div class="available" [class.-show]="isShowAdvanced">
   <span class="key" *ngFor="let item of keys | keyvalue; let key=index">

@@ -108,7 +108,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
     const index = this.status.options[key].findIndex(it => it.value === value);
     if (index !== -1) {
       this.status.options[key].splice(index, 1);
-      if (this.status.options[key].length === 0) {
+      if (this.status.options[key]?.length === 0) {
         delete this.status.options[key];
       }
     } else {
