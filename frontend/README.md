@@ -9,7 +9,8 @@ npm run start:ts
 and copy frontend\projects\extension to extension
 
 ## Build
+npm run build
 
-
-## Further help
-
+## After build
+Need remove media="print" onload="this.media='all'" or set compiler optimisation options
+inlineCritical = false, more detail https://github.com/angular/angular-cli/issues/20864

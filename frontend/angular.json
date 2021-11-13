@@ -22,7 +22,7 @@
             "main": "projects/cabinet/src/main.ts",
             "polyfills": "projects/cabinet/src/polyfills.ts",
             "tsConfig": "projects/cabinet/tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "assets": [
               "projects/cabinet/src/favicon.ico",
               "projects/cabinet/src/assets"
@@ -30,12 +30,27 @@
             "styles": [
               "projects/cabinet/src/styles.scss"
             ],
+            "optimization": {
+              "scripts": true,
+              "styles": {
+                "minify": false,
+                "inlineCritical": false
+              },
+              "fonts": true
+            },
             "scripts": []
           },
           "configurations": {
             "production": {
               "fileReplacements": [],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "none",
               "sourceMap": false,
               "extractCss": true,
@@ -104,7 +119,15 @@
             "main": "projects/popup/src/main.ts",
             "polyfills": "projects/popup/src/polyfills.ts",
             "tsConfig": "projects/popup/tsconfig.app.json",
-            "aot": false,
+            "aot": true,
+            "optimization": {
+              "scripts": false,
+              "styles": {
+                "minify": false,
+                "inlineCritical": false
+              },
+              "fonts": true
+            },
             "assets": [
               "projects/popup/src/favicon.ico",
               "projects/popup/src/assets"
@@ -117,7 +140,14 @@
           "configurations": {
             "production": {
               "fileReplacements": [],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "none",
               "sourceMap": false,
               "extractCss": true,
@@ -125,7 +155,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true,
+              "buildOptimizer": false,
               "budgets": [
                 {
                   "type": "initial",
