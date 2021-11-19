@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ShikimoriApi {
-  private nickname = 'apilab';
-  private password = '4595130';
+  private nickname = '';
+  private password = '';
   private instance: any;
 
   constructor() {
