@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-const SWAGGER_SCHEMES: Array<'http'|'https'> = ['http', 'https'];
 const SWAGGER_PUBLIC_PATH = 'swagger';
 
 async function bootstrap() {
@@ -10,10 +9,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Filecabinet')
-    .setBasePath('/')
     .setDescription('')
-    .setSchemes(...SWAGGER_SCHEMES)
-    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
 

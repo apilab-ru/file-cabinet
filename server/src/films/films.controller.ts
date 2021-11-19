@@ -1,10 +1,10 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { FilmsService } from './films.service';
-import { Film, SearchRequestResult, Genre } from '../api';
-import { ApiImplicitQuery, ApiUseTags } from '@nestjs/swagger';
-import { EFilmsSortBy, EOrderType, FilmsSearchQuery } from './interface';
+import { Film, Genre, SearchRequestResult } from '../api';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { EFilmsSortBy, EOrderType } from './interface';
 
-@ApiUseTags('films')
+@ApiTags('films')
 @Controller('films')
 export class FilmsController {
 
@@ -14,96 +14,90 @@ export class FilmsController {
   }
 
   @Get('movie')
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'name',
     type: 'string',
-    required: false
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'orderField',
     type: 'enum',
     enum: Object.values(EFilmsSortBy),
-    required: false
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'orderType',
     type: 'enum',
     enum: Object.values(EOrderType),
-    required: false
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'primary_release_year',
     type: 'string',
-    required: false
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'with_genres',
     type: 'string',
-    required: false
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'with_people',
     type: 'string',
-    required: false
   })
   async findFilm(
-    @Query() query
+    @Query() query,
   ): Promise<SearchRequestResult<Film>> {
-    const chips = {...query};
+    const chips = { ...query };
     const orderField = chips.orderField;
     const orderType = chips.orderType;
     delete chips.name;
     delete chips.orderField;
     delete chips.orderType;
     return await this.filmsService.searchMovie(
-      query.name, chips, orderField, orderType
+      query.name, chips, orderField, orderType,
     ).toPromise();
   }
 
   @Get('tv')
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'name',
     type: 'string',
-    required: false
+
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'orderField',
     type: 'enum',
     enum: Object.values(EFilmsSortBy),
-    required: false
+
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'orderType',
     type: 'enum',
     enum: Object.values(EOrderType),
-    required: false
+
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'primary_release_year',
     type: 'string',
-    required: false
+
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'with_genres',
     type: 'string',
-    required: false
+
   })
-  @ApiImplicitQuery({
+  @ApiQuery({
     name: 'with_people',
     type: 'string',
-    required: false
+
   })
   async findTv(
-    @Query() query
+    @Query() query,
   ): Promise<SearchRequestResult<Film>> {
-    const chips = {...query};
+    const chips = { ...query };
     const orderField = chips.orderField;
     const orderType = chips.orderType;
     delete chips.name;
     delete chips.orderField;
     delete chips.orderType;
     return await this.filmsService.searchTv(
-      query.name, chips, orderField, orderType
+      query.name, chips, orderField, orderType,
     ).toPromise();
   }
 

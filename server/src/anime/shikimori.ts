@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as Shikimori from './shikikomori.js';
+// TODO use https://www.npmjs.com/package/shikimori-api-node
 
 @Injectable()
 export class ShikimoriApi {
@@ -8,19 +8,19 @@ export class ShikimoriApi {
   private instance: any;
 
   constructor() {
-    const shikimori = new Shikimori({
+    /*const shikimori = new Shikimori({
       nickname: this.nickname,
       password: this.password,
     }, (err, client) => {
       if (err) throw new Error(err);
 
-      client.get('animes', {limit: 10}, (err, animes, response) => {
+      client.get('animes', { limit: 10 }, (err, animes, response) => {
         let top10 = animes.map(anime => anime.name);
         console.log(top10);
       });
 
-      client.post('messages/read_all', {type: 'news', frontend: false});
-    });
+      client.post('messages/read_all', { type: 'news', frontend: false });
+    });*/
   }
 
 }

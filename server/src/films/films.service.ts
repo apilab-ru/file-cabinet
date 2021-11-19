@@ -108,7 +108,7 @@ export class FilmsService {
         if (err) {
           reject(err);
         } else {
-          resolve();
+          resolve(true);
         }
       });
     });
