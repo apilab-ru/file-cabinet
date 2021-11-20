@@ -17,7 +17,7 @@ const fs = require('fs');
 @Injectable()
 export class AnimeService {
 
-  private readonly endpoint = 'http://smotret-anime.ru/api/series/';
+  private readonly endpoint = 'https://smotret-anime.online/api/series/';
 
   constructor(
     private readonly httpService: HttpService,
