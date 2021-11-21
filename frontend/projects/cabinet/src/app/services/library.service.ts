@@ -31,23 +31,6 @@ export class LibraryService {
     return this.fileCabService.addItemLibToStore(path, item);
   }
 
-  addItemByName(path: string, name: string, params?: ItemParams): Observable<ItemType> {
-    return this.fileCabService.addItemOld(path, name, params || {});
-  }
-
-  findItem(path: string, name: string): Observable<SearchRequestResult<Film | Anime>> {
-    switch (path) {
-      case 'films':
-        return this.filmsService.findMovie(name);
-
-      case 'tv':
-        return this.filmsService.findTv(name);
-
-      case 'anime':
-        return this.animeService.findAnime(name);
-    }
-  }
-
   deleteItem(path: string, id: number): void {
     this.fileCabService.deleteItem(path, id);
   }

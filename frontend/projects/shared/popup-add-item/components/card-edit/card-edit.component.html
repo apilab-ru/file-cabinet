@@ -44,7 +44,7 @@
       *ngIf="isShowLibrary"
       mat-raised-button
       color="primary"
-      [href]="'/cabinet/index.html?/' + selectedType"
+      [href]="'/cabinet/index.html?/#/' + formGroup.get('type')?.value"
       target="_blank"
     >
       Библиотека

@@ -1,3 +1,5 @@
+@import "../../../../../../../shared/styles/custom-scroll";
+
 .card {
   box-sizing: border-box;
   position: relative;
@@ -6,66 +8,10 @@
     margin-bottom: 0.5em;
   }
 
-  &__delete {
-    position: absolute;
-    top: 8px;
-    right: -10px;
-    color: #bbb7b7;
-    border: none;
-    background: none;
-    font-size: 26px;
-    padding: 3px;
-    cursor: pointer;
-    transition: 0.3s;
-
-    &:hover {
-      color: #f44336;
-    }
-  }
-
-  &__info {
-    display: flex;
-    align-items: flex-start;
-  }
-
-  &__title {
-    font-size: 16px;
-    min-height: 2.69em;
-    display: flex;
-    align-items: center;
-  }
-
-  &__description {
-    padding-left: 10px;
-    max-height: 271px;
-    overflow: hidden;
-    flex: 1;
-
-    &:hover {
-      overflow: auto;
-    }
-  }
-
-  &__image {
-    width: 180px;
-    height: 270px;
-    object-fit: cover;
-  }
-
-  &__link {
-    margin-top: 15px;
-    display: block;
-  }
-
   &__status {
     margin-bottom: -10px;
     display: flex;
     margin-top: 6px;
-  }
-
-  &__subtitle {
-    display: flex;
-    justify-content: space-between;
   }
 
   &__year {
@@ -89,8 +35,96 @@
   }
 }
 
+.card__delete {
+  position: absolute;
+  top: 8px;
+  right: -7px;
+  color: #bbb7b7;
+  border: none;
+  background: none;
+  font-size: 26px;
+  padding: 3px;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover {
+    color: #f44336;
+  }
+}
+
+.card__image {
+  width: 170px;
+  height: 250px;
+  object-fit: cover;
+  margin-top: 4px;
+}
+
+.card__info {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+
+.card__link {
+  margin-top: 15px;
+  display: block;
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  background: #ffffffe6;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.card__title {
+  font-size: 16px;
+  line-height: 1.3em;
+  padding-right: 16px;
+
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.card__description {
+  padding-left: 10px;
+  max-height: 255px;
+  overflow: hidden;
+  flex: 1;
+
+  &:hover {
+    overflow: auto;
+    padding-right: 3px;
+  }
+
+  @include customScroll();
+}
+
+.card__subtitle {
+  display: flex;
+  margin-top: 4px;
+}
+
+.card__episodes {
+  margin-left: 20px;
+}
+
 .comment {
   display: block;
   width: 330px;
   margin-top: 5px;
+}
+
+.meta-data-box {
+  display: none;
+  position: absolute;
+  top: 30%;
+  left: 0;
+  right: 0;
+  background: #ffffffd9;
+  border: 5px solid #fff;
+
+  .card:hover & {
+    display: block;
+  }
 }

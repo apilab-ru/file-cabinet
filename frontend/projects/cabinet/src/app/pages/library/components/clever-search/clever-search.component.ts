@@ -8,7 +8,7 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChange,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -62,6 +62,22 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
       });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.keys && !changes.keys.firstChange) {
+      const data = this.parseString(this.inputControl.value);
+      const stringData = this.renderValue(data);
+      if (stringData !== this.inputControl.value) {
+        this.inputControl.patchValue(stringData);
+      }
+    }
+
+    if (changes.status || changes.keys) {
+      if (!deepEqual(this.parseString(this.inputControl.value), this.status)) {
+        this.inputControl.patchValue(this.renderValue(this.status));
+      }
+    }
+  }
+
   ngAfterViewInit(): void {
     this.ngZone.runOutsideAngular(() => {
       this.field._elementRef.nativeElement.onmouseover = () => {
@@ -84,7 +100,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   setSection(key: string): void {
     this.initStatus();
-    if (this.status.options[key]) {
+    if (this.status?.options[key]) {
       delete this.status.options[key];
     } else {
       // @ts-ignore
@@ -95,12 +111,12 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   isSectionSelected(key: string): boolean {
-    return this.status && this.status.options && this.status.options[key];
+    return this?.status?.options && this.status.options[key];
   }
 
   selectValue(key: string, value: string | never): void {
     this.initStatus();
-    if (!this.status.options[key]) {
+    if (!this.status?.options[key]) {
       // @ts-ignore
       this.status.options[key] = [];
     }
@@ -135,21 +151,6 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.statusChanges.emit(null);
   }
 
-  ngOnChanges(changes: { [key: string]: SimpleChange }): void {
-    if (changes.keys && !changes.keys.firstChange) {
-      const data = this.parseString(this.inputControl.value);
-      const stringData = this.renderValue(data);
-      if (stringData !== this.inputControl.value) {
-        this.inputControl.patchValue(stringData);
-      }
-    }
-    if (changes.status) {
-      if (!deepEqual(this.parseString(this.inputControl.value), this.status)) {
-        this.inputControl.patchValue(this.renderValue(this.status));
-      }
-    }
-  }
-
   private initStatus(): void {
     if (!this.status) {
       this.status = {
@@ -160,16 +161,19 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   private renderValue(status: ISearchStatus): string {
-    if (!status) {
+    if (!status || !this.keys) {
       return '';
     }
     const options = [];
     let result = status.search;
     if (status.options) {
       for (let key in status.options) {
-        const name = this.keys[key].name;
-        const list = this.keys[key].list;
-        options.push(`?${name}=` + status.options[key].map(it => this.searchValue(it, list)).join(','));
+        const name = this.keys[key]?.name;
+        const list = this.keys[key]?.list;
+
+        if (name) {
+          options.push(`?${name}=` + status.options[key].map(it => this.searchValue(it, list)).join(','));
+        }
       }
       result += ' ' + options.join(' ');
     }
@@ -177,7 +181,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   private searchValue(it: ISearchValue, list?: ICleverSearchKey[]): string {
-    const found = list && list.find(item => item.id === it.value);
+    const found = list?.find(item => item.id === it.value);
     return found ? (it.positive ? '' : '!') + found.name : '';
   }
 

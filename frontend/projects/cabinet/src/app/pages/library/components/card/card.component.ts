@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { deepCopy, Genre } from '../../../../../models';
 import { ItemType, LibraryItem } from '@shared/models/library';
+import isEqual from 'lodash/isEqual';
 
 @Component({
   selector: 'app-card',
@@ -34,7 +35,7 @@ export class CardComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.item) {
-      this.isShowStars = this.checkIsShowStars(this.item.status);
+      this.isShowStars = this.checkIsShowStars(this.item?.status);
       this.localItem = deepCopy(this.item);
     }
   }
@@ -45,18 +46,20 @@ export class CardComponent implements OnChanges {
 
   onSetStars(star: number): void {
     this.localItem.star = star;
-    this.isChanged = true;
+    this.isChanged = this.checkIsChanged();
+    ;
   }
 
   onSetStatus(status: string): void {
     this.localItem.status = status;
     this.isShowStars = this.checkIsShowStars(status);
-    this.isChanged = true;
+    this.isChanged = this.checkIsChanged();
+    ;
   }
 
   onSetComment(comment: string): void {
     this.localItem.comment = comment;
-    this.isChanged = true;
+    this.isChanged = this.checkIsChanged();
   }
 
   update(): void {
@@ -66,5 +69,9 @@ export class CardComponent implements OnChanges {
 
   private checkIsShowStars(status: string): boolean {
     return status === 'complete' || status === 'process' || status === 'drop';
+  }
+
+  private checkIsChanged(): boolean {
+    return !isEqual(this.localItem, this.item);
   }
 }

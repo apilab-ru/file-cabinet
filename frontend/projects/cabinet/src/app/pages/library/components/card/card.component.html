@@ -1,13 +1,13 @@
 <div class="card">
-  <div class="card__title">
-    <span>{{ item.item.title }} / {{ item.item.original_title }}</span>
+  <div class="card__title" [attr.title]="item.item.title + ' ' + item.item.original_title">
+    {{ item.item.title || item.item.original_title }}
   </div>
   <div class="card__subtitle">
     <span class="card__year">{{ item.item.year }}</span>
-    <span *ngIf="item.item.episodes">
+    <span *ngIf="item.item.episodes" class="card__episodes">
       Серий: {{ item.item.episodes }}
     </span>
-    <span class="card__rating">{{ item.item.popularity }}</span>
+    <!--span class="card__rating">{{ item.item.popularity }}</span-->
   </div>
   <app-genres
     class="card__genres"
@@ -31,38 +31,39 @@
       [lazyLoad]="item.item.image"
       [errorImage]="placeholderError"
     />
+    <app-link *ngIf="item.url" class="card__link" [link]="item.url"></app-link>
     <div class="card__description">
       <div>{{ item.item.description }}</div>
-
-      <app-link class="card__link" [link]="item.url" *ngIf="item.url"></app-link>
     </div>
   </div>
-
-  <ng-container *ngIf="isLibraryMode || item.founded">
-    <app-status
-      class="card__status"
-      [value]="localItem.status"
-      (onUpdate)="onSetStatus($event)"
-    ></app-status>
-    <app-stars
-      *ngIf="isShowStars"
-      [star]="localItem.star || 0"
-      (setStars)="onSetStars($event)"
-    ></app-stars>
-  </ng-container>
 
   <div class="card__submit" *ngIf="!isLibraryMode && !item.founded">
     <button mat-stroked-button (click)="addItem.emit()">Добавить</button>
   </div>
 
-  <textarea
-    *ngIf="isLibraryMode || item.founded"
-    class="comment"
-    [ngModel]="item.comment"
-    (ngModelChange)="onSetComment($event)"
-  ></textarea>
+  <div class="meta-data-box">
+    <ng-container *ngIf="isLibraryMode || item.founded">
+      <app-status
+        class="card__status"
+        [value]="localItem?.status"
+        (onUpdate)="onSetStatus($event)"
+      ></app-status>
+      <app-stars
+        *ngIf="isShowStars"
+        [star]="localItem.star || 0"
+        (setStars)="onSetStars($event)"
+      ></app-stars>
+    </ng-container>
 
-  <div class="card__save" *ngIf="isChanged">
-    <button mat-raised-button color="primary" (click)="update()">Сохранить</button>
+    <textarea
+      *ngIf="isLibraryMode || item.founded"
+      class="comment"
+      [ngModel]="item.comment"
+      (ngModelChange)="onSetComment($event)"
+    ></textarea>
+
+    <div class="card__save" *ngIf="isChanged">
+      <button mat-raised-button color="primary" (click)="update()">Сохранить</button>
+    </div>
   </div>
 </div>

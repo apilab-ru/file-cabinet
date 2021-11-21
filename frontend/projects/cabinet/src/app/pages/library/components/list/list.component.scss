@@ -3,6 +3,18 @@
 }
 
 .data {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  @media screen and (min-width: 1020px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @media screen and (min-width: 1280px) {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
+  @media screen and (min-width: 1800px) {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  }
 }

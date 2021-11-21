@@ -1,10 +1,11 @@
-import { BehaviorSubject, from, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { deepCopy, Genre, NavigationItem, SearchRequestResult } from '../../cabinet/src/models';
-import { map, pluck, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { map, shareReplay, take } from 'rxjs/operators';
 import { fileCabApi } from './file-cab.api';
 import { MetaData } from '@shared/models/meta-data';
 import { ISchema, ItemType, LibraryItem } from '@shared/models/library';
 import { Tag } from '@shared/models/tag';
+import { PARSER_TYPES, TYPES } from '../models/const';
 
 const keyStore = 'store';
 
@@ -20,7 +21,7 @@ const storeData = {
 
 export class FileCab {
   private store = new BehaviorSubject<typeof storeData>(storeData);
-  private config = new BehaviorSubject<typeof configData>(configData);
+  private config = new BehaviorSubject<typeof configData>(this.init());
 
   config$: Observable<typeof configData>;
   store$: Observable<typeof storeData> = this.store.asObservable();
@@ -28,9 +29,7 @@ export class FileCab {
   animeGenres$: Observable<Genre[]>;
 
   constructor() {
-    this.config$ = from(this.init()).pipe(
-      tap(data => this.config.next(data)),
-      switchMap(() => this.config.asObservable()),
+    this.config$ = this.config.asObservable().pipe(
       shareReplay(1),
     );
 
@@ -56,8 +55,8 @@ export class FileCab {
     url?: string,
   ): Observable<LibraryItem<ItemType> | null> {
     return this.store$.pipe(
-      pluck('data', path),
-      map(list => list?.find(
+      map(store => store.data[path] || []),
+      map(list => list.find(
         item => item.item.title === name || item.url === url || item.name === name,
       ) || null),
     );
@@ -77,13 +76,6 @@ export class FileCab {
       default:
         return throwError(`path ${name} not support`);
     }
-  }
-
-  reload(): Promise<typeof configData> {
-    return this.init().then(res => {
-      this.config.next(res);
-      return res;
-    });
   }
 
   addItemOld(path: string, name: string, param: MetaData): Promise<ItemType> {
@@ -117,7 +109,7 @@ export class FileCab {
 
   checkExisted(path: string, item: ItemType): Observable<boolean> {
     return this.store.asObservable().pipe(
-      pluck('data', path),
+      map(store => store.data[path] || []),
       take(1),
       map(list => !!list.find(it => it.item.id === item.id)),
     );
@@ -232,11 +224,11 @@ export class FileCab {
     });
   }
 
-  private init(): Promise<typeof configData> {
-    return Promise.all([
-      fetch('/api/parser.json').then(res => res.json()),
-      fetch('/api/types.json').then(res => res.json()),
-    ]).then(([schemas, types]) => ({ schemas, types }));
+  private init(): typeof configData {
+    return {
+      schemas: PARSER_TYPES,
+      types: TYPES,
+    };
   }
 
 }

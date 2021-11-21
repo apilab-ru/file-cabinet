@@ -9,7 +9,7 @@ export interface LibraryItem<T extends Item> extends MetaData {
 }
 
 export interface ISchema {
-  func: string;
+  func?: string;
   title?: string;
   type: string;
 }

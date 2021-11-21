@@ -88,12 +88,6 @@ export class FileCabService {
     );
   }
 
-  addItemOld(path: string, name: string, param: MetaData): Observable<ItemType> {
-    return from(this.fileCab.addItemOld(path, name, param)).pipe(
-      runInZone(this.ngZone),
-    );
-  }
-
   deleteItem(path: string, id: number): void {
     return this.fileCab.deleteItem(path, id);
   }

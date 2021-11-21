@@ -12,10 +12,10 @@ import {
 } from '../../models';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { ItemType, LibraryItem } from '@shared/models/library';
-import { StatusList } from '@shared/const';
 import { map, switchMap } from 'rxjs/operators';
 import { FileCabService } from '@shared/services/file-cab.service';
 import { Tag } from '@shared/models/tag';
+import { StatusList } from '@shared/const';
 
 const BASE_STATE: ISearchStatus = {
   search: '',
@@ -65,10 +65,10 @@ export class SearchService {
     this.mode.next(mode);
   }
 
-  filterByState(data: LibraryItem<ItemType>[], state: ISearchStatus): LibraryItem<ItemType>[] {
+  filterByState(data: LibraryItem<ItemType>[], state: ISearchStatus, mode: LibraryMode): LibraryItem<ItemType>[] {
     if (state) {
       state.search = state.search && state.search.toLocaleLowerCase();
-      return data?.filter(item => this.itemToStateCompare(item, state));
+      return data?.filter(item => this.itemToStateCompare(item, state, mode));
     } else {
       return data;
     }
@@ -88,11 +88,12 @@ export class SearchService {
     );
   }
 
-  private itemToStateCompare(item: LibraryItem<ItemType>, state: ISearchStatus): boolean {
+  private itemToStateCompare(item: LibraryItem<ItemType>, state: ISearchStatus, mode: LibraryMode): boolean {
     let isCompare = true;
-    if (state.search) {
+    if (state.search && mode === LibraryMode.library) {
       isCompare = item.item.title.toLocaleLowerCase().search(state.search) > -1;
     }
+
     return isCompare
       && (!Object.keys(state.options).length
         || Object.keys(state.options)

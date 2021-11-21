@@ -11,7 +11,7 @@
   <mat-paginator
     [length]="(data$ | async)?.length"
     [pageSize]="limit$ | async"
-    [pageSizeOptions]="limitList"
+    [pageSizeOptions]="limitList$ | async"
     (page)="setPage($event)"
   ></mat-paginator>
 </div>

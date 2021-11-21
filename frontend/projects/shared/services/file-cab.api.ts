@@ -34,7 +34,7 @@ function fetchObservable<T>(path: string): Observable<T> {
 }
 
 class FileCabApi {
-  searchAnime(name: string): Observable<SearchRequestResult<Anime>> {
+  searchAnime(name: string = ''): Observable<SearchRequestResult<Anime>> {
     return fetchObservable<SearchRequestResult<Anime>>('anime/search?name=' + name);
   }
 
@@ -48,11 +48,11 @@ class FileCabApi {
     );
   }
 
-  searchFilm(name: string): Observable<SearchRequestResult<Film>> {
+  searchFilm(name: string = ''): Observable<SearchRequestResult<Film>> {
     return fetchObservable<SearchRequestResult<Film>>('films/movie?name=' + name);
   }
 
-  searchTv(name: string): Observable<SearchRequestResult<Film>> {
+  searchTv(name: string = ''): Observable<SearchRequestResult<Film>> {
     return fetchObservable<SearchRequestResult<Film>>('films/tv?name=' + name);
   }
 

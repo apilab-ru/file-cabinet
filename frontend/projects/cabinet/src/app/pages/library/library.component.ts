@@ -121,7 +121,7 @@ export class LibraryComponent implements OnInit {
       ? this.dataFactoryService.getFromLibrary()
       : this.dataFactoryService.search(state))
       .pipe(
-        map(list => this.searchService.filterByState(list, state)),
+        map(list => this.searchService.filterByState(list, state, mode)),
       );
   }
 }

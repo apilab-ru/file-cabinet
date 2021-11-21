@@ -93,7 +93,7 @@ export class PopupComponent implements OnInit, OnChanges {
           return list[0];
         }
 
-        return list.find(it => it.id === id);
+        return list?.find(it => it.id === id);
       }),
       filter(item => !!item),
     );

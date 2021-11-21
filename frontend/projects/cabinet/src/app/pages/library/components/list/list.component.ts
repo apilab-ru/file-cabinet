@@ -14,8 +14,18 @@ import {
 import { ListIteratorDirective, RowContext } from './list-iterator-directive';
 import { PageEvent } from '@angular/material/paginator';
 import { BehaviorSubject, combineLatest, Observable, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
+import { BreakpointsService } from '../../../../services/breakpoints.service';
+import { Breakpoint } from '../../../../../models/breakpoint';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+const SIZES = {
+  [Breakpoint.fullHd]: [15, 25, 50, 100],
+  [Breakpoint.hd]: [12, 24, 48, 96],
+  [Breakpoint.tabletWide]: [9, 18, 36, 72],
+};
+
+@UntilDestroy()
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
@@ -34,11 +44,24 @@ export class ListComponent<T> implements OnInit, OnChanges {
   page$ = new BehaviorSubject<number>(1);
   limit$ = new BehaviorSubject<number>(12);
 
-  limitList = [12, 24, 28, 100];
+  limitList$: Observable<number[]>;
 
   @ContentChild(ListIteratorDirective, { static: false }) private listIterator: ListIteratorDirective<T>;
 
+  constructor(
+    private breakpointsService: BreakpointsService,
+  ) {
+  }
+
   ngOnInit(): void {
+    this.limitList$ = this.breakpointsService.breakpoint$.pipe(
+      map(breakpoint => SIZES[breakpoint] || []),
+    );
+
+    this.limitList$.pipe(untilDestroyed(this)).subscribe(list => {
+      this.limit$.next(list[0]);
+    });
+
     this.showData$ = combineLatest([
       this.data$,
       this.page$,
@@ -53,7 +76,6 @@ export class ListComponent<T> implements OnInit, OnChanges {
       this.data$.next(this.list);
     }
     if (changes.page) {
-      console.log('xxx next', this.page);
       this.page$.next(this.page);
     }
   }
@@ -72,7 +94,11 @@ export class ListComponent<T> implements OnInit, OnChanges {
     this.limit$.next(page.pageSize);
   }
 
-  private calcShowData(data: T[], page: number, limit: number): T[] {
+  private calcShowData(data: T[] | undefined, page: number, limit: number): T[] {
+    if (!data) {
+      return [];
+    }
+
     const start = (page - 1) * limit;
     const end = page * limit;
     return data.slice(start, end);

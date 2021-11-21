@@ -1,3 +1,5 @@
+// @import "../../../../../shared/styles/custom-scroll";
+
 :host {
   border: 5px solid #3f51b5;
   display: flex;
@@ -12,4 +14,5 @@
   flex: 1;
   overflow: auto;
   height: calc(100vh - 58px);
+  // @include customScroll();
 }

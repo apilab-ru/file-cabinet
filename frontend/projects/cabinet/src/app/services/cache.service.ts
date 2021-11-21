@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-const EXPIRED = 60 * 60 * 24 * 30;
+const EXPIRED_ONE_HOUR = 60 * 60;
 
 interface CacheSubject<T> {
   timeLive: number;
@@ -24,7 +24,7 @@ export class CacheService {
   private cacheSubjectMap = new Map<string, CacheSubject<any>>();
   private dataMap = new Map<string, CacheItem<any>>();
 
-  register<T>(name: string, callback: CacheCallback<T>, timeLive = EXPIRED): void {
+  register<T>(name: string, callback: CacheCallback<T>, timeLive = EXPIRED_ONE_HOUR): void {
     this.cacheSubjectMap.set(name, {
       callback,
       timeLive,
@@ -36,7 +36,7 @@ export class CacheService {
     const now = this.getTime();
     const result = this.dataMap.get(key);
 
-    if (result && now - result.timeExpired > now) {
+    if (result && now < result.timeExpired) {
       return result.data.pipe(take(1));
     }
 
