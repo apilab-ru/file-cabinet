@@ -7,7 +7,6 @@ module.exports = {
   context: path.resolve(__dirname, 'projects'),
   entry: {
     background: './background/background.ts',
-    page: './page/page.ts',
   },
   output: {
     filename: '[name].js',

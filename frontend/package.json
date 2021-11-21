@@ -11,6 +11,7 @@
     "copy": "copyfiles -f ./projects/extension/* ../extension",
     "start:cabinet": "ng build --project=cabinet --source-map=true --watch --base-href ./index.html?/",
     "start:popup": "ng build --project=popup --source-map=true --watch --base-href ./index.html?/",
+    "start:page": "ng build --project=page=true --source-map --watch --outputHashing none --single-bundle",
     "start:ts": "webpack --mode development --config webpack.config.js -w",
     "storybook": "start-storybook -p 6006"
   },
