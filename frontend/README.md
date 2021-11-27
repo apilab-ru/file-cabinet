@@ -14,3 +14,6 @@ npm run build
 ## After build
 Need remove media="print" onload="this.media='all'" or set compiler optimisation options
 inlineCritical = false, more detail https://github.com/angular/angular-cli/issues/20864
+
+# Additional
+npm install copyfiles -g
