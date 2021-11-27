@@ -39,7 +39,7 @@ export class LibraryService {
     this.fileCabService.updateItem(path, id, item);
   }
 
-  updateStore(store: Partial<Library>): void {
-    console.log('xxx store', store);
+  updateStore(store: Library): void {
+    this.fileCabService.updateStore(store);
   }
 }

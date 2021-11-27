@@ -1,0 +1,34 @@
+{
+  "data": {
+    "anime": [],
+    "films": [
+      {
+        "item": {
+          "title": "Солдаты неудачи",
+          "genre_ids": [
+            28,
+            35,
+            12,
+            10752
+          ],
+          "original_title": "Tropic Thunder",
+          "date": "2008-08-09",
+          "popularity": 15.875,
+          "description": "Камера. Мотор. Начали! ...",
+          "image": "https://image.tmdb.org/t/p/w500/3zTRtmsAQxiq3sM6TWAZoMmcd7W.jpg",
+          "id": 7446
+        },
+        "url": "https://www.kinopoisk.ru/film/soldaty-neudachi-2008-278208/",
+        "status": "complete",
+        "star": 8
+      }
+    ],
+    "tv": []
+  },
+  "tags": [
+    {
+      "key": "myself",
+      "name": "Мой тег"
+    }
+  ]
+}

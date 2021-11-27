@@ -1,6 +1,17 @@
 <div class="card">
-  <div class="card__title" [attr.title]="item.item.title + ' ' + item.item.original_title">
-    {{ item.item.title || item.item.original_title }}
+  <div class="card__title">
+    <span class="title-text" [attr.title]="item.item.title + ' / ' + (item.item.original_title || '')">
+      {{ item.item.title || item.item.original_title }}
+    </span>
+
+    <span class="star-box" (click)="toggleEditMode()">
+      <span *ngIf="localItem?.star" class="star-sum">{{ localItem?.star }}</span>
+      <span
+        class="star"
+        [class.-completed]="localItem?.star"
+        [class.-edit-mode]="isEditMode"
+      ></span>
+    </span>
   </div>
   <div class="card__subtitle">
     <span class="card__year">{{ item.item.year }}</span>
@@ -33,7 +44,7 @@
     />
     <app-link *ngIf="item.url" class="card__link" [link]="item.url"></app-link>
     <div class="card__description">
-      <div>{{ item.item.description }}</div>
+      <div>{{ item.item.description || item.comment || 'Нет описания' }}</div>
     </div>
   </div>
 
@@ -41,7 +52,7 @@
     <button mat-stroked-button (click)="addItem.emit()">Добавить</button>
   </div>
 
-  <div class="meta-data-box">
+  <div *ngIf="isEditMode" class="meta-data-box">
     <ng-container *ngIf="isLibraryMode || item.founded">
       <app-status
         class="card__status"
@@ -53,6 +64,12 @@
         [star]="localItem.star || 0"
         (setStars)="onSetStars($event)"
       ></app-stars>
+      <app-progress
+        class="progress"
+        [item]="item?.item"
+        [value]="localItem.progress"
+        (valueChane)="onSetProgress($event)"
+      ></app-progress>
     </ng-container>
 
     <textarea

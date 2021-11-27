@@ -1,13 +1,12 @@
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { deepCopy, Genre, NavigationItem, SearchRequestResult } from '../../cabinet/src/models';
-import { map, shareReplay, take } from 'rxjs/operators';
+import { catchError, map, shareReplay, take } from 'rxjs/operators';
 import { fileCabApi } from './file-cab.api';
 import { MetaData } from '@shared/models/meta-data';
-import { ISchema, ItemType, LibraryItem } from '@shared/models/library';
+import { ISchema, ItemType, Library, LibraryItem, LibrarySettings } from '@shared/models/library';
 import { Tag } from '@shared/models/tag';
 import { PARSER_TYPES, TYPES } from '../models/const';
-
-const keyStore = 'store';
+import { ChromeStoreApi } from '@shared/services/chrome-store.api';
 
 const configData = {
   schemas: {} as Record<string, ISchema>,
@@ -17,11 +16,13 @@ const configData = {
 const storeData = {
   tags: [] as Tag[],
   data: {} as Record<string, LibraryItem<ItemType>[]>,
+  settings: {} as LibrarySettings,
 };
 
 export class FileCab {
-  private store = new BehaviorSubject<typeof storeData>(storeData);
+  private store = new BehaviorSubject<Library>(storeData);
   private config = new BehaviorSubject<typeof configData>(this.init());
+  private storeApi = new ChromeStoreApi();
 
   config$: Observable<typeof configData>;
   store$: Observable<typeof storeData> = this.store.asObservable();
@@ -35,14 +36,22 @@ export class FileCab {
 
     this.config$.subscribe();
 
-    this.updateStore(this.loadStore());
-    this.listenChangeStore();
+    this.loadStore().pipe(
+      take(1),
+    ).subscribe(store => this.updateStore(store));
+
     this.filmGenres$ = fileCabApi.loadFilmGenres().pipe(
       shareReplay(1),
     );
     this.animeGenres$ = fileCabApi.loadAnimeGenres().pipe(
       shareReplay(1),
     );
+
+    this.store$.subscribe(store => console.log('xxx store', store));
+
+    /*this.storeApi.onStoreChanges().subscribe(res => {
+      console.log('xxx store change', res);
+    })*/
   }
 
   selectGenres(type: string): Observable<Genre[]> {
@@ -55,7 +64,7 @@ export class FileCab {
     url?: string,
   ): Observable<LibraryItem<ItemType> | null> {
     return this.store$.pipe(
-      map(store => store.data[path] || []),
+      map(store => store.data && store.data[path] || []),
       map(list => list.find(
         item => item.item.title === name || item.url === url || item.name === name,
       ) || null),
@@ -76,16 +85,6 @@ export class FileCab {
       default:
         return throwError(`path ${name} not support`);
     }
-  }
-
-  addItemOld(path: string, name: string, param: MetaData): Promise<ItemType> {
-    return this.searchApi(path, name).toPromise()
-      .then(res => this.checkResults(res))
-      .then(item => this.checkUnique(path, item))
-      .then(item => {
-        this.addItemToStore(path, item, param);
-        return item;
-      });
   }
 
   addItemLibToStore(path: string, item: LibraryItem<ItemType>): Promise<void> {
@@ -109,7 +108,7 @@ export class FileCab {
 
   checkExisted(path: string, item: ItemType): Observable<boolean> {
     return this.store.asObservable().pipe(
-      map(store => store.data[path] || []),
+      map(store => store.data && store.data[path] || []),
       take(1),
       map(list => !!list.find(it => it.item.id === item.id)),
     );
@@ -134,21 +133,7 @@ export class FileCab {
       data,
     });
 
-    console.log('xxx update store', this.store.getValue());
-
     return itemRes;
-  }
-
-  checkResults(res: SearchRequestResult<ItemType>) {
-    if (res.total_results === 1) {
-      return Promise.resolve(res.results[0]);
-    } else {
-      /*if (!this.popup) {
-        console.error('popup null', this);
-        return Promise.reject({ code: 'popupNull' });
-      }
-      return this.popup.showModal(res.results);*/
-    }
   }
 
   checkUnique(path, item): Promise<ItemType> {
@@ -193,35 +178,45 @@ export class FileCab {
     }
   }
 
-  private loadStore(): typeof storeData {
-    let store;
-    try {
-      store = JSON.parse(localStorage.getItem(keyStore));
-    } catch (e) {
-    }
-
-    if (!store) {
-      store = {
-        tags: [],
-        data: {},
-      };
-    }
-
-    return store;
-  }
-
-  private updateStore(store: typeof storeData): void {
+  updateStore(store: Library): void {
     this.store.next(store);
-    localStorage.setItem(keyStore, JSON.stringify(store));
+    this.storeApi.setStore(store);
   }
 
-  private listenChangeStore(): void {
-    window.addEventListener('storage', event => {
-      if (event.key === keyStore) {
-        const data = JSON.parse(event.newValue);
-        this.updateStore(data);
-      }
-    });
+  private loadStore(): Observable<Library> {
+    return this.storeApi.getStore<Library>().pipe(
+      map(store => {
+
+        if (!store) {
+          store = {
+            tags: [],
+            data: {},
+            settings: {},
+          };
+        }
+
+        if (!store.settings) {
+          store.settings = {};
+        }
+
+        if (!store.data) {
+          store.data = {};
+        }
+
+        if (!store.tags) {
+          store.tags = [];
+        }
+
+        return store;
+      }),
+      catchError(() => {
+        return of({
+          tags: [],
+          data: {},
+          settings: {},
+        });
+      }),
+    );
   }
 
   private init(): typeof configData {

@@ -10,6 +10,8 @@ import { PopupAddItemModule } from '@shared/popup-add-item/popup-add-item.module
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -25,12 +27,14 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
         component: AnalyzeComponent,
       },
     ]),
-    MatTreeModule,
+    FormsModule,
     MatButtonModule,
-    PopupAddItemModule,
-    MatTooltipModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatTooltipModule,
+    MatTreeModule,
+    PopupAddItemModule,
   ],
 })
 export class AnalyzeModule {

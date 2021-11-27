@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ItemType } from '@shared/models/library';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -14,6 +14,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class ProgressComponent implements ControlValueAccessor {
   @Input() item?: ItemType;
   @Input() value: number = 0;
+  @Output() valueChane = new EventEmitter<number>();
 
   private onChange?: (value: number) => void;
 
@@ -22,8 +23,11 @@ export class ProgressComponent implements ControlValueAccessor {
   }
 
   updateValue(value: number): void {
-    if (this.onChange)
+    if (this.onChange) {
       this.onChange(+value || 0);
+    }
+
+    this.valueChane.emit(+value || 0);
   }
 
   registerOnChange(fn: (value: number) => void): void {

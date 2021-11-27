@@ -1,7 +1,18 @@
 <p>
-  <button mat-raised-button color="primary" (click)="backup()">Бэкап</button>
+  <button class="button" mat-raised-button color="primary" (click)="backup()">
+    Бэкап
+  </button>
 
-  <button mat-raised-button color="primary" (click)="fixStatusAnime()">prepareAnime</button>
+  <!--button mat-raised-button color="primary" (click)="fixStatusAnime()">prepareAnime</button>
 
-  <button mat-raised-button color="primary" (click)="restoreAnime()">restoreAnime</button>
+  <button mat-raised-button color="primary" (click)="restoreAnime()">restoreAnime</button-->
 </p>
+<p>
+  <label class="button mat-raised-button mat-button-base mat-primary">
+    <input class="input-file" type="file" (change)="importFileChange($event)"/> Импорт
+  </label>
+</p>
+<h2>Формат</h2>
+<pre>
+  {{ exampleJson | json }}
+</pre>

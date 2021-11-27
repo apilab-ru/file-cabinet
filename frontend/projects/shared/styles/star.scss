@@ -1,0 +1,55 @@
+@mixin star() {
+  margin: calc(var(--star-size) * 0.76) 0;
+  height: 0;
+  width: 0;
+  position: relative;
+  border-right: var(--star-size) solid transparent;
+  border-bottom: calc(var(--star-size) * 0.7) solid var(--star-color);
+  border-left: var(--star-size) solid transparent;
+  transform: rotate(35deg);
+  margin-right: calc(var(--star-size) * 0.1);
+  cursor: pointer;
+
+  &:before,
+  &:after {
+    content: "";
+    height: 0;
+    width: 0;
+    position: absolute;
+  }
+
+  &:before {
+    top: calc(var(--star-size) * -0.53);
+    left: calc(var(--star-size) * -0.64);
+    border-bottom: calc(var(--star-size) * 0.8) solid var(--star-color);
+    border-left: calc(var(--star-size) * 0.3) solid transparent;
+    border-right: calc(var(--star-size) * 0.3) solid transparent;
+    transform: rotate(-35deg);
+  }
+
+  &:after {
+    top: calc(var(--star-size) * 0.04);
+    left: calc(var(--star-size) * -1.06);
+    border-right: var(--star-size) solid transparent;
+    border-bottom: calc(var(--star-size) * 0.7) solid var(--star-color);
+    border-left: var(--star-size) solid transparent;
+    transform: rotate(-70deg);
+  }
+
+  &.selected {
+    border-bottom-color: var(--star-selected-color);
+
+    &:before, &:after {
+      border-bottom-color: var(--star-selected-color);
+    }
+  }
+
+  &.hovered {
+    border-bottom-color: var(--star-hover-color);
+
+    &:before, &:after {
+      border-bottom-color: var(--star-hover-color);
+    }
+  }
+}
+

@@ -28,6 +28,7 @@ import { Genre } from '@server/api/base';
 import { BaseInfo } from '@shared/popup-add-item/models/base-info';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FileCabService } from '@shared/services/file-cab.service';
+import isEqual from 'lodash/isEqual';
 
 @UntilDestroy()
 @Component({
@@ -68,6 +69,7 @@ export class PopupComponent implements OnInit, OnChanges {
     this.searchData$ = this.baseInfo$.pipe(
       tap(({ type, name }) => this.searchData.next({ type, name })),
       switchMap(() => this.searchData),
+      distinctUntilChanged(isEqual),
       shareReplay({ refCount: true, bufferSize: 1 }),
     );
     this.genres$ = this.searchData$.pipe(
@@ -112,6 +114,10 @@ export class PopupComponent implements OnInit, OnChanges {
     if (changes.baseInfo) {
       this.baseInfoStory.next(this.baseInfo);
     }
+  }
+
+  onUpdateSearchData(data: SearchData): void {
+    this.searchData.next(data);
   }
 
   onUpdate(cardData: CardData): void {

@@ -29,6 +29,7 @@ interface TreeItem extends BookmarkTreeNode {
 export class AnalyzeComponent implements OnInit {
   treeControl = new NestedTreeControl<TreeItem>(node => node.children);
   dataSource = new MatTreeNestedDataSource<TreeItem>();
+  removeBookmark = true;
   schemas$ = this.fileCabService.schemas$;
 
   constructor(
@@ -91,7 +92,9 @@ export class AnalyzeComponent implements OnInit {
       untilDestroyed(this),
     ).subscribe((res) => {
       node.load = false;
-      this.removeNode(node);
+      if (this.removeBookmark) {
+        this.removeNode(node);
+      }
 
       this.matSnackBar.open('Сохранено', undefined, {
         duration: 2000,
@@ -100,7 +103,6 @@ export class AnalyzeComponent implements OnInit {
   }
 
   exportNode(node: BookmarkTreeNode): void {
-    console.log('export node', node);
     const html = this.chromeApiService.generateExportBookmarkHtml(node);
     saveAsFile(html, `bookmark-${node.title}.html`);
   }

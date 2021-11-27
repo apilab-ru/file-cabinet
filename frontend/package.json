@@ -4,12 +4,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build:cabinet": "ng build --project=cabinet --base-href ./index.html?/ --prod",
-    "build:popup": "ng build --project=popup --base-href ./index.html?/ --prod",
-    "build:ts": "webpack --mode production --config webpack.config.js",
-    "build": "npm run build:ts & npm run build:cabinet & npm run build:popup",
+    "build:cabinet": "ng build --project=cabinet --base-href ./index.html?/ --prod --source-map=false",
+    "build:popup": "ng build --project=popup --base-href ./index.html?/ --prod --source-map=false",
+    "build:ts": "webpack --mode production --config webpack.config.js --source-map=false",
+    "build": "npm run build:ts && npm run build:cabinet && npm run build:popup",
     "start:cabinet": "ng build --project=cabinet --source-map=true --watch --base-href ./index.html?/",
-    "start:popup": "ng build --project=popup --source-map --watch --base-href ./index.html?/",
+    "start:popup": "ng build --project=popup --source-map=true --watch --base-href ./index.html?/",
     "start:ts": "webpack --mode development --config webpack.config.js -w",
     "storybook": "start-storybook -p 6006"
   },

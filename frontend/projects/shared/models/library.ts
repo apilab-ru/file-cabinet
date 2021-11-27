@@ -16,7 +16,12 @@ export interface ISchema {
 
 export type ItemType = Anime | Film;
 
+export interface LibrarySettings {
+
+}
+
 export interface Library {
   tags: Tag[];
   data: Record<string, LibraryItem<ItemType>[]>;
+  settings: LibrarySettings;
 }

@@ -11,13 +11,16 @@ import {
 import { NavigationItem } from '@shared/models/navigation';
 import { checkIsShowStar } from '@shared/utils/check-is-show-star';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ItemType, LibraryItem } from '@shared/models/library';
 import { CardData } from '../../models/card-data';
 import { checkIsShowProgress } from '@shared/utils/check-is-show-progress';
 import { STATUS_LIST } from '@shared/const';
+import { SearchData } from '@shared/popup-add-item/models/search-data';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-card-edit',
   templateUrl: './card-edit.component.html',
@@ -33,6 +36,7 @@ export class CardEditComponent implements OnChanges, OnInit {
   @Input() isSearchMode = true;
 
   @Output() update = new EventEmitter<CardData>();
+  @Output() updateSearchData = new EventEmitter<SearchData>();
 
   isShowStar$: Observable<boolean>;
   isShowProgress$: Observable<boolean>;
@@ -56,6 +60,15 @@ export class CardEditComponent implements OnChanges, OnInit {
       startWith(this.formGroup.getRawValue()),
       map(({ status }) => checkIsShowProgress(status)),
     );
+
+    combineLatest([
+      this.formGroup.get('name').valueChanges.pipe(startWith(this.formGroup.get('name').value)),
+      this.formGroup.get('type').valueChanges.pipe(startWith(this.formGroup.get('type').value)),
+    ]).pipe(
+      untilDestroyed(this),
+    ).subscribe(([name, type]) => {
+      this.updateSearchData.emit({ name, type });
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

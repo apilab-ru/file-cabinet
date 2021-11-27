@@ -32,6 +32,7 @@ export class CardComponent implements OnChanges {
   isShowStars = false;
   localItem: LibraryItem<ItemType>;
   isChanged = false;
+  isEditMode = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.item) {
@@ -47,14 +48,17 @@ export class CardComponent implements OnChanges {
   onSetStars(star: number): void {
     this.localItem.star = star;
     this.isChanged = this.checkIsChanged();
-    ;
+  }
+
+  onSetProgress(progress: number): void {
+    this.localItem.progress = progress;
+    this.isChanged = this.checkIsChanged();
   }
 
   onSetStatus(status: string): void {
     this.localItem.status = status;
     this.isShowStars = this.checkIsShowStars(status);
     this.isChanged = this.checkIsChanged();
-    ;
   }
 
   onSetComment(comment: string): void {
@@ -65,6 +69,11 @@ export class CardComponent implements OnChanges {
   update(): void {
     this.isChanged = false;
     this.updateItem.emit(this.localItem);
+    this.isEditMode = false;
+  }
+
+  toggleEditMode(): void {
+    this.isEditMode = !this.isEditMode;
   }
 
   private checkIsShowStars(status: string): boolean {

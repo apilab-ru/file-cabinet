@@ -1,3 +1,7 @@
+<mat-checkbox class="setting-checkbox" [(ngModel)]="removeBookmark">
+  Удалить закладку после импорта
+</mat-checkbox>
+
 <mat-tree #tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
   <!-- This is the tree node template for leaf nodes -->
   <ng-container *matTreeNodeDef="let node">

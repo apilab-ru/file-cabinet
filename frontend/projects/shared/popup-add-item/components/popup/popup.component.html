@@ -6,6 +6,7 @@
   [item]="libraryItem$ | async"
   [isShowLibrary]="isShowLibrary"
   (update)="onUpdate($event)"
+  (updateSearchData)="onUpdateSearchData($event)"
 ></app-card-edit>
 
 <ng-container *ngIf="!(item$ | async)">

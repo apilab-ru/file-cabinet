@@ -1,4 +1,5 @@
 @import "../../../../../../../shared/styles/custom-scroll";
+@import "../../../../../../../shared/styles/star";
 
 .card {
   box-sizing: border-box;
@@ -27,18 +28,19 @@
     align-items: center;
     padding-top: 10px;
   }
+}
 
-  &__save {
-    position: absolute;
-    bottom: 0;
-    right: 15px;
-  }
+.card__save {
+  margin-top: 5px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .card__delete {
+  display: none;
   position: absolute;
-  top: 8px;
-  right: -7px;
+  top: -7px;
+  right: 40px;
   color: #bbb7b7;
   border: none;
   background: none;
@@ -49,6 +51,10 @@
 
   &:hover {
     color: #f44336;
+  }
+
+  .card:hover & {
+    display: block;
   }
 }
 
@@ -79,11 +85,18 @@
 .card__title {
   font-size: 16px;
   line-height: 1.3em;
-  padding-right: 16px;
+  display: flex;
 
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+
+.title-text {
+  display: block;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card__description {
@@ -116,15 +129,37 @@
 }
 
 .meta-data-box {
-  display: none;
   position: absolute;
-  top: 30%;
+  top: 20px;
   left: 0;
   right: 0;
-  background: #ffffffd9;
+  background: #ffffff;
   border: 5px solid #fff;
+  display: block;
+}
 
-  .card:hover & {
-    display: block;
+.star-box {
+  display: flex;
+  margin-left: auto;
+  font-size: 12px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.star {
+  @include star;
+  --star-color: #0091ea;
+  --star-hover-color: #0091ea;
+  --star-selected-color: #0091ea;
+  --star-size: 9px;
+
+  margin-left: 3px;
+
+  &.-completed {
+    --star-color: #ffeb3b;
+  }
+
+  &.-edit-mode {
+    --star-color: #00c853;
   }
 }

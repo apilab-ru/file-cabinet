@@ -1,8 +1,3 @@
-export interface Tag {
-  name: string;
-  id: number;
-}
-
 export enum Path {
   anime = 'anime',
   tv = 'tv',

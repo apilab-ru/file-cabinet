@@ -44,12 +44,19 @@ export class AppComponent implements OnInit {
         from(this.browserApiService.getActiveTabTitle(schemas)),
         from(this.browserApiService.getActiveTabLinks()),
       ])),
-      map(([schemas, title, { url, domain }]) => {
+      map(([schemas, title, { url, domain }]) => ({ schemas, title, url, domain })),
+      switchMap(({ schemas, title, url, domain }) => this.fileCabService.searchByUrl(url).pipe(
+        map(localItem => ({ schemas, title, url, domain, localItem })),
+      )),
+      map(({ schemas, title, url, domain, localItem }) => {
         const currentScheme = schemas[domain];
-        const name = trimTitle(title, currentScheme?.func);
+        const name = localItem ? localItem.name
+          : trimTitle(title, currentScheme?.func);
+        const type = localItem ? localItem.type
+          : currentScheme?.type || Types.films;
 
         return {
-          type: currentScheme?.type || Types.films,
+          type,
           name,
           url,
           domain,

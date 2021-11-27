@@ -1,3 +1,5 @@
+import * as cloneDeep from 'lodash/cloneDeep';
+
 export function deepCopy<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj));
+  return cloneDeep(obj);
 }

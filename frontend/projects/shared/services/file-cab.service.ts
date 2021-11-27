@@ -1,13 +1,17 @@
 import { Injectable, NgZone } from '@angular/core';
 import { FileCab } from '@shared/services/file-cab';
 import { from, Observable } from 'rxjs';
-import { map, pluck } from 'rxjs/operators';
+import { map, pluck, take } from 'rxjs/operators';
 import { ISchema, ItemType, Library, LibraryItem } from '@shared/models/library';
 import { runInZone } from '@shared/utils/run-in-zone';
 import { NavigationItem } from '@shared/models/navigation';
 import { Genre, SearchRequestResult } from '@server/api/base';
 import { MetaData } from '@shared/models/meta-data';
 import { Tag } from '@shared/models/tag';
+
+interface FlatLibraryItem extends LibraryItem<ItemType> {
+  type: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -53,6 +57,32 @@ export class FileCabService {
     );
   }
 
+  searchByUrl(url: string): Observable<{ type: string, id: number, name: string } | null> {
+    return this.data$.pipe(
+      take(1),
+      map(store => {
+        const list = this.flatStore(store);
+        const item = list.find(it => it.url === url);
+        if (item) {
+          return {
+            type: item.type,
+            id: item.item.id,
+            name: item.name || item.item.title,
+          };
+        }
+
+        return null;
+      }),
+    );
+  }
+
+  private flatStore(store: Record<string, LibraryItem<ItemType>[]>): FlatLibraryItem[] {
+    return Object.entries(store)
+      .reduce((all, [type, list]) => ([
+        ...all, ...list.map(item => ({ ...item, type })),
+      ]), []);
+  }
+
   selectGenres(type: string): Observable<Genre[]> {
     return this.fileCab.selectGenres(type).pipe(
       runInZone(this.ngZone),
@@ -75,7 +105,6 @@ export class FileCabService {
     );
   }
 
-  // TODO refactoring to observable
   addItemLibToStore(path: string, item: LibraryItem<ItemType>): Observable<void> {
     return from(this.fileCab.addItemLibToStore(path, item)).pipe(
       runInZone(this.ngZone),
@@ -94,5 +123,9 @@ export class FileCabService {
 
   updateItem(path: string, id: number, item): LibraryItem<ItemType> {
     return this.fileCab.updateItem(path, id, item);
+  }
+
+  updateStore(store: Library): void {
+    return this.fileCab.updateStore(store);
   }
 }

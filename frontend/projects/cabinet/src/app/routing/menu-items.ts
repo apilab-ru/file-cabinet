@@ -33,6 +33,6 @@ export const MENU_ITEMS: (Route & { name: string })[] = [
   {
     path: 'analyze',
     loadChildren: () => import('../pages/analyze/analyze.module').then(res => res.AnalyzeModule),
-    name: 'Анализ',
+    name: 'Импорт из закладок',
   },
 ];
