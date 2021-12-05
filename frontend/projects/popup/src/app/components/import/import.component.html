@@ -1,0 +1,62 @@
+<div class="parser-info">
+  <div
+    *ngIf="!parserPreset.founded && parserPreset.messageHost"
+    class="message"
+    [innerHtml]="parserPreset.messageHost"
+  ></div>
+
+  <div class="buttons">
+    <button *ngIf="parserPreset.founded" mat-raised-button color="primary" (click)="startImport(parserPreset)">
+      Импортировать
+    </button>
+
+    <a
+      *ngIf="parserPreset.founded"
+      mat-raised-button
+      color="primary"
+      [href]="'/cabinet/index.html?/'"
+      target="_blank"
+    >
+      Библиотека
+    </a>
+  </div>
+</div>
+
+<div *ngIf="progress$ | async as progress" class="progress-box">
+  <div class="progress-bar" [style.width]="progress.current / progress.total * 100 + '%'"></div>
+  <div class="progress-count">
+    {{ progress.current }} / {{ progress.total }}
+  </div>
+</div>
+
+<ng-container *ngIf="progress$ | async">
+  <app-card-edit
+    [selectedType]="this.form.get('type').value"
+    [name]="this.form.get('name').value"
+    [isShowLibrary]="false"
+    [item]="meta$ | async"
+    [isSearchMode]="true"
+    (update)="onUpdate($event)"
+    (updateSearchData)="onUpdateSearchData($event)"
+  ></app-card-edit>
+
+  <ng-container *ngIf="(mode$ | async) === 'select'">
+    <app-founded-list
+      *ngIf="foundedList$ | async as foundedList; else emptyList"
+      [list]="foundedList"
+      [genres]="genres$ | async"
+      (selectedChange)="selectItem(foundedList, $event)"
+    ></app-founded-list>
+
+    <ng-template #emptyList>
+      Ничего не найдено
+    </ng-template>
+
+    <div class="buttons-list">
+      <button mat-raised-button color="primary" (click)="skip()">
+        Пропустить
+      </button>
+    </div>
+  </ng-container>
+
+</ng-container>

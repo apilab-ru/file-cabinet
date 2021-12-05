@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
-import { FileCab } from '@shared/services/file-cab';
-import { from, Observable } from 'rxjs';
+import { FileCab, ItemParam } from '@shared/services/file-cab';
+import { from, Observable, of } from 'rxjs';
 import { map, pluck, take } from 'rxjs/operators';
 import { ISchema, ItemType, Library, LibraryItem } from '@shared/models/library';
 import { runInZone } from '@shared/utils/run-in-zone';
@@ -57,12 +57,13 @@ export class FileCabService {
     );
   }
 
-  searchByUrl(url: string): Observable<{ type: string, id: number, name: string } | null> {
+  searchByUrl(url: string, name: string): Observable<{ type: string, id: number, name: string } | null> {
     return this.data$.pipe(
       take(1),
       map(store => {
         const list = this.flatStore(store);
-        const item = list.find(it => it.url === url);
+        const item = list.find(it => it.url === url && (it.name === name || it.item.original_title === name));
+
         if (item) {
           return {
             type: item.type,
@@ -76,13 +77,6 @@ export class FileCabService {
     );
   }
 
-  private flatStore(store: Record<string, LibraryItem<ItemType>[]>): FlatLibraryItem[] {
-    return Object.entries(store)
-      .reduce((all, [type, list]) => ([
-        ...all, ...list.map(item => ({ ...item, type })),
-      ]), []);
-  }
-
   selectGenres(type: string): Observable<Genre[]> {
     return this.fileCab.selectGenres(type).pipe(
       runInZone(this.ngZone),
@@ -91,12 +85,25 @@ export class FileCabService {
 
   searchInStore(
     path: string,
-    name: string,
-    url?: string,
+    item: ItemParam,
   ): Observable<LibraryItem<ItemType> | null> {
-    return this.fileCab.searchInStore(path, name, url).pipe(
+    return this.fileCab.searchInStore(path, item).pipe(
       runInZone(this.ngZone),
     );
+  }
+
+  checkExisted(path: string, item: ItemParam): Observable<boolean> {
+    return this.fileCab.checkExisted(path, item).pipe(
+      take(1),
+      runInZone(this.ngZone),
+    );
+  }
+
+  private flatStore(store: Record<string, LibraryItem<ItemType>[]>): FlatLibraryItem[] {
+    return Object.entries(store)
+      .reduce((all, [type, list]) => ([
+        ...all, ...list.map(item => ({ ...item, type })),
+      ]), []);
   }
 
   addOrUpdate(path: string, item: ItemType, metaData: MetaData): Observable<LibraryItem<ItemType>> {
@@ -111,8 +118,19 @@ export class FileCabService {
     );
   }
 
-  searchApi(path: string, name: string): Observable<SearchRequestResult<ItemType>> {
-    return this.fileCab.searchApi(path, name).pipe(
+  searchApi(path: string | undefined, name: string): Observable<SearchRequestResult<ItemType>> {
+    return !path ? of({
+      page: 1,
+      total_pages: 1,
+      total_results: 0,
+      results: [],
+    }) : this.fileCab.searchApi(path, name).pipe(
+      runInZone(this.ngZone),
+    );
+  }
+
+  loadById(path: string, id: number): Observable<ItemType> {
+    return this.fileCab.loadById(path, id).pipe(
       runInZone(this.ngZone),
     );
   }

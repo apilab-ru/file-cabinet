@@ -68,7 +68,8 @@ export class SearchService {
   filterByState(data: LibraryItem<ItemType>[], state: ISearchStatus, mode: LibraryMode): LibraryItem<ItemType>[] {
     if (state) {
       state.search = state.search && state.search.toLocaleLowerCase();
-      return data?.filter(item => this.itemToStateCompare(item, state, mode));
+      const list = data?.filter(item => this.itemToStateCompare(item, state, mode));
+      return list;
     } else {
       return data;
     }
@@ -91,7 +92,10 @@ export class SearchService {
   private itemToStateCompare(item: LibraryItem<ItemType>, state: ISearchStatus, mode: LibraryMode): boolean {
     let isCompare = true;
     if (state.search && mode === LibraryMode.library) {
-      isCompare = item.item.title.toLocaleLowerCase().search(state.search) > -1;
+      isCompare = item.item.title?.toLocaleLowerCase().search(state.search) > -1
+        || item.item.original_title?.toLocaleLowerCase().search(state.search) > -1
+        || item.name?.toLocaleLowerCase().search(state.search) > -1
+      ;
     }
 
     return isCompare

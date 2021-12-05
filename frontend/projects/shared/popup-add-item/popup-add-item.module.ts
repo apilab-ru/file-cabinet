@@ -13,6 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { StarsModule } from '@shared/stars/stars.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoaderModule } from '@shared/loader/loader.module';
+import { SearchBoxComponent } from './components/search-box/search-box.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { LoaderModule } from '@shared/loader/loader.module';
     FoundedListComponent,
     HorizontalScrollDirective,
     PopupComponent,
+    SearchBoxComponent,
   ],
   imports: [
     CommonModule,
@@ -36,6 +38,8 @@ import { LoaderModule } from '@shared/loader/loader.module';
   exports: [
     PopupComponent,
     CardEditComponent,
+    FoundedListComponent,
+    SearchBoxComponent,
   ],
 })
 export class PopupAddItemModule {

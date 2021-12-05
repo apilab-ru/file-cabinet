@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { deepCopy, Genre, NavigationItem, SearchRequestResult } from '../../cabinet/src/models';
-import { catchError, map, shareReplay, take } from 'rxjs/operators';
+import { catchError, map, shareReplay, take, tap } from 'rxjs/operators';
 import { fileCabApi } from './file-cab.api';
 import { MetaData } from '@shared/models/meta-data';
 import { ISchema, ItemType, Library, LibraryItem, LibrarySettings } from '@shared/models/library';
@@ -18,6 +18,12 @@ const storeData = {
   data: {} as Record<string, LibraryItem<ItemType>[]>,
   settings: {} as LibrarySettings,
 };
+
+export interface ItemParam {
+  id?: number;
+  name?: string;
+  url?: string;
+}
 
 export class FileCab {
   private store = new BehaviorSubject<Library>(storeData);
@@ -47,7 +53,7 @@ export class FileCab {
       shareReplay(1),
     );
 
-    this.store$.subscribe(store => console.log('xxx store', store));
+    this.store$.subscribe();
 
     /*this.storeApi.onStoreChanges().subscribe(res => {
       console.log('xxx store change', res);
@@ -60,13 +66,16 @@ export class FileCab {
 
   searchInStore(
     path: string,
-    name: string,
-    url?: string,
+    item: ItemParam,
   ): Observable<LibraryItem<ItemType> | null> {
     return this.store$.pipe(
+      take(1),
       map(store => store.data && store.data[path] || []),
       map(list => list.find(
-        item => item.item.title === name || item.url === url || item.name === name,
+        it => it.item.title === item.name
+          || it.url === item.url
+          || it.name === item.name
+          || (item.id && item.id === it.item.id),
       ) || null),
     );
   }
@@ -87,18 +96,24 @@ export class FileCab {
     }
   }
 
-  addItemLibToStore(path: string, item: LibraryItem<ItemType>): Promise<void> {
-    return this.checkUnique(path, item.item)
-      .then(() => {
-        const meta = deepCopy(item);
-        delete meta.item;
+  loadById(path: string, id: number): Observable<ItemType> {
+    switch (path) {
+      case 'anime':
+        return fileCabApi.getAnimeById(id);
+    }
+  }
 
-        this.addItemToStore(path, item.item, meta);
+  addItemLibToStore(path: string, libItem: LibraryItem<ItemType>): Promise<void> {
+    return this.checkUnique(path, libItem.item)
+      .then(() => {
+        const { item, ...meta } = libItem;
+
+        this.addItemToStore(path, item, meta);
       });
   }
 
   addOrUpdate(path: string, item: ItemType, metaData: MetaData): Observable<LibraryItem<ItemType>> {
-    return this.checkExisted(path, item).pipe(
+    return this.checkExisted(path, { id: item.id }).pipe(
       map(isExisted => isExisted ? this.updateItem(path, item.id, {
         ...metaData,
         item,
@@ -106,11 +121,20 @@ export class FileCab {
     );
   }
 
-  checkExisted(path: string, item: ItemType): Observable<boolean> {
+  checkExisted(path: string, item: ItemParam): Observable<boolean> {
     return this.store.asObservable().pipe(
-      map(store => store.data && store.data[path] || []),
+      map(store => this.syncCheckExisted(store.data, path, item)),
       take(1),
-      map(list => !!list.find(it => it.item.id === item.id)),
+    );
+  }
+
+  private syncCheckExisted(data: Record<string, LibraryItem<ItemType>[]> | undefined, path: string, item: ItemParam): boolean {
+    if (!data || !data[path]) {
+      return false;
+    }
+
+    return !!data[path].find(it => it.item.id === item.id
+      || (item.url && item.url === it.url),
     );
   }
 

@@ -2,17 +2,38 @@
   <button class="button" mat-raised-button color="primary" (click)="backup()">
     Бэкап
   </button>
-
   <!--button mat-raised-button color="primary" (click)="fixStatusAnime()">prepareAnime</button>
 
   <button mat-raised-button color="primary" (click)="restoreAnime()">restoreAnime</button-->
 </p>
+
 <p>
   <label class="button mat-raised-button mat-button-base mat-primary">
     <input class="input-file" type="file" (change)="importFileChange($event)"/> Импорт
   </label>
 </p>
-<h2>Формат</h2>
-<pre>
-  {{ exampleJson | json }}
+<mat-expansion-panel class="panel">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Формат
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <pre>
+{{ exampleJson | json }}
 </pre>
+</mat-expansion-panel>
+
+<mat-expansion-panel class="services panel">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Сервисные функции
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <p>
+    <button class="button" mat-raised-button color="primary" (click)="clearDoubles()">
+      Удалить дубликаты
+    </button>
+  </p>
+</mat-expansion-panel>

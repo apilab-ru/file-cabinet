@@ -1,8 +1,10 @@
-<app-popup
-  *ngIf="baseInfo$ | async as baseInfo; else empty"
-  [baseInfo]="baseInfo"
-  (onSaveEvent)="onSave()"
-></app-popup>
+<ng-container *ngIf="!(parserPreset$ | async)?.founded">
+  <app-popup
+    *ngIf="baseInfo$ | async as baseInfo; else empty"
+    [baseInfo]="baseInfo"
+    (onSaveEvent)="onSave()"
+  ></app-popup>
+</ng-container>
 
 <ng-template #empty>
   <a
@@ -15,3 +17,8 @@
   </a>
 </ng-template>
 
+<app-popup-import
+  *ngIf="parserPreset$ | async as parserPreset"
+  class="popup-import"
+  [parserPreset]="parserPreset"
+></app-popup-import>

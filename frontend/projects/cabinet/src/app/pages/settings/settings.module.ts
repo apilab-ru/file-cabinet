@@ -4,6 +4,7 @@ import { SettingsComponent } from './settings.component';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     }]),
     MatButtonModule,
     MatSnackBarModule,
+    MatExpansionModule,
   ],
 })
 export class SettingsModule {

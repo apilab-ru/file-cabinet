@@ -1,0 +1,19 @@
+<ng-container [formGroup]="form">
+  <mat-form-field class="input-box">
+    <mat-label>Название материала</mat-label>
+    <input matInput formControlName="name">
+  </mat-form-field>
+
+  <div class="buttons">
+    <button
+      *ngFor="let type of (types$ | async)"
+      class="button"
+      mat-raised-button
+      [color]="type.path === form?.get('type')?.value ? 'accent' : 'primary'"
+      (click)="selectType(type.path)"
+    >
+      {{ type.name }}
+    </button>
+  </div>
+</ng-container>
+

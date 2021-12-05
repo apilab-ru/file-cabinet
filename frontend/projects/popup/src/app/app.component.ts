@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Types } from '@shared/const';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { BrowserApiService } from './services/browser-api.service';
@@ -8,6 +8,8 @@ import { trimTitle } from '@shared/utils/trim-title';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BaseInfo } from '@shared/popup-add-item/models/base-info';
 import { FileCabService } from '@shared/services/file-cab.service';
+import { ParserFounded } from './interface';
+import { parserPresets } from '@shared/parser/const';
 
 @UntilDestroy()
 @Component({
@@ -19,6 +21,7 @@ import { FileCabService } from '@shared/services/file-cab.service';
 export class AppComponent implements OnInit {
   baseInfo$: Observable<BaseInfo | null>;
   schemas$ = this.fileCabService.schemas$;
+  parserPreset$: Observable<ParserFounded | null>;
 
   constructor(
     private browserApiService: BrowserApiService,
@@ -29,12 +32,26 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.baseInfo$ = this.createBaseInfo();
+    this.parserPreset$ = this.searchPreset();
   }
 
   onSave(): void {
     this.matSnackBar.open('Сохранено', undefined, {
       duration: 2000,
     });
+  }
+
+  private searchPreset(): Observable<ParserFounded | null> {
+    return from(this.browserApiService.getActiveTabLinks()).pipe(
+      map(({ url, domain }) => {
+        const preset = parserPresets.find(it => it.domain === domain);
+
+        return !preset ? null : {
+          ...preset,
+          founded: preset.host === '*' ? true : preset.host.test(url),
+        };
+      }),
+    );
   }
 
   private createBaseInfo(): Observable<BaseInfo | null> {
@@ -45,9 +62,13 @@ export class AppComponent implements OnInit {
         from(this.browserApiService.getActiveTabLinks()),
       ])),
       map(([schemas, title, { url, domain }]) => ({ schemas, title, url, domain })),
-      switchMap(({ schemas, title, url, domain }) => this.fileCabService.searchByUrl(url).pipe(
-        map(localItem => ({ schemas, title, url, domain, localItem })),
-      )),
+      switchMap(({ schemas, title, url, domain }) => {
+        const currentScheme = schemas[domain];
+        const name = trimTitle(title, currentScheme?.func);
+        return this.fileCabService.searchByUrl(url, name).pipe(
+          map(localItem => ({ schemas, title, url, domain, localItem })),
+        );
+      }),
       map(({ schemas, title, url, domain, localItem }) => {
         const currentScheme = schemas[domain];
         const name = localItem ? localItem.name

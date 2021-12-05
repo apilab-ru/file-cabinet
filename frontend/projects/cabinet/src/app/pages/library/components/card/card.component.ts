@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { deepCopy, Genre } from '../../../../../models';
 import { ItemType, LibraryItem } from '@shared/models/library';
-import isEqual from 'lodash/isEqual';
+import * as isEqual from 'lodash/isEqual';
 
 @Component({
   selector: 'app-card',

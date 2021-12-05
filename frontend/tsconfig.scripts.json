@@ -8,8 +8,7 @@
     "target": "es5"
   },
   "files": [
-    "./projects/background/background.ts",
-    "./projects/page/page.ts"
+    "./projects/background/background.ts"
   ],
   "include": [
     "./src/**/*.d.ts"

@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "File-cabinet",
-  "version": "1.3",
+  "version": "1.3.2",
   "description": "This extension allows you control your library",
   "icons": {
     "48": "library_add.png"
@@ -18,18 +18,6 @@
       "background.js"
     ]
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "page/runtime.js",
-        "page/main.js",
-        "page.js"
-      ]
-    }
-  ],
   "permissions": [
     "activeTab",
     "storage",

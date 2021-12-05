@@ -18,6 +18,7 @@ export interface ItemParams {
 })
 export class LibraryService {
   data$ = this.fileCabService.data$;
+  store$ = this.fileCabService.store$;
 
   constructor(
     private filmsService: FilmsService,

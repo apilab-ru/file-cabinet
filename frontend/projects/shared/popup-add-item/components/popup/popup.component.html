@@ -1,6 +1,5 @@
 <app-card-edit
   *ngIf="baseInfo$ | async as baseInfo"
-  [types]="types$ | async"
   [selectedType]="baseInfo.type"
   [name]="baseInfo.name"
   [item]="libraryItem$ | async"

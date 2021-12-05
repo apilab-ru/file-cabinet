@@ -1,21 +1,6 @@
 <div class="root" [formGroup]="formGroup">
   <div class="load-box">
-    <mat-form-field *ngIf="isSearchMode" class="input-box">
-      <mat-label>Название материала</mat-label>
-      <input matInput formControlName="name">
-    </mat-form-field>
-
-    <div *ngIf="isSearchMode" class="buttons">
-      <button
-        *ngFor="let type of types"
-        class="button"
-        mat-raised-button
-        [color]="type.path === selectedType ? 'accent' : 'primary'"
-        (click)="selectType(type.path)"
-      >
-        {{ type.name }}
-      </button>
-    </div>
+    <app-search-box *ngIf="isSearchMode" [form]="formGroup"></app-search-box>
 
     <mat-form-field class="status-box">
       <mat-label>Статус</mat-label>

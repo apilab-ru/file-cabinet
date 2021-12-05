@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LibraryService } from '../../services/library.service';
-import { first, map, mergeMap } from 'rxjs/operators';
+import { first, map, mergeMap, take } from 'rxjs/operators';
 import { forkJoin, Observable, of } from 'rxjs';
 import { Anime } from '../../../models';
 import { AnimeService } from '../../services/anime.service';
 import { saveAsFile } from '../../helpers/save-as-file';
-import { Library, LibraryItem } from '@shared/models/library';
+import { ItemType, Library, LibraryItem } from '@shared/models/library';
 import { FileCabService } from '@shared/services/file-cab.service';
 import * as exampleJson from './format.json';
 import isArray from 'lodash/isArray';
@@ -44,6 +44,31 @@ export class SettingsComponent {
     if (files && files[0]) {
       reader.readAsText(files[0]);
     }
+  }
+
+  clearDoubles(): void {
+    this.libraryService.store$.pipe(
+      take(1),
+      map(store => {
+        return {
+          ...store,
+          data: Object.entries(store.data)
+            .reduce((obj, [key, list]) => ({ ...obj, [key]: this.clearDoublesList(list) }),
+              {}),
+        };
+      }),
+    ).subscribe(store => {
+      this.libraryService.updateStore(store);
+      this.matSnackBar.open('Дубли удалены', undefined, {
+        duration: 3000,
+      });
+    });
+  }
+
+  private clearDoublesList(list: LibraryItem<ItemType>[]): LibraryItem<ItemType>[] {
+    return list.filter((item, index) => index === list
+      .findIndex(it => it.item.id === item.item.id),
+    );
   }
 
   private importFileLoad(event: ProgressEvent): void {

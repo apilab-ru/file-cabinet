@@ -28,9 +28,8 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardEditComponent implements OnChanges, OnInit {
-  @Input() types: NavigationItem[];
   @Input() selectedType: string;
-  @Input() item: LibraryItem<ItemType>;
+  @Input() item: Partial<LibraryItem<ItemType>>;
   @Input() name: string;
   @Input() isShowLibrary = true;
   @Input() isSearchMode = true;
@@ -85,11 +84,6 @@ export class CardEditComponent implements OnChanges, OnInit {
         name: this.name,
       });
     }
-  }
-
-  selectType(type: string): void {
-    this.selectedType = type;
-    this.formGroup.patchValue({ type });
   }
 
   save(): void {

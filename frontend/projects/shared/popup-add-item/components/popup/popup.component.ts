@@ -49,7 +49,6 @@ export class PopupComponent implements OnInit, OnChanges {
   private baseInfoStory = new BehaviorSubject<BaseInfo | null>(null);
 
   isLoading$ = new BehaviorSubject(false);
-  types$ = this.fileCabService.types$;
   libraryItem$: Observable<LibraryItem<ItemType>>;
   item$: Observable<ItemType>;
   genres$: Observable<Genre[]>;
@@ -81,7 +80,7 @@ export class PopupComponent implements OnInit, OnChanges {
       this.baseInfo$,
     ]).pipe(
       switchMap(([{ type, name }, baseInfo]) => this
-        .fileCabService.searchInStore(type, name, baseInfo.url)),
+        .fileCabService.searchInStore(type, { name, url: baseInfo.url })),
     );
 
     this.foundedList$ = this.createFoundList();
