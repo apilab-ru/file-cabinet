@@ -8,10 +8,10 @@ export const BASE_CLEVER_SEARCH_KEYS = {
   years: {
     name: 'года',
   },
-  tags: {
+  /*tags: {
     name: 'теги',
     list: [],
-  },
+  },*/
   ratingFrom: {
     name: 'рейтингОт',
   },

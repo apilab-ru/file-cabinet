@@ -156,13 +156,13 @@ export class SearchService {
   private loadKeys(mode: LibraryMode, genres: Genre[], tags: Tag[]): ICleverSearchKeys {
     const keys = deepCopy(BASE_CLEVER_SEARCH_KEYS);
     keys.genres.list = genres;
-    keys.tags.list = tags;
+    // keys.tags.list = tags;
 
     if (mode === LibraryMode.search) {
       delete keys.status;
       delete keys.ratingFrom;
       delete keys.ratingTo;
-      delete keys.tags;
+      // delete keys.tags;
     }
 
     return keys;
