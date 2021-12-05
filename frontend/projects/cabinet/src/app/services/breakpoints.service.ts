@@ -16,6 +16,7 @@ export class BreakpointsService {
     .map(([key, size]) => ({ key: key as Breakpoint, size }));
 
   breakpoint$: Observable<Breakpoint>;
+  isMobile$: Observable<boolean>;
 
   constructor() {
     this.breakpoint$ = fromEvent(window, 'resize').pipe(
@@ -24,6 +25,15 @@ export class BreakpointsService {
       distinctUntilChanged(),
       shareReplay({ refCount: true, bufferSize: 1 }),
     );
+
+    this.isMobile$ = this.breakpoint$.pipe(
+      map(breakpoint => breakpoint === Breakpoint.mobile),
+      shareReplay({ refCount: true, bufferSize: 1 }),
+    );
+  }
+
+  checkIsMobile(): boolean {
+    return this.checkForWindowResize() === Breakpoint.mobile;
   }
 
   private checkForWindowResize(): Breakpoint {

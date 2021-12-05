@@ -23,6 +23,7 @@ const SIZES = {
   [Breakpoint.fullHd]: [15, 25, 50, 100],
   [Breakpoint.hd]: [12, 24, 48, 96],
   [Breakpoint.tabletWide]: [9, 18, 36, 72],
+  [Breakpoint.mobile]: [10, 20, 50, 100],
 };
 
 @UntilDestroy()

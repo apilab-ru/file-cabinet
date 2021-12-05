@@ -1,32 +1,34 @@
-<div class="search">
-  <div class="mode-select">
-    <button
-      class="mode"
-      [class.-checked]="(mode$ | async) === LibraryMode.library"
-      title="Библиотека"
-      (click)="changeMode(LibraryMode.library)"
-    >
-      <span class="icon-folder"></span>
-    </button>
-    <button
-      class="mode"
-      [class.-checked]="(mode$ | async) === LibraryMode.search"
-      title="Поиск"
-      (click)="changeMode(LibraryMode.search)"
-    >
-      <span class="icon-search"></span>
-    </button>
+<ng-template #searchInput>
+  <div class="search">
+    <div class="mode-select">
+      <button
+        class="mode"
+        [class.-checked]="(mode$ | async) === LibraryMode.library"
+        title="Библиотека"
+        (click)="changeMode(LibraryMode.library)"
+      >
+        <span class="icon-folder"></span>
+      </button>
+      <button
+        class="mode"
+        [class.-checked]="(mode$ | async) === LibraryMode.search"
+        title="Поиск"
+        (click)="changeMode(LibraryMode.search)"
+      >
+        <span class="icon-search"></span>
+      </button>
+    </div>
+
+    <app-clever-search
+      class="search__input"
+      [keys]="searchKeys$ | async"
+      [status]="searchStatus$ | async"
+      (statusChanges)="updateSearch($event)"
+    ></app-clever-search>
   </div>
+</ng-template>
 
-  <app-clever-search
-    class="search__input"
-    [keys]="searchKeys$ | async"
-    [status]="searchStatus$ | async"
-    (statusChanges)="updateSearch($event)"
-  ></app-clever-search>
-</div>
-
-<div class="content">
+<div [appLayoutTopSlot]="searchInput" class="content">
   <app-loader *ngIf="isLoad$ | async"></app-loader>
   <app-list [list]="list$ | async">
     <app-card

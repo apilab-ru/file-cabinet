@@ -1,8 +1,14 @@
+@import "projects/shared/styles/breakpoint";
+
 :host {
   display: block;
   padding: 5px;
   min-height: 350px;
-  width: 300px;
+  min-width: 300px;
+
+  @include isMobile() {
+    width: calc(100% - 8px);
+  }
 }
 
 .popup-import {

@@ -1,3 +1,5 @@
+@import "projects/shared/styles/breakpoint";
+
 :host {
   display: flex;
   flex-direction: column;
@@ -5,11 +7,15 @@
 
 .search {
   display: flex;
-  width: calc(100% - 800px);
+  width: 100%;
   position: absolute;
-  right: 10px;
-  top: 10px;
+  top: 0;
+  left: 0;
   z-index: 10;
+
+  @include isMobile() {
+    top: 5px;
+  }
 
   &__input {
     flex: 1;
@@ -19,6 +25,10 @@
     border-radius: 4px;
     min-height: 48px;
     box-sizing: border-box;
+
+    @include isMobile() {
+      margin-left: -60px;
+    }
   }
 
   &__setting {
@@ -36,6 +46,11 @@
   display: flex;
   max-height: 48px;
   margin-left: -5px;
+  z-index: 1;
+
+  @include isMobile() {
+    margin-left: 0;
+  }
 }
 
 .mode {
@@ -69,4 +84,5 @@
   box-sizing: border-box;
   margin: 10px;
   overflow: hidden;
+  transform: translate3d(0, 0, 0);
 }

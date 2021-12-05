@@ -1,4 +1,4 @@
-// @import "../../../../../shared/styles/custom-scroll";
+@import "projects/shared/styles/breakpoint";
 
 :host {
   border: 5px solid #3f51b5;
@@ -8,11 +8,50 @@
   box-sizing: border-box;
   padding: 5px;
   overflow: hidden;
+
+  @include isMobile() {
+    flex-direction: column-reverse;
+    padding: 0;
+  }
+}
+
+.navigations {
+  display: flex;
+  background-color: #3f51b5;
+
+
+  .mat-tab-label-active {
+    opacity: 1 !important;
+  }
+}
+
+.link_name {
+  margin-left: 2px;
+
+  @include isMobile() {
+    display: none;
+  }
+}
+
+.link_icon {
+  @include isMobile() {
+    font-size: 18px;
+  }
+}
+
+.search-box {
+  flex: 1;
+  position: relative;
 }
 
 .router-content {
   flex: 1;
   overflow: auto;
   height: calc(100vh - 58px);
-  // @include customScroll();
+}
+
+.mobile-search-box {
+  height: 48px;
+  margin-top: -5px;
+  position: relative;
 }

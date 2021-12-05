@@ -1,17 +1,32 @@
-<nav class="navigations" mat-tab-nav-bar backgroundColor="primary">
-  <a
-    *ngFor="let link of navLinks"
-    mat-tab-link
-    [routerLink]="link.path"
-    routerLinkActive
-    #rla="routerLinkActive"
-    [active]="rla.isActive"
-  >
-    {{ link.name }}
-  </a>
-</nav>
+<div class="navigations">
+  <nav mat-tab-nav-bar backgroundColor="primary">
+    <a
+      *ngFor="let link of navLinks"
+      mat-tab-link
+      [routerLink]="link.path"
+      routerLinkActive
+      #rla="routerLinkActive"
+      [active]="rla.isActive"
+    >
+      <span class="link_icon {{ link.icon }}"></span>
+      <span class="link_name">{{ link.name }}</span>
+    </a>
+  </nav>
+
+  <ng-container *ngIf="!(isMobile$ | async)">
+    <div class="search-box" *ngIf="template$ | async as template">
+      <ng-container *ngTemplateOutlet="template"></ng-container>
+    </div>
+  </ng-container>
+</div>
+
 
 <div class="router-content">
   <router-outlet></router-outlet>
 </div>
 
+<ng-container *ngIf="isMobile$ | async">
+  <div *ngIf="template$ | async as template" class="mobile-search-box">
+    <ng-container *ngTemplateOutlet="template"></ng-container>
+  </div>
+</ng-container>

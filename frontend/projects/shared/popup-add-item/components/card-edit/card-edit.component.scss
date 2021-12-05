@@ -1,7 +1,13 @@
+@import "projects/shared/styles/breakpoint";
+
 :host {
   display: block;
-  width: 300px;
+  min-width: 300px;
   background: #ffffff;
+
+  @include isMobile() {
+    width: 100%;
+  }
 }
 
 .status-box {

@@ -13,7 +13,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime, map } from 'rxjs/operators';
+import { debounceTime, filter, map, switchMap, tap } from 'rxjs/operators';
 import {
   BASE_CLEVER_SEARCH_KEYS,
   ICleverSearchKey,
@@ -25,8 +25,11 @@ import { KeyListenerService } from '../../../../services/key-listener.service';
 import { MatFormField } from '@angular/material/form-field';
 import * as isEqual from 'lodash/isEqual';
 import { toggleAnimation } from './toggle-animation';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, fromEvent } from 'rxjs';
+import { BreakpointsService } from '../../../../services/breakpoints.service';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-clever-search',
   templateUrl: './clever-search.component.html',
@@ -53,6 +56,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
     private keyListenerService: KeyListenerService,
     private ngZone: NgZone,
     private elementRef: ElementRef<HTMLElement>,
+    private breakpointService: BreakpointsService,
   ) {
   }
 
@@ -85,21 +89,26 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.elementRef.nativeElement.onmouseover = () => {
-        if (!this.isShowAdvanced$.getValue() && !this.isIgnoreHover) {
+    if (!this.breakpointService.checkIsMobile()) {
+      this.ngZone.runOutsideAngular(() => {
+        fromEvent(this.elementRef.nativeElement, 'mouseover').pipe(
+          filter(() => !this.isShowAdvanced$.getValue()),
+          untilDestroyed(this),
+        ).subscribe(() => {
           this.ngZone.run(() => {
             this.isShowAdvanced$.next(true);
           });
-        }
-      };
-
-      this.elementRef.nativeElement.onmouseleave = () => {
-        this.ngZone.run(() => {
-          this.isShowAdvanced$.next(false);
         });
-      };
-    });
+
+        fromEvent(this.elementRef.nativeElement, 'mouseleave').pipe(
+          untilDestroyed(this),
+        ).subscribe(() => {
+          this.ngZone.run(() => {
+            this.isShowAdvanced$.next(false);
+          });
+        });
+      });
+    }
   }
 
   toggle(): void {
