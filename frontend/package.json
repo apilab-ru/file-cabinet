@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build:cabinet": "ng build --project=cabinet --base-href ./index.html?/ --prod --source-map=false",
     "build:popup": "ng build --project=popup --base-href ./index.html?/ --prod --source-map=false",
-    "build:ts": "webpack --mode production --config webpack.config.js --source-map=false",
+    "build:ts": "webpack --config webpack.config.js --mode production --devtool=false",
     "build": "npm run build:ts && npm run build:cabinet && npm run build:popup && npm run copy",
     "copy": "copyfiles -f ./projects/extension/* ../extension",
     "start:cabinet": "ng build --project=cabinet --source-map=true --watch --base-href ./index.html?/",
