@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   NgZone,
@@ -22,12 +23,16 @@ import {
 } from '../../../../../models';
 import { KeyListenerService } from '../../../../services/key-listener.service';
 import { MatFormField } from '@angular/material/form-field';
+import * as isEqual from 'lodash/isEqual';
+import { toggleAnimation } from './toggle-animation';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-clever-search',
   templateUrl: './clever-search.component.html',
   styleUrls: ['./clever-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [toggleAnimation],
 })
 export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() keys: ICleverSearchKeys = BASE_CLEVER_SEARCH_KEYS;
@@ -37,7 +42,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   @ViewChild(MatFormField, { static: true }) private field: MatFormField;
 
-  isShowAdvanced = false;
+  isShowAdvanced$ = new BehaviorSubject<boolean>(false);
   separator = '?';
   inputControl = new FormControl();
   debounceTime = 500;
@@ -47,6 +52,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
   constructor(
     private keyListenerService: KeyListenerService,
     private ngZone: NgZone,
+    private elementRef: ElementRef<HTMLElement>,
   ) {
   }
 
@@ -72,7 +78,7 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     if (changes.status || changes.keys) {
-      if (!deepEqual(this.parseString(this.inputControl.value), this.status)) {
+      if (!isEqual(this.parseString(this.inputControl.value), this.status)) {
         this.inputControl.patchValue(this.renderValue(this.status));
       }
     }
@@ -80,18 +86,24 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.ngZone.runOutsideAngular(() => {
-      this.field._elementRef.nativeElement.onmouseover = () => {
-        if (!this.isShowAdvanced && !this.isIgnoreHover) {
+      this.elementRef.nativeElement.onmouseover = () => {
+        if (!this.isShowAdvanced$.getValue() && !this.isIgnoreHover) {
           this.ngZone.run(() => {
-            this.isShowAdvanced = true;
+            this.isShowAdvanced$.next(true);
           });
         }
+      };
+
+      this.elementRef.nativeElement.onmouseleave = () => {
+        this.ngZone.run(() => {
+          this.isShowAdvanced$.next(false);
+        });
       };
     });
   }
 
   toggle(): void {
-    this.isShowAdvanced = !this.isShowAdvanced;
+    this.isShowAdvanced$.next(!this.isShowAdvanced$.getValue());
     this.isIgnoreHover = true;
     setTimeout(() => {
       this.isIgnoreHover = false;
@@ -210,11 +222,10 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
       }
     }
 
-    const result = {
+    return {
       search: search.join(' ').trim(),
       options,
     };
-    return result;
   }
 
   private convertKey(key: string): string {
@@ -252,8 +263,4 @@ export class CleverSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return isNaN(+value) ? value : +value;
   }
 
-}
-
-function deepEqual(obj1, obj2) {
-  return JSON.stringify(obj1) === JSON.stringify(obj2);
 }
