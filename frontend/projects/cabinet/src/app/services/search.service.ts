@@ -163,6 +163,7 @@ export class SearchService {
       delete keys.ratingFrom;
       delete keys.ratingTo;
       // delete keys.tags;
+      return {};
     }
 
     return keys;
