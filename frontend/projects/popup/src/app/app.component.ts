@@ -3,13 +3,14 @@ import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Types } from '@shared/const';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { BrowserApiService } from './services/browser-api.service';
-import { combineLatest, from, Observable, of } from 'rxjs';
+import { combineLatest, forkJoin, from, Observable, of } from 'rxjs';
 import { trimTitle } from '@shared/utils/trim-title';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BaseInfo } from '@shared/popup-add-item/models/base-info';
 import { FileCabService } from '@shared/services/file-cab.service';
 import { ParserFounded } from './interface';
 import { parserPresets } from '@shared/parser/const';
+import { captureException } from '@sentry/angular';
 
 @UntilDestroy()
 @Component({
@@ -64,9 +65,21 @@ export class AppComponent implements OnInit {
       map(([schemas, title, { url, domain }]) => ({ schemas, title, url, domain })),
       switchMap(({ schemas, title, url, domain }) => {
         const currentScheme = schemas[domain];
-        const name = trimTitle(title, currentScheme?.func);
-        return this.fileCabService.searchByUrl(url, name).pipe(
-          map(localItem => ({ schemas, title, url, domain, localItem })),
+        const name = trimTitle(title, currentScheme?.func).trim();
+
+        return forkJoin([
+          this.fileCabService.searchByUrl(url, currentScheme?.type),
+          this.fileCabService.searchByName(name, currentScheme?.type),
+        ]).pipe(
+          map(([itemByUrl, itemByName]) => {
+            return {
+              schemas,
+              title,
+              url,
+              domain,
+              localItem: itemByUrl || itemByName,
+            };
+          }),
         );
       }),
       map(({ schemas, title, url, domain, localItem }) => {
@@ -83,7 +96,11 @@ export class AppComponent implements OnInit {
           domain,
         };
       }),
-      catchError(() => of(null)),
+      catchError((error) => {
+        captureException(error);
+
+        return of(null);
+      }),
       shareReplay({ refCount: true, bufferSize: 1 }),
     );
   }

@@ -91,12 +91,10 @@ export class SearchService {
 
   private itemToStateCompare(item: LibraryItem<ItemType>, state: ISearchStatus, mode: LibraryMode): boolean {
     let isCompare = true;
-    if (state.search && mode === LibraryMode.library) {
-      isCompare = item.item.title?.toLocaleLowerCase().search(state.search) > -1
-        || item.item.original_title?.toLocaleLowerCase().search(state.search) > -1
-        || item.name?.toLocaleLowerCase().search(state.search) > -1
-      ;
-    }
+    isCompare = item.item.title?.toLocaleLowerCase().search(state.search) > -1
+      || item.item.original_title?.toLocaleLowerCase().search(state.search) > -1
+      || item.name?.toLocaleLowerCase().search(state.search) > -1
+    ;
 
     return isCompare
       && (!Object.keys(state.options).length
@@ -118,12 +116,12 @@ export class SearchService {
 
       case SearchKeys.years:
         const searchResYears = this.compareList([item.item.year], separateSearch);
-        return searchResYears.positive.reduce((prev, next) => prev || next, false)
+        return searchResYears.positive.reduce((prev, next) => prev || next, !searchResYears.positive.length)
           && searchResYears.negative.reduce((prev, next) => prev && next, true);
 
       case SearchKeys.status:
         const searchResStatus = this.compareList([item.status], separateSearch);
-        return searchResStatus.positive.reduce((prev, next) => prev || next, false)
+        return searchResStatus.positive.reduce((prev, next) => prev || next, !searchResStatus.positive.length)
           && searchResStatus.negative.reduce((prev, next) => prev && next, true);
 
       case SearchKeys.ratingFrom:

@@ -1,6 +1,6 @@
 /// <reference types="chrome"/>
 
-export * from '../../../../../server/src/api';
+export * from '@server/models/index';
 export * from '@shared/models/navigation';
 export * from './library';
 export * from './clever-search';

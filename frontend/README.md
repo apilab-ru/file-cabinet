@@ -1,6 +1,8 @@
 # FileCabinet
 Storybook from https://storybook.js.org/tutorials/intro-to-storybook/angular/en/get-started/
 
+[Extension](https://chrome.google.com/webstore/detail/file-cabinet/poiackckjbminlmppejhfkmjkfpfegkd?hl=ru)
+
 ## Development server
 run:
 npm run start:cabinet
@@ -17,3 +19,6 @@ inlineCritical = false, more detail https://github.com/angular/angular-cli/issue
 
 # Additional
 npm install copyfiles -g
+
+## Tools
+[Sentry](https://sentry.io/organizations/apilab/issues/?project=6103397)

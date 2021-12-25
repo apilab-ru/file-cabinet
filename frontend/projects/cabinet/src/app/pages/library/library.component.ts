@@ -118,10 +118,9 @@ export class LibraryComponent implements OnInit {
 
   private selectData(mode: LibraryMode, state: ISearchStatus): Observable<LibraryItem<ItemType>[]> {
     return (mode === LibraryMode.library
-      ? this.dataFactoryService.getFromLibrary()
-      : this.dataFactoryService.search(state))
-      .pipe(
+      ? this.dataFactoryService.getFromLibrary().pipe(
         map(list => this.searchService.filterByState(list, state, mode)),
-      );
+      )
+      : this.dataFactoryService.search(state));
   }
 }

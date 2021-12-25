@@ -6,7 +6,7 @@ import { BrowserApiService } from '../../services/browser-api.service';
 import { ParserPreset, ParserResponse } from '@shared/parser/interface';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FileCabService } from '@shared/services/file-cab.service';
-import { Genre } from '@server/api/base';
+import { Genre } from '@server/models/base';
 import { ItemType, LibraryItem } from '@shared/models/library';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';

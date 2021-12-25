@@ -1,7 +1,8 @@
 import { environment } from '../../../environments/environment';
-import { Anime, Film, Genre, SearchRequestResult } from '../../../../server/src/api';
+import { Anime, Film, Genre, SearchRequestResult } from '@server/models/index';
 import { Observable, timer } from 'rxjs';
 import { delayWhen, map, retryWhen, tap } from 'rxjs/operators';
+import { captureException } from '@sentry/angular';
 
 const apiUrl = environment.apiUrl;
 
@@ -27,7 +28,7 @@ function fetchObservable<T>(path: string): Observable<T> {
     };
   }).pipe(
     retryWhen(errors => errors.pipe(
-      tap(val => console.log('xxx err', val)),
+      tap(error => captureException(error)),
       delayWhen(() => timer(3000)),
     )),
   );

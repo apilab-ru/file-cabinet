@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { CacheService } from './cache.service';
-import { Anime, Genre, SearchRequestResult } from '@server/api/index';
+import { Anime, Genre, SearchRequestResult } from '@server/models/index';
 import { Observable } from 'rxjs';
 import { fileCabApi } from '@shared/services/file-cab.api';
 import { FileCabService } from '@shared/services/file-cab.service';

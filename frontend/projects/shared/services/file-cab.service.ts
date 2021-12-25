@@ -1,16 +1,22 @@
 import { Injectable, NgZone } from '@angular/core';
 import { FileCab, ItemParam } from '@shared/services/file-cab';
 import { from, Observable, of } from 'rxjs';
-import { map, pluck, take } from 'rxjs/operators';
+import { map, pluck, shareReplay, take } from 'rxjs/operators';
 import { ISchema, ItemType, Library, LibraryItem } from '@shared/models/library';
 import { runInZone } from '@shared/utils/run-in-zone';
 import { NavigationItem } from '@shared/models/navigation';
-import { Genre, SearchRequestResult } from '@server/api/base';
+import { Genre, SearchRequestResult } from '@server/models/base';
 import { MetaData } from '@shared/models/meta-data';
 import { Tag } from '@shared/models/tag';
 
 interface FlatLibraryItem extends LibraryItem<ItemType> {
   type: string;
+}
+
+interface SearchResult {
+  type: string;
+  id: number;
+  name: string;
 }
 
 @Injectable({
@@ -57,12 +63,35 @@ export class FileCabService {
     );
   }
 
-  searchByUrl(url: string, name: string): Observable<{ type: string, id: number, name: string } | null> {
+  searchByName(name: string, type?: string): Observable<SearchResult | null> {
     return this.data$.pipe(
       take(1),
       map(store => {
-        const list = this.flatStore(store);
-        const item = list.find(it => it.url === url && (it.name === name || it.item.original_title === name));
+        const list = this.flatStore(store, type);
+        const item = list.find(it => it.name?.includes(name)
+          || it.item.original_title?.includes(name)
+          || it.item.title?.includes(name),
+        );
+
+        if (item) {
+          return {
+            type: item.type,
+            id: item.item.id,
+            name: item.name || item.item.title,
+          };
+        }
+
+        return null;
+      }),
+    );
+  }
+
+  searchByUrl(url: string, type?: string): Observable<SearchResult | null> {
+    return this.data$.pipe(
+      take(1),
+      map(store => {
+        const list = this.flatStore(store, type);
+        const item = list.find(it => it.url === url);
 
         if (item) {
           return {
@@ -99,8 +128,9 @@ export class FileCabService {
     );
   }
 
-  private flatStore(store: Record<string, LibraryItem<ItemType>[]>): FlatLibraryItem[] {
+  private flatStore(store: Record<string, LibraryItem<ItemType>[]>, type: string): FlatLibraryItem[] {
     return Object.entries(store)
+      .sort(([pathA], [pathB]) => (pathB === type ? 1 : 0) - (pathA === type ? 1 : 0))
       .reduce((all, [type, list]) => ([
         ...all, ...list.map(item => ({ ...item, type })),
       ]), []);

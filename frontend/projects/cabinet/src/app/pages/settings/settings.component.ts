@@ -8,7 +8,7 @@ import { saveAsFile } from '../../helpers/save-as-file';
 import { ItemType, Library, LibraryItem } from '@shared/models/library';
 import { FileCabService } from '@shared/services/file-cab.service';
 import * as exampleJson from './format.json';
-import isArray from 'lodash/isArray';
+import * as isArray from 'lodash/isArray';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

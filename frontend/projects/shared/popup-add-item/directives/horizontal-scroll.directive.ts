@@ -12,6 +12,7 @@ export class HorizontalScrollDirective {
 
   @HostListener('wheel', ['$event'])
   public onScroll(event: WheelEvent) {
+    event.preventDefault();
     this.ngZone.runOutsideAngular(() => {
       this.element.nativeElement.scrollLeft += event.deltaY;
     });

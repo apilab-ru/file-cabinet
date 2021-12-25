@@ -1,8 +1,14 @@
+import { captureException } from '@sentry/angular';
+
 const nameExp = /([a-zA-zа-яА-яёЁ\s0-9:,.-]*)/;
 
 export function trimTitle(title: string, func?: string): string {
   if (func) {
-    return Function('const func = ' + func + '; return func(arguments[0])')(title);
+    try {
+      return Function('const func = ' + func + '; return func(arguments[0])')(title);
+    } catch (e) {
+      captureException(e);
+    }
   }
 
   return title.match(nameExp)[0]

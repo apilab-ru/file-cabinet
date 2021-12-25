@@ -1,12 +1,14 @@
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { deepCopy, Genre, NavigationItem, SearchRequestResult } from '../../cabinet/src/models';
-import { catchError, map, shareReplay, take, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, take } from 'rxjs/operators';
 import { fileCabApi } from './file-cab.api';
 import { MetaData } from '@shared/models/meta-data';
 import { ISchema, ItemType, Library, LibraryItem, LibrarySettings } from '@shared/models/library';
 import { Tag } from '@shared/models/tag';
-import { PARSER_TYPES, TYPES } from '../models/const';
+import { TYPES } from '../models/const';
 import { ChromeStoreApi } from '@shared/services/chrome-store.api';
+import { parserSchemas } from '@shared/parser/const';
+import { captureException } from '@sentry/angular';
 
 const configData = {
   schemas: {} as Record<string, ISchema>,
@@ -233,7 +235,9 @@ export class FileCab {
 
         return store;
       }),
-      catchError(() => {
+      catchError((error) => {
+        captureException(error);
+
         return of({
           tags: [],
           data: {},
@@ -245,7 +249,7 @@ export class FileCab {
 
   private init(): typeof configData {
     return {
-      schemas: PARSER_TYPES,
+      schemas: parserSchemas,
       types: TYPES,
     };
   }

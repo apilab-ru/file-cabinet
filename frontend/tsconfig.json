@@ -23,6 +23,9 @@
       "@server/api/*": [
         "../server/src/api/*"
       ],
+      "@server/models/*": [
+        "../server/src/models/*"
+      ],
       "@shared/*": [
         "projects/shared/*"
       ]

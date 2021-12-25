@@ -24,11 +24,11 @@ import {
   withLatestFrom,
 } from 'rxjs/operators';
 import { ItemType, LibraryItem } from '@shared/models/library';
-import { Genre } from '@server/api/base';
+import { Genre } from '@server/models/base';
 import { BaseInfo } from '@shared/popup-add-item/models/base-info';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FileCabService } from '@shared/services/file-cab.service';
-import isEqual from 'lodash/isEqual';
+import * as isEqual from 'lodash/isEqual';
 
 @UntilDestroy()
 @Component({

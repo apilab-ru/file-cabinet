@@ -1,10 +1,15 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Genre } from '../../../../../models';
+import { captureException } from '@sentry/angular';
 
 const findName = (list, id): string => {
   const tag = list && list.find(g => g.id == id);
   if (!tag && list) {
-    console.error('not found tag', id, list);
+    captureException({
+      message: 'not found genre',
+      id,
+      list,
+    });
   }
   return tag && tag.name;
 };

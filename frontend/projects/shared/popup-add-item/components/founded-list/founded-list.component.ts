@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { ItemType } from '@shared/models/library';
-import { Genre } from '@server/api/base';
+import { Genre } from '@server/models/base';
 
 @Component({
   selector: 'app-founded-list',
