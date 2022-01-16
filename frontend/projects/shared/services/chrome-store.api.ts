@@ -25,4 +25,16 @@ export class ChromeStoreApi {
     });
   }
 
+  setGlobalStorage<T>(data: T): Promise<void> {
+    return chrome.storage.sync.set(data);
+  }
+
+  getGlobalStorage<T>(): Observable<T> {
+    return new Observable<T>((resolve) => {
+      chrome.storage.sync.get(null, (result: T) => {
+        resolve.next(result);
+      });
+    });
+  }
+
 }

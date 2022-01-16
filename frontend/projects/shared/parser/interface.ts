@@ -1,4 +1,4 @@
-import { MetaData } from '@shared/models/meta-data';
+import { MetaData } from '@server/models/meta-data';
 
 export interface ParserSendRequest<T> {
   data: T;

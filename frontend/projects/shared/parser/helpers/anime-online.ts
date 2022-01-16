@@ -1,5 +1,5 @@
 import { ParserResponse } from '@shared/parser/interface';
-import { StatusList } from '@shared/const';
+import { StatusList } from '@shared/const/const';
 
 const statusCast = {
   'Смотрю': StatusList.process,

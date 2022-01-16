@@ -11,7 +11,7 @@ import {
 import { CardData } from '@shared/popup-add-item/models/card-data';
 import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { SearchData } from '@shared/popup-add-item/models/search-data';
-import { MetaData } from '@shared/models/meta-data';
+import { MetaData } from '@server/models/meta-data';
 import {
   distinctUntilChanged,
   filter,
@@ -23,12 +23,11 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { ItemType, LibraryItem } from '@shared/models/library';
-import { Genre } from '@server/models/base';
 import { BaseInfo } from '@shared/popup-add-item/models/base-info';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FileCabService } from '@shared/services/file-cab.service';
 import * as isEqual from 'lodash/isEqual';
+import { GenreOld, LibraryItem, MediaItem } from '@server/models';
 
 @UntilDestroy()
 @Component({
@@ -41,7 +40,7 @@ export class PopupComponent implements OnInit, OnChanges {
   @Input() baseInfo: BaseInfo;
   @Input() isShowLibrary = true;
 
-  @Output() onSaveEvent = new EventEmitter<LibraryItem<ItemType>>();
+  @Output() onSaveEvent = new EventEmitter<LibraryItem>();
 
   private saveEvent = new Subject<{ type: string, metaData: MetaData }>();
   private searchData = new ReplaySubject<SearchData>(1);
@@ -49,10 +48,10 @@ export class PopupComponent implements OnInit, OnChanges {
   private baseInfoStory = new BehaviorSubject<BaseInfo | null>(null);
 
   isLoading$ = new BehaviorSubject(false);
-  libraryItem$: Observable<LibraryItem<ItemType>>;
-  item$: Observable<ItemType>;
-  genres$: Observable<Genre[]>;
-  foundedList$: Observable<ItemType[]>;
+  libraryItem$: Observable<LibraryItem>;
+  item$: Observable<MediaItem>;
+  genres$: Observable<GenreOld[]>;
+  foundedList$: Observable<MediaItem[]>;
   searchData$: Observable<SearchData>;
   baseInfo$: Observable<BaseInfo>;
 
@@ -126,11 +125,11 @@ export class PopupComponent implements OnInit, OnChanges {
     this.saveEvent.next({ type, metaData });
   }
 
-  selectItemId(itemId: number): void {
-    this.itemId.next(itemId);
+  selectItem(item: MediaItem): void {
+    this.itemId.next(item.id);
   }
 
-  private updateItem(type: string, metaData: MetaData): Observable<LibraryItem<ItemType>> {
+  private updateItem(type: string, metaData: MetaData): Observable<LibraryItem> {
     return this.item$.pipe(
       take(1),
       withLatestFrom(this.baseInfo$),
@@ -145,7 +144,7 @@ export class PopupComponent implements OnInit, OnChanges {
     );
   }
 
-  private createFoundList(): Observable<ItemType[]> {
+  private createFoundList(): Observable<MediaItem[]> {
     return combineLatest([
       this.libraryItem$,
       this.searchData$,
@@ -168,8 +167,8 @@ export class PopupComponent implements OnInit, OnChanges {
   }
 
   private searchItemChangedCompare(
-    [prevItem, prevSearch]: [LibraryItem<ItemType> | undefined, SearchData],
-    [currItem, currSearch]: [LibraryItem<ItemType> | undefined, SearchData],
+    [prevItem, prevSearch]: [LibraryItem | undefined, SearchData],
+    [currItem, currSearch]: [LibraryItem | undefined, SearchData],
   ): boolean {
     if (prevItem) {
       return prevItem?.item.id === currItem?.item.id;

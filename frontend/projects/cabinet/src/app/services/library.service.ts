@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { FilmsService } from './films.service';
 import { Observable } from 'rxjs';
 import { AnimeService } from './anime.service';
-import { Anime, Film, SearchRequestResult } from '../../models';
+import { LibraryItem, MediaItem } from '../../models';
 import { ChromeApiService } from './chrome-api.service';
-import { ItemType, Library, LibraryItem } from '@shared/models/library';
+import { Library } from '@shared/models/library';
 import { FileCabService } from '@shared/services/file-cab.service';
 
 export interface ItemParams {
@@ -28,16 +28,16 @@ export class LibraryService {
   ) {
   }
 
-  addItem(path: string, item: LibraryItem<ItemType>): Observable<any> {
+  addItem(path: string, item: LibraryItem): Observable<any> {
     return this.fileCabService.addItemLibToStore(path, item);
   }
 
-  deleteItem(path: string, id: number): void {
-    this.fileCabService.deleteItem(path, id);
+  deleteItem(path: string, item: MediaItem): void {
+    this.fileCabService.deleteItem(path, item);
   }
 
-  updateItem(path: string, id: number, item): void {
-    this.fileCabService.updateItem(path, id, item);
+  updateItem(path: string, item: LibraryItem): void {
+    this.fileCabService.updateItem(path, item);
   }
 
   updateStore(store: Library): void {

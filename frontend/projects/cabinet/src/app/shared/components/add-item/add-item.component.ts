@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ItemType, LibraryItem } from '@shared/models/library';
 import { CardData } from '@shared/popup-add-item/models/card-data';
+import { LibraryItem } from '../../../../../../../../server/src/library/interface';
 
 @Component({
   selector: 'app-add-item',
@@ -12,7 +12,7 @@ import { CardData } from '@shared/popup-add-item/models/card-data';
 export class AddItemComponent {
   constructor(
     private dialogRef: MatDialogRef<AddItemComponent>,
-    @Inject(MAT_DIALOG_DATA) public item: LibraryItem<ItemType>,
+    @Inject(MAT_DIALOG_DATA) public item: LibraryItem,
   ) {
   }
 

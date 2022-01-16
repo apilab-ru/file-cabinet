@@ -1,39 +1,65 @@
-<p>
-  <button class="button" mat-raised-button color="primary" (click)="backup()">
-    Бэкап
-  </button>
-  <!--button mat-raised-button color="primary" (click)="fixStatusAnime()">prepareAnime</button>
+<div class="panel -next">
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Синхронизация
+      </mat-panel-title>
+    </mat-expansion-panel-header>
 
-  <button mat-raised-button color="primary" (click)="restoreAnime()">restoreAnime</button-->
-</p>
+    <div class="form">
+      <app-auth-block></app-auth-block>
+    </div>
+  </mat-expansion-panel>
+</div>
 
-<p>
-  <label class="button mat-raised-button mat-button-base mat-primary">
-    <input class="input-file" type="file" (change)="importFileChange($event)"/> Импорт
-  </label>
-</p>
-<mat-expansion-panel class="panel">
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      Формат
-    </mat-panel-title>
-  </mat-expansion-panel-header>
+<div class="panel -next">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Сервисные функции
+      </mat-panel-title>
+    </mat-expansion-panel-header>
 
-  <pre>
+    <p>
+      <button class="button" mat-raised-button color="primary" (click)="clearDoubles()">
+        Удалить дубликаты
+      </button>
+    </p>
+  </mat-expansion-panel>
+</div>
+
+<div class="panel -next">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Импорт / Экспорт
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <p>
+      <button class="button" mat-raised-button color="primary" (click)="backup()">
+        Бэкап
+      </button>
+    </p>
+
+    <p>
+      <label class="button mat-raised-button mat-button-base mat-primary">
+        <input class="input-file" type="file" (change)="importFileChange($event)"/> Импорт
+      </label>
+    </p>
+  </mat-expansion-panel>
+</div>
+
+<div class="panel -next">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Формат
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <pre>
 {{ exampleJson | json }}
 </pre>
-</mat-expansion-panel>
-
-<mat-expansion-panel class="services panel">
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      Сервисные функции
-    </mat-panel-title>
-  </mat-expansion-panel-header>
-
-  <p>
-    <button class="button" mat-raised-button color="primary" (click)="clearDoubles()">
-      Удалить дубликаты
-    </button>
-  </p>
-</mat-expansion-panel>
+  </mat-expansion-panel>
+</div>

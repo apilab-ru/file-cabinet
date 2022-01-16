@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ItemType } from '@shared/models/library';
-import { Genre } from '@server/models/base';
+import { MediaItem } from '@server/models';
+import { Genre } from '@server/models/genre';
 
 @Component({
   selector: 'app-founded-list',
@@ -9,20 +9,21 @@ import { Genre } from '@server/models/base';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FoundedListComponent {
-  @Input() list: ItemType[];
+  @Input() list: MediaItem[];
   @Input() genres: Genre[];
-  @Output() selectedChange = new EventEmitter<number>();
+
+  @Output() selectedChange = new EventEmitter<MediaItem>();
 
   getGenres(genres: Genre[], ids: number[]): string[] {
     return ids?.map(id => genres?.find(it => it.id === id)?.name)
       .filter(item => !!item);
   }
 
-  select(selected: number): void {
-    this.selectedChange.emit(selected);
+  select(item: MediaItem): void {
+    this.selectedChange.emit(item);
   }
 
-  trackBy(index: number, item: ItemType): number {
+  trackBy(index: number, item: MediaItem): number {
     return item.id;
   }
 }

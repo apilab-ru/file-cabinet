@@ -1,15 +1,15 @@
 {
   "manifest_version": 2,
-  "name": "File-cabinet",
-  "version": "1.3.3",
+  "name": "WatchList",
+  "version": "1.4",
   "description": "This extension allows you control your library",
   "icons": {
-    "48": "library_add.png"
+    "48": "wish-list-icon.png"
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com 'unsafe-eval'; object-src 'self';",
   "browser_action": {
     "default_title": "File cabinet",
-    "default_icon": "library_add.png",
+    "default_icon": "wish-list-icon.png",
     "default_popup": "popup/index.html"
   },
   "background": {

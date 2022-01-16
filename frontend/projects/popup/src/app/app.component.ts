@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { Types } from '@shared/const';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { Types } from '@shared/const/const';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { BrowserApiService } from './services/browser-api.service';
 import { combineLatest, forkJoin, from, Observable, of } from 'rxjs';

@@ -24,7 +24,7 @@
             "tsConfig": "projects/cabinet/tsconfig.app.json",
             "aot": true,
             "assets": [
-              "projects/cabinet/src/favicon.ico",
+              "projects/cabinet/src/wish-list-icon.png",
               "projects/cabinet/src/assets"
             ],
             "styles": [

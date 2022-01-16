@@ -1,0 +1,47 @@
+<ng-container *ngIf="settings$ | async as settings">
+  <mat-tab-group *ngIf="!settings.user" (selectedTabChange)="tabChange($event)">
+    <mat-tab label="Авторизация">
+      <app-auth-form [form]="authForm"></app-auth-form>
+
+      <div class="buttons">
+        <button class="button" mat-raised-button color="primary" (click)="auth()">
+          Авторизация
+        </button>
+
+        <button class="button" mat-raised-button color="accent" (click)="resetPassword()">
+          Сбросить пароль
+        </button>
+      </div>
+    </mat-tab>
+    <mat-tab label="Регистрация">
+      <app-auth-form [form]="authForm"></app-auth-form>
+
+      <button class="button" mat-raised-button color="primary" (click)="registration()">
+        Регистрация
+      </button>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div *ngIf="settings.user" class="user-info-box">
+    <div class="user-name">Пользователь: {{ settings.user.email }}</div>
+
+    <mat-checkbox
+      class="checkbox-line"
+      [ngModel]="settings.enableSync"
+      (ngModelChange)="toggleSync($event, settings)"
+    >
+      Включить синхронизацию
+    </mat-checkbox>
+
+    <button class="button -logout" mat-raised-button color="primary" (click)="sync()">
+      Сохранить на сервер
+    </button>
+    <button class="button -logout" mat-raised-button color="primary" (click)="load()">
+      Загрузить с сервера
+    </button>
+    <button class="button -logout" mat-raised-button color="warn" (click)="logout()">
+      Выйти
+    </button>
+  </div>
+</ng-container>
+

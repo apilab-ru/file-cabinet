@@ -3,7 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { LibraryService } from '../../../services/library.service';
 import { MatSelectChange } from '@angular/material/select';
 import { Status } from '@shared/models/status-item';
-import { STATUS_LIST } from '@shared/const';
+import { STATUS_LIST } from '@shared/const/const';
 
 @Component({
   selector: 'app-status',

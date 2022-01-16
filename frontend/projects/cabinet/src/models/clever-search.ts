@@ -1,4 +1,4 @@
-import { STATUS_LIST } from '@shared/const';
+import { STATUS_LIST } from '@shared/const/const';
 
 export const BASE_CLEVER_SEARCH_KEYS = {
   genres: {

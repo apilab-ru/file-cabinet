@@ -45,7 +45,7 @@
       *ngIf="foundedList$ | async as foundedList; else emptyList"
       [list]="foundedList"
       [genres]="genres$ | async"
-      (selectedChange)="selectItem(foundedList, $event)"
+      (selectedChange)="selectItem($event)"
     ></app-founded-list>
 
     <ng-template #emptyList>

@@ -1,14 +1,46 @@
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { deepCopy, Genre, NavigationItem, SearchRequestResult } from '../../cabinet/src/models';
-import { catchError, map, shareReplay, take } from 'rxjs/operators';
+import { BehaviorSubject, merge, NEVER, Observable, of, ReplaySubject, Subject, throwError } from 'rxjs';
+import {
+  deepCopy,
+  FIREBASE_EVENT_TABLE,
+  GenreOld,
+  LibraryItem,
+  LibraryItemType,
+  MediaItem,
+  NavigationItem,
+  SearchRequestResult,
+} from '../../cabinet/src/models';
+import {
+  catchError,
+  debounceTime,
+  filter,
+  map,
+  shareReplay,
+  skip,
+  startWith,
+  switchMap,
+  take, tap,
+  withLatestFrom,
+} from 'rxjs/operators';
 import { fileCabApi } from './file-cab.api';
-import { MetaData } from '@shared/models/meta-data';
-import { ISchema, ItemType, Library, LibraryItem, LibrarySettings } from '@shared/models/library';
+import { MetaData } from '@server/models/meta-data';
+import {
+  ISchema,
+  ItemType,
+  Library,
+  LibraryItemOld,
+  LibraryOld,
+  LibrarySettings,
+  UserData,
+} from '@shared/models/library';
 import { Tag } from '@shared/models/tag';
 import { TYPES } from '../models/const';
 import { ChromeStoreApi } from '@shared/services/chrome-store.api';
 import { parserSchemas } from '@shared/parser/const';
 import { captureException } from '@sentry/angular';
+import { FirebaseService } from '@shared/services/firebase.service';
+import { Genre } from '@server/models/genre';
+import { userApiService } from './user-api.service';
+import { notificationsService } from './notifications.service';
 
 const configData = {
   schemas: {} as Record<string, ISchema>,
@@ -17,9 +49,11 @@ const configData = {
 
 const storeData = {
   tags: [] as Tag[],
-  data: {} as Record<string, LibraryItem<ItemType>[]>,
-  settings: {} as LibrarySettings,
+  data: {} as Record<string, LibraryItem[]>,
+  lastTimeUpdate: 0,
 };
+
+const DEBOUNCE_TIME_AFTER_UPDATE = 20_000;
 
 export interface ItemParam {
   id?: number;
@@ -31,11 +65,23 @@ export class FileCab {
   private store = new BehaviorSubject<Library>(storeData);
   private config = new BehaviorSubject<typeof configData>(this.init());
   private storeApi = new ChromeStoreApi();
+  private settingsUpdate = new Subject<LibrarySettings>();
+  private storeUpdateQuery = new ReplaySubject<void>(1);
+  private storeLoadEvent = new Subject<void>();
+  private lastTimeUpdate = null;
+
+  private notificationsService = notificationsService;
+  private firebaseService = new FirebaseService();
+  private userApiService = userApiService;
 
   config$: Observable<typeof configData>;
   store$: Observable<typeof storeData> = this.store.asObservable();
-  filmGenres$: Observable<Genre[]>;
-  animeGenres$: Observable<Genre[]>;
+
+  filmGenres$: Observable<GenreOld[]>;
+  animeGenres$: Observable<GenreOld[]>;
+  genres$: Observable<Genre[]>;
+
+  settings$: Observable<LibrarySettings>;
 
   constructor() {
     this.config$ = this.config.asObservable().pipe(
@@ -44,32 +90,113 @@ export class FileCab {
 
     this.config$.subscribe();
 
-    this.loadStore().pipe(
-      take(1),
-    ).subscribe(store => this.updateStore(store));
-
     this.filmGenres$ = fileCabApi.loadFilmGenres().pipe(
       shareReplay(1),
     );
     this.animeGenres$ = fileCabApi.loadAnimeGenres().pipe(
       shareReplay(1),
     );
+    this.genres$ = fileCabApi.loadGenres().pipe(
+      shareReplay(1),
+    );
 
-    this.store$.subscribe();
+    this.loadStore().pipe(
+      take(1),
+      withLatestFrom(this.genres$),
+      map(([store, genres]) => ({
+        ...store,
+        data: this.migrateData(store.data, genres),
+      }) as Library),
+    ).subscribe(store => this.updateStore(store));
 
-    /*this.storeApi.onStoreChanges().subscribe(res => {
-      console.log('xxx store change', res);
-    })*/
+    this.store$.subscribe(store => {
+      this.lastTimeUpdate = store.lastTimeUpdate;
+    });
+
+    this.settings$ = merge(
+      this.storeApi.getGlobalStorage(),
+      this.settingsUpdate,
+    ).pipe(
+      startWith({}),
+      debounceTime(0),
+      shareReplay({ refCount: true, bufferSize: 1 }),
+    );
+
+    this.updateListenersInit();
   }
 
-  selectGenres(type: string): Observable<Genre[]> {
+  private listenUpdateLibrary(settings: UserData): Observable<UserData> {
+    return merge(
+      this.firebaseService.selectData<number>(FIREBASE_EVENT_TABLE + '/' + settings.id).pipe(
+        debounceTime(100),
+        map((time) => ({ settings, time })),
+        filter(({ time }) => time >= this.lastTimeUpdate),
+        map(() => settings),
+      ),
+      this.storeLoadEvent.asObservable().pipe(
+        map(() => settings),
+      ),
+    );
+  }
+
+  private updateListenersInit(): void {
+    let lastSettings;
+
+    const settingsUpdate$ = this.settings$.pipe(
+      tap(set => lastSettings = set),
+      map(settings => settings.user && settings.enableSync ? settings.user : null),
+    );
+
+    settingsUpdate$.pipe(
+      switchMap(settings => !settings
+        ? NEVER
+        : this.listenUpdateLibrary(settings),
+      ),
+      switchMap((settings) => this.userApiService.loadLibrary(settings.token)),
+    ).subscribe(store => {
+      this.updateStore(store, false);
+    });
+
+    settingsUpdate$.pipe(
+      switchMap(settings => !settings
+        ? NEVER
+        : this.storeUpdateQuery.pipe(
+          skip(1),
+          debounceTime(100),
+          withLatestFrom(this.store$),
+          map(([, store]) => ({ settings, store })),
+        ),
+      ),
+      switchMap(({ settings, store }) => this.userApiService.postLibrary(settings.token, store)),
+      tap(() => this.lastTimeUpdate = new Date().getTime() + DEBOUNCE_TIME_AFTER_UPDATE),
+      catchError(error => {
+        console.error(error);
+
+        if (error.message === 'notFoundUser') {
+          this.notificationsService.addMessage('syncErrorUserNotFound');
+
+          delete lastSettings.user;
+          this.updateSettings(lastSettings);
+        }
+
+        return of();
+      }),
+    ).subscribe();
+  }
+
+  updateSettings(settings: LibrarySettings): void {
+    this.settingsUpdate.next(settings);
+    this.storeApi.setGlobalStorage(settings);
+  }
+
+  selectGenres(type: string): Observable<GenreOld[]> {
     return type === 'anime' ? this.animeGenres$ : this.filmGenres$;
   }
 
   searchInStore(
     path: string,
     item: ItemParam,
-  ): Observable<LibraryItem<ItemType> | null> {
+  ): Observable<LibraryItem | null> {
     return this.store$.pipe(
       take(1),
       map(store => store.data && store.data[path] || []),
@@ -77,12 +204,12 @@ export class FileCab {
         it => it.item.title === item.name
           || it.url === item.url
           || it.name === item.name
-          || (item.id && item.id === it.item.id),
+          || (item.id === it.item.id),
       ) || null),
     );
   }
 
-  searchApi(path: string, name: string): Observable<SearchRequestResult<ItemType>> {
+  searchApi(path: string, name: string): Observable<SearchRequestResult<MediaItem>> {
     switch (path) {
       case 'anime':
         return fileCabApi.searchAnime(name);
@@ -98,14 +225,14 @@ export class FileCab {
     }
   }
 
-  loadById(path: string, id: number): Observable<ItemType> {
+  loadById(path: string, id: number): Observable<MediaItem> {
     switch (path) {
       case 'anime':
         return fileCabApi.getAnimeById(id);
     }
   }
 
-  addItemLibToStore(path: string, libItem: LibraryItem<ItemType>): Promise<void> {
+  addItemLibToStore(path: string, libItem: LibraryItem): Promise<void> {
     return this.checkUnique(path, libItem.item)
       .then(() => {
         const { item, ...meta } = libItem;
@@ -114,9 +241,9 @@ export class FileCab {
       });
   }
 
-  addOrUpdate(path: string, item: ItemType, metaData: MetaData): Observable<LibraryItem<ItemType>> {
-    return this.checkExisted(path, { id: item.id }).pipe(
-      map(isExisted => isExisted ? this.updateItem(path, item.id, {
+  addOrUpdate(path: string, item: MediaItem, metaData: MetaData): Observable<LibraryItem> {
+    return this.checkExisted(path, item).pipe(
+      map(isExisted => isExisted ? this.updateItem(path, {
         ...metaData,
         item,
       }) : this.addItemToStore(path, item, metaData)),
@@ -130,7 +257,7 @@ export class FileCab {
     );
   }
 
-  private syncCheckExisted(data: Record<string, LibraryItem<ItemType>[]> | undefined, path: string, item: ItemParam): boolean {
+  private syncCheckExisted(data: Record<string, LibraryItem[]> | undefined, path: string, item: ItemParam): boolean {
     if (!data || !data[path]) {
       return false;
     }
@@ -140,7 +267,7 @@ export class FileCab {
     );
   }
 
-  addItemToStore(path: string, item: ItemType, param: MetaData): LibraryItem<ItemType> {
+  addItemToStore(path: string, item: MediaItem, param: MetaData): LibraryItem {
     const data = deepCopy(this.store.getValue().data);
 
     if (!data[path]) {
@@ -162,7 +289,7 @@ export class FileCab {
     return itemRes;
   }
 
-  checkUnique(path, item): Promise<ItemType> {
+  checkUnique(path: string, item: MediaItem): Promise<MediaItem> {
     const { data } = this.store.getValue();
 
     if (data[path]) {
@@ -175,14 +302,15 @@ export class FileCab {
   }
 
 
-  updateItem(path: string, id: number, item: LibraryItem<ItemType>): LibraryItem<ItemType> {
+  updateItem(path: string, item: LibraryItem): LibraryItem {
     const { data } = deepCopy(this.store.getValue());
 
     if (!data[path]) {
       data[path] = [];
     }
 
-    const index = data[path].findIndex(it => it.item.id === id);
+    const index = data[path].findIndex(it => it.item.id === item.item.id);
+
     data[path][index] = item;
 
     this.updateStore({ ...this.store.getValue(), data });
@@ -190,39 +318,49 @@ export class FileCab {
     return item;
   }
 
-  deleteItem(path: string, id: number): void {
+  deleteItem(path: string, item: MediaItem): void {
     const { data } = deepCopy(this.store.getValue());
 
     if (!data[path]) {
       return;
     }
 
-    const index = data[path].findIndex(it => it.item.id === id);
+    const index = data[path].findIndex(it => it.item.id === item.id);
     if (index !== -1) {
       data[path].splice(index, 1);
       this.updateStore({ ...this.store.getValue(), data });
     }
   }
 
-  updateStore(store: Library): void {
+  updateStore(store: Library, skipSync = false): void {
+    store = { ...store, lastTimeUpdate: new Date().getTime() };
+
     this.store.next(store);
     this.storeApi.setStore(store);
+
+    if (!skipSync) {
+      this.sendUpdate();
+    }
   }
 
-  private loadStore(): Observable<Library> {
-    return this.storeApi.getStore<Library>().pipe(
+  sendUpdate(): void {
+    this.storeUpdateQuery.next();
+  }
+
+  sendLoadStore(): void {
+    this.storeLoadEvent.next(undefined);
+  }
+
+  private loadStore(): Observable<Library | LibraryOld> {
+    return this.storeApi.getStore<Library | LibraryOld>().pipe(
       map(store => {
 
         if (!store) {
           store = {
             tags: [],
             data: {},
-            settings: {},
+            lastTimeUpdate: 0,
           };
-        }
-
-        if (!store.settings) {
-          store.settings = {};
         }
 
         if (!store.data) {
@@ -241,7 +379,7 @@ export class FileCab {
         return of({
           tags: [],
           data: {},
-          settings: {},
+          lastTimeUpdate: 0,
         });
       }),
     );
@@ -252,6 +390,85 @@ export class FileCab {
       schemas: parserSchemas,
       types: TYPES,
     };
+  }
+
+  private migrateData(
+    data: Record<string, (LibraryItemOld<ItemType> | LibraryItem)[]>,
+    genres: Genre[],
+  ): Record<string, Partial<LibraryItem>[]> {
+    const animeGenresMap = genres.reduce((obj, item) => {
+      if (item.smotretId) {
+        obj[item.smotretId] = item.id;
+      }
+
+      return obj;
+    }, {});
+
+    const filmsGenresMap = genres.reduce((obj, item) => {
+      if (item.imdbId) {
+        obj[item.imdbId] = item.id;
+      }
+
+      return obj;
+    }, {});
+
+    return {
+      anime: data.anime.map(data => ({
+        ...data,
+        item: {
+          ...this.dataItemConverter(data.item, animeGenresMap, 'smotretId'),
+          smotretId: data.item.id,
+        },
+      })),
+      films: data.films.map(data => ({
+        ...data,
+        item: {
+          ...this.dataItemConverter(data.item, filmsGenresMap, 'imdbId'),
+          imdbId: data.item.id,
+          type: LibraryItemType.movie,
+        },
+      })),
+      tv: data.tv.map(data => ({
+        ...data,
+        item: {
+          ...this.dataItemConverter(data.item, filmsGenresMap, 'imdbId'),
+          imdbId: data.item.id,
+          type: LibraryItemType.tv,
+        },
+      })),
+    };
+  }
+
+  private dataItemConverter(
+    item: ItemType | MediaItem,
+    genresMap: Record<number, number>,
+    fieldId: keyof MediaItem,
+  ): MediaItem {
+    if ((item as MediaItem).genreIds) {
+      if (!item.id) {
+        return {
+          ...item,
+          id: item[fieldId],
+        } as MediaItem;
+      }
+
+      return item as MediaItem;
+    }
+
+    return {
+      title: item.title,
+      originalTitle: (item as ItemType).original_title,
+      description: item.description,
+      image: item.image,
+      genreIds: (item as MediaItem).genreIds || (item as ItemType).genre_ids.map(id => genresMap[id]),
+      popularity: item.popularity,
+      year: item.year,
+      episodes: item.episodes,
+      type: item.type,
+      [fieldId]: item.id,
+      url: null,
+      id: item.id,
+    } as MediaItem;
   }
 
 }

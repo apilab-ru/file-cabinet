@@ -5,9 +5,9 @@
         {{ item.title }} {{ item.year }}
       </div>
       <div class="genres">
-        {{ getGenres(genres, item.genre_ids) }}
+        {{ getGenres(genres, item.genreIds) }}
 
-        <button class="button" mat-raised-button (click)="select(item.id)">
+        <button class="button" mat-raised-button (click)="select(item)">
           Выбрать
         </button>
       </div>

@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LibraryService } from '../../services/library.service';
 import { first, map, mergeMap, take } from 'rxjs/operators';
 import { forkJoin, Observable, of } from 'rxjs';
-import { Anime } from '../../../models';
+import { LibraryItem } from '../../../models';
 import { AnimeService } from '../../services/anime.service';
 import { saveAsFile } from '../../helpers/save-as-file';
-import { ItemType, Library, LibraryItem } from '@shared/models/library';
+import { Library } from '@shared/models/library';
 import { FileCabService } from '@shared/services/file-cab.service';
 import * as exampleJson from './format.json';
 import * as isArray from 'lodash/isArray';
@@ -53,7 +53,7 @@ export class SettingsComponent {
         return {
           ...store,
           data: Object.entries(store.data)
-            .reduce((obj, [key, list]) => ({ ...obj, [key]: this.clearDoublesList(list) }),
+            .reduce((obj, [key, list]) => ({ ...obj, [key]: this.clearDoublesList(list, key) }),
               {}),
         };
       }),
@@ -65,7 +65,7 @@ export class SettingsComponent {
     });
   }
 
-  private clearDoublesList(list: LibraryItem<ItemType>[]): LibraryItem<ItemType>[] {
+  private clearDoublesList(list: LibraryItem[], path: string): LibraryItem[] {
     return list.filter((item, index) => index === list
       .findIndex(it => it.item.id === item.item.id),
     );
@@ -104,63 +104,4 @@ export class SettingsComponent {
 
     return result;
   }
-
-  prepareAnime(): void {
-    this.fileCabService.store$
-      .pipe(
-        first(),
-        mergeMap(store => forkJoin(
-          of(store),
-          ...store.data.anime.map(item => this.checkAnime(item as LibraryItem<Anime>)),
-        )),
-      )
-      .subscribe(([store, ...anime]) => {
-        const resultStore = {
-          data: {
-            ...store.data,
-            anime,
-          },
-          tags: store.tags,
-        };
-        // this.libraryService.updateStore(resultStore);
-      });
-  }
-
-  fixStatusAnime() {
-    /*this.libraryService.store$
-      .pipe(first()).subscribe(store => {
-      store.data.anime.forEach(item => {
-        if (item.status === 'completed') {
-          item.status = 'complete';
-        }
-      });
-      this.libraryService.updateStore(store);
-    });*/
-  }
-
-  restoreAnime() {
-    this.fileCabService.store$
-      .pipe(first())
-      .subscribe(store => {
-        store.data.anime.forEach(item => {
-          item.item.image = item.item.image.replace('smotret-anime-365.ru', 'smotret-anime.online');
-        });
-        delete store['anime'];
-        delete store['films'];
-        delete store['tv'];
-        this.libraryService.updateStore(store);
-      });
-  }
-
-  checkAnime(libraryItem: LibraryItem<Anime>): Observable<LibraryItem<Anime>> {
-    if (!libraryItem.item.episodes) {
-      return this.animeService.getById(libraryItem.item.id).pipe(map(item => ({
-        ...libraryItem,
-        item,
-      })));
-    } else {
-      return of(libraryItem);
-    }
-  }
-
 }

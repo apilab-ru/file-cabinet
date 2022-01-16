@@ -1,66 +1,40 @@
-import { environment } from '../../../environments/environment';
-import { Anime, Film, Genre, SearchRequestResult } from '@server/models/index';
-import { Observable, timer } from 'rxjs';
-import { delayWhen, map, retryWhen, tap } from 'rxjs/operators';
-import { captureException } from '@sentry/angular';
-
-const apiUrl = environment.apiUrl;
-
-function fetchObservable<T>(path: string): Observable<T> {
-  return new Observable<T>((observer) => {
-    const controller = new AbortController();
-
-    fetch(new URL(apiUrl + path).href, {
-      signal: controller.signal,
-    })
-      .then(res => res.json())
-      .then(res => {
-        observer.next(res);
-        observer.complete();
-      })
-      .catch(err => {
-        observer.error(err);
-      });
-
-    return () => {
-      controller.abort();
-      observer.complete();
-    };
-  }).pipe(
-    retryWhen(errors => errors.pipe(
-      tap(error => captureException(error)),
-      delayWhen(() => timer(3000)),
-    )),
-  );
-}
+import { Anime, Film, GenreOld, MediaItem, SearchRequestResult } from '@server/models/index';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { fetchObservable } from '@shared/utils/fetch-observable';
+import { Genre } from '@server/models/genre';
 
 class FileCabApi {
-  searchAnime(name: string = ''): Observable<SearchRequestResult<Anime>> {
-    return fetchObservable<SearchRequestResult<Anime>>('anime/search?name=' + name);
+  searchAnime(name: string = ''): Observable<SearchRequestResult<MediaItem>> {
+    return fetchObservable<SearchRequestResult<MediaItem>>('anime/v2/search?name=' + name);
   }
 
-  getAnimeById(id: number): Observable<Anime> {
-    return fetchObservable<Anime>('anime/' + id);
+  getAnimeById(id: number): Observable<MediaItem> {
+    return fetchObservable<MediaItem>('anime/v2/' + id);
   }
 
-  loadAnimeGenres(): Observable<Genre[]> {
-    return fetchObservable<Genre[]>(`anime/genres`).pipe(
+  loadAnimeGenres(): Observable<GenreOld[]> {
+    return fetchObservable<GenreOld[]>(`anime/genres`).pipe(
       map(list => list.sort((a, b) => a.name.localeCompare(b.name))),
     );
   }
 
-  searchFilm(name: string = ''): Observable<SearchRequestResult<Film>> {
-    return fetchObservable<SearchRequestResult<Film>>('films/movie?name=' + name);
+  searchFilm(name: string = ''): Observable<SearchRequestResult<MediaItem>> {
+    return fetchObservable<SearchRequestResult<MediaItem>>('films/v2/movie?name=' + name);
   }
 
-  searchTv(name: string = ''): Observable<SearchRequestResult<Film>> {
-    return fetchObservable<SearchRequestResult<Film>>('films/tv?name=' + name);
+  searchTv(name: string = ''): Observable<SearchRequestResult<MediaItem>> {
+    return fetchObservable<SearchRequestResult<MediaItem>>('films/v2/tv?name=' + name);
   }
 
-  loadFilmGenres(): Observable<Genre[]> {
-    return fetchObservable<Genre[]>(`films/genres`).pipe(
+  loadFilmGenres(): Observable<GenreOld[]> {
+    return fetchObservable<GenreOld[]>(`films/genres`).pipe(
       map(list => list.sort((a, b) => a.name.localeCompare(b.name))),
     );
+  }
+
+  loadGenres(): Observable<Genre[]> {
+    return fetchObservable<Genre[]>(`genres/list`);
   }
 }
 

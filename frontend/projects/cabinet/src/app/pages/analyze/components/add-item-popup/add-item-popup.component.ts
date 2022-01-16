@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BaseInfo } from '@shared/popup-add-item/models/base-info';
-import { ItemType, LibraryItem } from '@shared/models/library';
+import { LibraryItem } from '../../../../../../../../../server/src/library/interface';
 
 @Component({
   selector: 'app-add-item-popup',
@@ -12,11 +12,11 @@ import { ItemType, LibraryItem } from '@shared/models/library';
 export class AddItemPopupComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { baseInfo: BaseInfo },
-    private dialogRef: MatDialogRef<LibraryItem<ItemType>>,
+    private dialogRef: MatDialogRef<LibraryItem>,
   ) {
   }
 
-  onSave(item: LibraryItem<ItemType>): void {
+  onSave(item: LibraryItem): void {
     this.dialogRef.close(item);
   }
 

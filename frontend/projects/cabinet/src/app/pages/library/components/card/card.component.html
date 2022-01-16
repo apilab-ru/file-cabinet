@@ -1,10 +1,10 @@
 <div class="card">
   <div class="card__title">
-    <span class="title-text" [attr.title]="item.item.title + ' / ' + (item.item.original_title || '')">
-      {{ item.item.title || item.item.original_title }}
+    <span class="title-text" [attr.title]="item.item.title + ' / ' + (item.item.originalTitle || '')">
+      {{ item.item.title || item.item.originalTitle }}
     </span>
 
-    <span class="star-box" (click)="toggleEditMode()">
+    <span *ngIf="isLibraryMode || item.founded" class="star-box" (click)="toggleEditMode()">
       <span *ngIf="localItem?.star" class="star-sum">{{ localItem?.star }}</span>
       <span
         class="star"
@@ -22,7 +22,7 @@
   </div>
   <app-genres
     class="card__genres"
-    [list]="item.item.genre_ids"
+    [list]="item.item.genreIds"
     (clickGenre)="onClickGenre($event)"
     [genres]="genres"
   ></app-genres>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Genre } from '../../../../../models';
 import { captureException } from '@sentry/angular';
+import { GenreOld } from '@server/models';
 
 const findName = (list, id): string => {
   const tag = list && list.find(g => g.id == id);
@@ -22,7 +22,7 @@ const findName = (list, id): string => {
 })
 export class GenresComponent {
   @Input() list: number[];
-  @Input() genres: Genre[];
+  @Input() genres: GenreOld[];
 
   @Output() clickGenre = new EventEmitter<number>();
 

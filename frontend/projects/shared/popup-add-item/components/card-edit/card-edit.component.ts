@@ -13,12 +13,12 @@ import { checkIsShowStar } from '@shared/utils/check-is-show-star';
 import { FormControl, FormGroup } from '@angular/forms';
 import { combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { ItemType, LibraryItem } from '@shared/models/library';
 import { CardData } from '../../models/card-data';
 import { checkIsShowProgress } from '@shared/utils/check-is-show-progress';
-import { STATUS_LIST } from '@shared/const';
+import { STATUS_LIST } from '@shared/const/const';
 import { SearchData } from '@shared/popup-add-item/models/search-data';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { LibraryItem } from '@server/models';
 
 @UntilDestroy()
 @Component({
@@ -29,7 +29,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 })
 export class CardEditComponent implements OnChanges, OnInit {
   @Input() selectedType: string;
-  @Input() item: Partial<LibraryItem<ItemType>>;
+  @Input() item: Partial<LibraryItem>;
   @Input() name: string;
   @Input() isShowLibrary = true;
   @Input() isSearchMode = true;

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
-import { ItemType } from '@shared/models/library';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { MediaItem } from '@server/models';
 
 @Component({
   selector: 'app-progress',
@@ -12,7 +12,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressComponent implements ControlValueAccessor {
-  @Input() item?: ItemType;
+  @Input() item?: MediaItem;
   @Input() value: number = 0;
   @Output() valueChane = new EventEmitter<number>();
 

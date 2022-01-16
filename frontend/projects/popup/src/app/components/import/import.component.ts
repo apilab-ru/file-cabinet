@@ -6,13 +6,13 @@ import { BrowserApiService } from '../../services/browser-api.service';
 import { ParserPreset, ParserResponse } from '@shared/parser/interface';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FileCabService } from '@shared/services/file-cab.service';
-import { Genre } from '@server/models/base';
-import { ItemType, LibraryItem } from '@shared/models/library';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SearchData } from '@shared/popup-add-item/models/search-data';
 import { CardData } from '@shared/popup-add-item/models/card-data';
-import { MetaData } from '@shared/models/meta-data';
+import { MetaData } from '@server/models/meta-data';
+import { LibraryItem, MediaItem } from '@server/models';
+import { Genre } from '@server/models/genre';
 
 const fullSize = '-full';
 const defaultType = 'films';
@@ -29,11 +29,11 @@ export class PopupImportComponent implements OnInit {
 
   currentType$: Observable<string>;
   genres$: Observable<Genre[]>;
-  foundedList$: Observable<ItemType[] | null>;
+  foundedList$: Observable<MediaItem[] | null>;
 
   progress$ = new BehaviorSubject<{ current: number, total: number } | null>(null);
-  selectedItem$ = new BehaviorSubject<ItemType | null>(null);
-  libraryItem$: Observable<LibraryItem<ItemType> | null>;
+  selectedItem$ = new BehaviorSubject<MediaItem | null>(null);
+  libraryItem$: Observable<LibraryItem | null>;
   mode$ = new BehaviorSubject<string | null>(null);
   skip$ = new BehaviorSubject<boolean | undefined>(undefined);
   meta$ = new BehaviorSubject<MetaData | null>(null);
@@ -53,9 +53,7 @@ export class PopupImportComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentType$ = this.form.get('type').valueChanges.pipe(startWith(defaultType));
-    this.genres$ = this.currentType$.pipe(
-      switchMap(type => this.fileCabService.selectGenres(type)),
-    );
+    this.genres$ = this.fileCabService.genres$;
     this.foundedList$ = this.form.valueChanges.pipe(
       switchMap(({ type, name }) => this.fileCabService.searchApi(type, name).pipe(
         map(res => res.results),
@@ -113,8 +111,8 @@ export class PopupImportComponent implements OnInit {
     });
   }
 
-  selectItem(list: ItemType[], id: number): void {
-    this.selectedItem$.next(list.find(it => it.id === id));
+  selectItem(item: MediaItem): void {
+    this.selectedItem$.next(item);
   }
 
   skip(): void {

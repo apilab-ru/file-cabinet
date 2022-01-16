@@ -1,21 +1,20 @@
 import { Injectable } from '@angular/core';
 import {
   BASE_CLEVER_SEARCH_KEYS,
-  deepCopy,
-  Genre,
+  deepCopy, GenreOld,
   ICleverSearchKeys,
   ISearchStatus,
   ISearchValue,
+  LibraryItem,
   LibraryMode,
   Path,
   SearchKeys,
 } from '../../models';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { ItemType, LibraryItem } from '@shared/models/library';
 import { map, switchMap } from 'rxjs/operators';
 import { FileCabService } from '@shared/services/file-cab.service';
 import { Tag } from '@shared/models/tag';
-import { StatusList } from '@shared/const';
+import { StatusList } from '@shared/const/const';
 
 const BASE_STATE: ISearchStatus = {
   search: '',
@@ -65,7 +64,7 @@ export class SearchService {
     this.mode.next(mode);
   }
 
-  filterByState(data: LibraryItem<ItemType>[], state: ISearchStatus, mode: LibraryMode): LibraryItem<ItemType>[] {
+  filterByState(data: LibraryItem[], state: ISearchStatus, mode: LibraryMode): LibraryItem[] {
     if (state) {
       state.search = state.search && state.search.toLocaleLowerCase();
       const list = data?.filter(item => this.itemToStateCompare(item, state, mode));
@@ -89,10 +88,10 @@ export class SearchService {
     );
   }
 
-  private itemToStateCompare(item: LibraryItem<ItemType>, state: ISearchStatus, mode: LibraryMode): boolean {
+  private itemToStateCompare(item: LibraryItem, state: ISearchStatus, mode: LibraryMode): boolean {
     let isCompare = true;
     isCompare = item.item.title?.toLocaleLowerCase().search(state.search) > -1
-      || item.item.original_title?.toLocaleLowerCase().search(state.search) > -1
+      || item.item.originalTitle?.toLocaleLowerCase().search(state.search) > -1
       || item.name?.toLocaleLowerCase().search(state.search) > -1
     ;
 
@@ -103,14 +102,14 @@ export class SearchService {
           .reduce((prev, next) => prev && next, true));
   }
 
-  private checkCompare(key: SearchKeys, value: ISearchValue[], item: LibraryItem<ItemType>): boolean {
+  private checkCompare(key: SearchKeys, value: ISearchValue[], item: LibraryItem): boolean {
     if (!value[0]) {
       return true;
     }
     const separateSearch = this.separateSearchValue(value);
     switch (key) {
       case SearchKeys.genres:
-        const searchResGenres = this.compareList(item.item.genre_ids, separateSearch);
+        const searchResGenres = this.compareList(item.item.genreIds, separateSearch);
         return searchResGenres.positive.reduce((prev, next) => prev && next, true)
           && searchResGenres.negative.reduce((prev, next) => prev && next, true);
 
@@ -151,7 +150,7 @@ export class SearchService {
     };
   }
 
-  private loadKeys(mode: LibraryMode, genres: Genre[], tags: Tag[]): ICleverSearchKeys {
+  private loadKeys(mode: LibraryMode, genres: GenreOld[], tags: Tag[]): ICleverSearchKeys {
     const keys = deepCopy(BASE_CLEVER_SEARCH_KEYS);
     keys.genres.list = genres;
     // keys.tags.list = tags;

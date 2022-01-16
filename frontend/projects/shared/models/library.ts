@@ -1,10 +1,11 @@
 import { Item } from '@server/models/base';
-import { MetaData } from './meta-data';
+import { MetaData } from '@server/models/meta-data';
 import { Anime } from '@server/models/anime';
 import { Film } from '@server/models/films';
 import { Tag } from './tag';
+import { LibraryItem } from '../../../../server/src/library/interface';
 
-export interface LibraryItem<T extends Item> extends MetaData {
+export interface LibraryItemOld<T extends Item> extends MetaData {
   item: T;
 }
 
@@ -16,12 +17,25 @@ export interface ISchema {
 
 export type ItemType = Anime | Film;
 
-export interface LibrarySettings {
+export interface UserData {
+  id: number;
+  email: string;
+  token: string;
+}
 
+export interface LibrarySettings {
+  user?: UserData
+  enableSync?: boolean;
 }
 
 export interface Library {
   tags: Tag[];
-  data: Record<string, LibraryItem<ItemType>[]>;
-  settings: LibrarySettings;
+  data: Record<string, LibraryItem[]>;
+  lastTimeUpdate: number;
+}
+
+export interface LibraryOld {
+  tags: Tag[];
+  data: Record<string, LibraryItemOld<ItemType>[]>;
+  lastTimeUpdate: number;
 }

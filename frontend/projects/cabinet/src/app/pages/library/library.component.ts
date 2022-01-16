@@ -1,17 +1,16 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { LibraryService } from '../../services/library.service';
-import { ISearchStatus, LibraryMode, Path } from '../../../models';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { ISearchStatus, LibraryItem, LibraryMode, Path } from '../../../models';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { DataFactoryService } from './services/data-factory.service';
 import { SearchService } from '../../services/search.service';
 import { AddItemComponent } from '../../shared/components/add-item/add-item.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { ItemType, LibraryItem } from '@shared/models/library';
-import { StatusList } from '@shared/const';
-import { MetaData } from '@shared/models/meta-data';
+import { StatusList } from '@shared/const/const';
+import { MetaData } from '@server/models/meta-data';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @UntilDestroy()
@@ -27,7 +26,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class LibraryComponent implements OnInit {
   mode$ = this.searchService.mode$;
-  list$: Observable<LibraryItem<ItemType>[]>;
+  list$: Observable<LibraryItem[]>;
   genres$ = this.dataFactoryService.genres$;
   searchStatus$ = this.searchService.status$;
   page$ = this.searchService.page$;
@@ -63,6 +62,10 @@ export class LibraryComponent implements OnInit {
     ]).pipe(
       tap(() => this.isLoad$.next(true)),
       switchMap(([status, mode]) => this.selectData(mode, status)),
+      catchError(err => {
+        this.notification(err.message);
+        return of([]);
+      }),
       tap(() => this.isLoad$.next(false)),
       shareReplay({ refCount: true, bufferSize: 1 }),
     );
@@ -80,16 +83,16 @@ export class LibraryComponent implements OnInit {
     this.searchService.selectGenre(genre);
   }
 
-  updateItem(item: LibraryItem<ItemType>): void {
-    this.libraryService.updateItem(this.path, item.item.id, item);
+  updateItem(item: LibraryItem): void {
+    this.libraryService.updateItem(this.path, item);
   }
 
-  deleteItem(item: LibraryItem<ItemType>): void {
-    this.libraryService.deleteItem(this.path, item.item.id);
+  deleteItem(item: LibraryItem): void {
+    this.libraryService.deleteItem(this.path, item.item);
   }
 
-  addItem(libraryItem: LibraryItem<ItemType>): void {
-    const dialog = this.dialog.open<void, MetaData, LibraryItem<ItemType>>(AddItemComponent, {
+  addItem(libraryItem: LibraryItem): void {
+    const dialog = this.dialog.open<void, MetaData, LibraryItem>(AddItemComponent, {
       data: {
         ...libraryItem,
         status: StatusList.planned,
@@ -106,21 +109,25 @@ export class LibraryComponent implements OnInit {
         untilDestroyed(this),
       )
       .subscribe(() => {
-        this.matSnackBar.open('Сохранено', undefined, {
-          duration: 2000,
-        });
+        this.notification('Сохранено');
       });
   }
 
-  trackBy(index: number, item: LibraryItem<ItemType>): number {
-    return item.item.id;
+  trackBy(index: number, item: LibraryItem): number {
+    return item.item.id || item.item.imdbId || item.item.smotretId;
   }
 
-  private selectData(mode: LibraryMode, state: ISearchStatus): Observable<LibraryItem<ItemType>[]> {
+  private selectData(mode: LibraryMode, state: ISearchStatus): Observable<LibraryItem[]> {
     return (mode === LibraryMode.library
       ? this.dataFactoryService.getFromLibrary().pipe(
         map(list => this.searchService.filterByState(list, state, mode)),
       )
       : this.dataFactoryService.search(state));
+  }
+
+  private notification(message: string): void {
+    this.matSnackBar.open(message, undefined, {
+      duration: 2000,
+    });
   }
 }

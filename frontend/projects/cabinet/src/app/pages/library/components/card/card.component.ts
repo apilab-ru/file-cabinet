@@ -7,9 +7,9 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { deepCopy, Genre } from '../../../../../models';
-import { ItemType, LibraryItem } from '@shared/models/library';
+import { deepCopy, LibraryItem } from '../../../../../models';
 import * as isEqual from 'lodash/isEqual';
+import { Genre } from '@server/models/genre';
 
 @Component({
   selector: 'app-card',
@@ -18,11 +18,11 @@ import * as isEqual from 'lodash/isEqual';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardComponent implements OnChanges {
-  @Input() item: LibraryItem<ItemType>;
+  @Input() item: LibraryItem;
   @Input() genres: Genre[];
   @Input() isLibraryMode = false;
 
-  @Output() updateItem = new EventEmitter<LibraryItem<ItemType>>();
+  @Output() updateItem = new EventEmitter<LibraryItem>();
   @Output() deleteItem = new EventEmitter<void>();
   @Output() addItem = new EventEmitter<void>();
   @Output() clickGenre = new EventEmitter<number>();
@@ -30,7 +30,7 @@ export class CardComponent implements OnChanges {
   placeholder = 'assets/placeholder-loading.svg';
   placeholderError = 'assets/placeholder-error.svg';
   isShowStars = false;
-  localItem: LibraryItem<ItemType>;
+  localItem: LibraryItem;
   isChanged = false;
   isEditMode = false;
 

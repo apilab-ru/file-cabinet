@@ -13,7 +13,7 @@
     *ngIf="foundedList$ | async as foundedList"
     [list]="foundedList"
     [genres]="genres$ | async"
-    (selectedChange)="selectItemId($event)"
+    (selectedChange)="selectItem($event)"
   ></app-founded-list>
 </ng-container>
 
