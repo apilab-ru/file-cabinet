@@ -11,13 +11,9 @@ import { Genre } from '@server/models/genre';
 export class FoundedListComponent {
   @Input() list: MediaItem[];
   @Input() genres: Genre[];
+  @Input() foundedItem: MediaItem;
 
   @Output() selectedChange = new EventEmitter<MediaItem>();
-
-  getGenres(genres: Genre[], ids: number[]): string[] {
-    return ids?.map(id => genres?.find(it => it.id === id)?.name)
-      .filter(item => !!item);
-  }
 
   select(item: MediaItem): void {
     this.selectedChange.emit(item);

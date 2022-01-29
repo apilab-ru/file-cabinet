@@ -1,0 +1,463 @@
+export const STORY_GENRES = [
+  {
+    'id': 12,
+    'name': 'Приключения',
+    'key': 'adventure',
+    'kind': [
+      'anime',
+      'films',
+    ],
+    'imdbId': 12,
+    'smotretId': 2,
+  },
+  {
+    'id': 14,
+    'name': 'Фэнтези',
+    'key': 'fantasy',
+    'kind': [
+      'anime',
+      'films',
+    ],
+    'imdbId': 14,
+    'smotretId': 10,
+  },
+  {
+    'id': 18,
+    'name': 'Драма',
+    'key': 'drama',
+    'kind': [
+      'anime',
+      'tv',
+      'films',
+    ],
+    'imdbId': 18,
+    'smotretId': 8,
+  },
+  {
+    'id': 27,
+    'name': 'Ужасы',
+    'key': 'horror',
+    'kind': [
+      'anime',
+      'films',
+    ],
+    'imdbId': 27,
+    'smotretId': 14,
+  },
+  {
+    'id': 35,
+    'name': 'Комедия',
+    'key': 'comedy',
+    'kind': [
+      'anime',
+      'tv',
+      'films',
+    ],
+    'imdbId': 35,
+    'smotretId': 4,
+  },
+  {
+    'id': 53,
+    'name': 'Триллер',
+    'key': 'thriller',
+    'kind': [
+      'anime',
+      'films',
+    ],
+    'imdbId': 53,
+    'smotretId': 41,
+  },
+  {
+    'id': 878,
+    'name': 'Фантастика',
+    'key': 'sci-fi',
+    'kind': [
+      'anime',
+      'films',
+    ],
+    'imdbId': 878,
+    'smotretId': 24,
+  },
+  {
+    'id': 9648,
+    'name': 'Детектив',
+    'key': 'detective',
+    'kind': [
+      'anime',
+      'tv',
+      'films',
+    ],
+    'imdbId': 9648,
+    'smotretId': 7,
+  },
+  {
+    'id': 10402,
+    'name': 'Музыка',
+    'key': 'music',
+    'kind': [
+      'anime',
+      'films',
+    ],
+    'imdbId': 10402,
+    'smotretId': 19,
+  },
+  {
+    'id': 10771,
+    'name': 'Экшен',
+    'key': 'action',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 1,
+  },
+  {
+    'id': 10772,
+    'name': 'Машины',
+    'key': 'cars',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 3,
+  },
+  {
+    'id': 10773,
+    'name': 'Безумие',
+    'key': 'crazy',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 5,
+  },
+  {
+    'id': 10774,
+    'name': 'Демоны',
+    'key': 'demons',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 6,
+  },
+  {
+    'id': 10775,
+    'name': 'Этти',
+    'key': 'ecchi',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 9,
+  },
+  {
+    'id': 10776,
+    'name': 'Игры',
+    'key': 'game',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 11,
+  },
+  {
+    'id': 10777,
+    'name': 'Хентай',
+    'key': 'hentai',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 12,
+  },
+  {
+    'id': 10778,
+    'name': 'Исторический',
+    'key': 'histori',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 13,
+  },
+  {
+    'id': 10779,
+    'name': 'Детское',
+    'key': 'kids',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 15,
+  },
+  {
+    'id': 10780,
+    'name': 'Боевые искусства',
+    'key': 'martial-arts',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 17,
+  },
+  {
+    'id': 10781,
+    'name': 'Меха',
+    'key': 'mecha',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 18,
+  },
+  {
+    'id': 10782,
+    'name': 'Пародия',
+    'key': 'parody',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 20,
+  },
+  {
+    'id': 10783,
+    'name': 'Самураи',
+    'key': 'samurai',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 21,
+  },
+  {
+    'id': 10784,
+    'name': 'Романтика',
+    'key': 'romance',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 22,
+  },
+  {
+    'id': 10785,
+    'name': 'Школа',
+    'key': 'school',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 23,
+  },
+  {
+    'id': 10786,
+    'name': 'Сёдзе',
+    'key': 'shoujo',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 25,
+  },
+  {
+    'id': 10787,
+    'name': 'Сёдзе Ай',
+    'key': 'yuri',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 26,
+  },
+  {
+    'id': 10788,
+    'name': 'Сёнен',
+    'key': 'seinen',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 27,
+  },
+  {
+    'id': 10789,
+    'name': 'Сёнен Ай',
+    'key': 'yaoi',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 28,
+  },
+  {
+    'id': 10790,
+    'name': 'Космос',
+    'key': 'space',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 29,
+  },
+  {
+    'id': 10791,
+    'name': 'Спорт',
+    'key': 'sports',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 30,
+  },
+  {
+    'id': 10792,
+    'name': 'Супер сила',
+    'key': 'super-power',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 31,
+  },
+  {
+    'id': 10793,
+    'name': 'Вампиры',
+    'key': 'vampire',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 32,
+  },
+  {
+    'id': 10794,
+    'name': 'Гарем',
+    'key': 'harem',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 35,
+  },
+  {
+    'id': 10795,
+    'name': 'Повседневность',
+    'key': 'slice-of-life',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 36,
+  },
+  {
+    'id': 10796,
+    'name': 'Сверхъестественное',
+    'key': 'supernatural',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 37,
+  },
+  {
+    'id': 10797,
+    'name': 'Военное',
+    'key': 'military',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 38,
+  },
+  {
+    'id': 10798,
+    'name': 'Полиция',
+    'key': 'police',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 39,
+  },
+  {
+    'id': 10799,
+    'name': 'Психологическое',
+    'key': 'psychological',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 40,
+  },
+  {
+    'id': 10800,
+    'name': 'Сейнен',
+    'key': 'seinen',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 42,
+  },
+  {
+    'id': 10801,
+    'name': 'Дзёсей',
+    'key': 'josei',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 43,
+  },
+  {
+    'id': 10802,
+    'name': 'Gourmet',
+    'key': 'food',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': 47,
+  },
+  {
+    'id': 10803,
+    'name': 'Erotica',
+    'key': 'erotica',
+    'kind': [
+      'anime',
+    ],
+    'imdbId': null,
+    'smotretId': null,
+  },
+];
+
+export const LIBRARY_ITEM = {
+  'comment': '',
+  'item': {
+    'aniDbId': 16130,
+    'description': 'После окончания Второй мировой войны мир был поделен между двумя сверхдержавами — Федеративной Республикой Зирнитра на востоке и Соединенным Королевством Арнак на западе. В поиске новых территорий обе страны устремили свой взор в небо, тем самым начав техническую гонку за право стать первым государством, покорившим космос.1960 год. Лидер Зирнитры Фёдор Гергиев объявил о старте проекта «Мечта» — программы пилотируемых космических полётов. В это же время запасному пилоту Льву Лепсу поручили тренировать Ирину Люминеск — первую испытуемую в проекте «Носферату», сверхсекретном эксперименте по использованию вампиров в космических исследованиях. Лев и Ирина принадлежат к разным расам и имеют совершенно разные взгляды на мир, но оба хотят попасть в космос. Справятся ли они с этой миссией?Это история о девушке-вампире, которая стала первым космонавтом в истории человечества.',
+    'episodes': 12,
+    'genreIds': [
+      '878',
+      '10790',
+      '10793',
+    ],
+    'id': 1839,
+    'image': 'https://smotret-anime.online/posters/24306.40013352744.jpg',
+    'imdbId': null,
+    'originalTitle': 'Irina: The Vampire Cosmonaut',
+    'popularity': '7.36',
+    'shikimoriId': 48471,
+    'smotretId': 1839,
+    'title': 'Луна, Лайка и Носферату',
+    'type': 'tv',
+    'url': 'https://smotret-anime.online/catalog/tsuki-to-laika-to-nosferatu-24306',
+    'year': 2021,
+  },
+  'progress': 2,
+  'star': 9,
+  'status': 'process',
+  'url': 'https://animego.org/anime/luna-layka-i-nosferatu-s1894',
+};

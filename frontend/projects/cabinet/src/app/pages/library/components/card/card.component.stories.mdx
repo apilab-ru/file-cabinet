@@ -1,0 +1,33 @@
+import { LibraryModule } from '../../library.module';
+import { moduleMetadata } from '@storybook/angular';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LIBRARY_ITEM, STORY_GENRES } from '../../../../../../../shared/storybook/genres';
+
+<Meta
+  title="Cabinet / Card"
+  decorators={[
+    moduleMetadata({
+      imports: [LibraryModule, BrowserAnimationsModule],
+    })
+    ]}
+/>
+
+<Preview>
+  <Story name="Default">
+    {{
+      template: `
+        <div class="box">
+          <app-card
+            [genres]="genres"
+            [item]="item"
+          ></app-card>
+        </div>
+        <style></style>
+      `,
+      props: {
+        item: LIBRARY_ITEM,
+        genres: STORY_GENRES,
+      }
+    }}
+  </Story>
+</Preview>

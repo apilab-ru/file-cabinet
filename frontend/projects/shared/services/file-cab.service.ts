@@ -2,14 +2,15 @@ import { Injectable, NgZone } from '@angular/core';
 import { FileCab, ItemParam } from '@shared/services/file-cab';
 import { from, Observable, of } from 'rxjs';
 import { map, pluck, take } from 'rxjs/operators';
-import { ISchema, ItemType, Library, LibraryItemOld, LibrarySettings } from '@shared/models/library';
+import { ISchema, Library, LibrarySettings } from '@shared/models/library';
 import { runInZone } from '@shared/utils/run-in-zone';
 import { NavigationItem } from '@shared/models/navigation';
-import { GenreOld, SearchRequestResult } from '@server/models/base';
+import { SearchRequestResult } from '@server/models/base';
 import { MetaData } from '@server/models/meta-data';
 import { Tag } from '@shared/models/tag';
-import { LibraryFlatData, LibraryFlatItem, LibraryItem, MediaItem } from '@server/models';
+import { LibraryItem, MediaItem } from '@server/models';
 import { Genre } from '@server/models/genre';
+import { GenreKind } from '../../../../server/src/genres/const';
 
 interface FlatLibraryItem extends LibraryItem {
   type: string;
@@ -27,8 +28,6 @@ interface SearchResult {
 export class FileCabService {
   schemas$: Observable<Record<string, ISchema>>;
   types$: Observable<NavigationItem[]>;
-  animeGenres$: Observable<GenreOld[]>;
-  filmGenres$: Observable<GenreOld[]>;
   genres$: Observable<Genre[]>;
 
   data$: Observable<Record<string, LibraryItem[]>>;
@@ -51,8 +50,6 @@ export class FileCabService {
       map(({ types }) => types),
       runInZone(this.ngZone),
     );
-    this.animeGenres$ = this.fileCab.animeGenres$;
-    this.filmGenres$ = this.fileCab.filmGenres$;
     this.genres$ = this.fileCab.genres$;
 
     this.data$ = this.fileCab.store$.pipe(
@@ -119,8 +116,9 @@ export class FileCabService {
     );
   }
 
-  selectGenres(type: string): Observable<GenreOld[]> {
-    return this.fileCab.selectGenres(type).pipe(
+  selectGenres(type: string): Observable<Genre[]> {
+    return this.fileCab.genres$.pipe(
+      map(list => list.filter(genre => genre.kind.includes(type as GenreKind))),
       runInZone(this.ngZone),
     );
   }

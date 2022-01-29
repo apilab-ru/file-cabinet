@@ -1,0 +1,228 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "genreIcon";
+  src: url(./font.woff) format("woff");
+  font-weight: 400;
+  font-style: normal
+}
+
+[data-icon]:before {
+  content: attr(data-icon)
+}
+
+[class*=" genre-icon-"]:before, [class^=genre-icon-]:before, [data-icon]:before {
+  font-family: "genreIcon" !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale
+}
+
+.genre-icon-action:before {
+  content: "\e000"
+}
+
+.genre-icon-adventure:before {
+  content: "\e001"
+}
+
+.genre-icon-psychological:before {
+  content: "\e002"
+}
+
+.genre-icon-drama:before {
+  content: "\e003"
+}
+
+.genre-icon-demons:before {
+  content: "\e004"
+}
+
+.genre-icon-romance:before {
+  content: "\e005"
+}
+
+.genre-icon-yaoi:before {
+  content: "\e006"
+}
+
+.genre-icon-shoujo:before {
+  content: "\e007"
+}
+
+.genre-icon-ecchi-2:before {
+  content: "\e008"
+}
+
+.genre-icon-ecchi:before {
+  content: "\e009"
+}
+
+.genre-icon-comedy-2:before {
+  content: "\e00a"
+}
+
+.genre-icon-mecha:before {
+  content: "\e00b"
+}
+
+.genre-icon-psychological-2:before {
+  content: "\e00c"
+}
+
+.genre-icon-seinen:before {
+  content: "\e00d"
+}
+
+.genre-icon-super-power-2:before {
+  content: "\e00e"
+}
+
+.genre-icon-ninja-portrait:before {
+  content: "\e00f"
+}
+
+.genre-icon-music:before {
+  content: "\e010"
+}
+
+.genre-icon-music-2:before {
+  content: "\e011"
+}
+
+.genre-icon-martial-arts:before {
+  content: "\e012"
+}
+
+.genre-icon-hentai:before {
+  content: "\e013"
+}
+
+.genre-icon-magic:before {
+  content: "\e014"
+}
+
+.genre-icon-yuri:before {
+  content: "\e015"
+}
+
+.genre-icon-school:before {
+  content: "\e016"
+}
+
+.genre-icon-shounen:before {
+  content: "\e017"
+}
+
+.genre-icon-action-battle:before {
+  content: "\e018"
+}
+
+.genre-icon-sports:before {
+  content: "\e019"
+}
+
+.genre-icon-cars:before {
+  content: "\e01a"
+}
+
+.genre-icon-super-power:before {
+  content: "\e01b"
+}
+
+.genre-icon-crazy:before {
+  content: "\e01c"
+}
+
+.genre-icon-military:before {
+  content: "\e01d"
+}
+
+.genre-icon-thriller:before {
+  content: "\e01e"
+}
+
+.genre-icon-parody:before {
+  content: "\e01f"
+}
+
+.genre-icon-josei:before {
+  content: "\e020"
+}
+
+.genre-icon-parody-2:before {
+  content: "\e021"
+}
+
+.genre-icon-fantasy:before {
+  content: "\e022"
+}
+
+.genre-icon-space:before {
+  content: "\e023"
+}
+
+.genre-icon-horror:before {
+  content: "\e024"
+}
+
+.genre-icon-mystery:before {
+  content: "\e025"
+}
+
+.genre-icon-sci-fi:before {
+  content: "\e026"
+}
+
+.genre-icon-histori:before {
+  content: "\e027"
+}
+
+.genre-icon-kids:before {
+  content: "\e028"
+}
+
+.genre-icon-supernatural:before {
+  content: "\e029"
+}
+
+.genre-icon-harem-2:before {
+  content: "\e02a"
+}
+
+.genre-icon-harem:before {
+  content: "\e02b"
+}
+
+.genre-icon-police:before {
+  content: "\e02c"
+}
+
+.genre-icon-samurai:before {
+  content: "\e02d"
+}
+
+.genre-icon-slice-of-life:before {
+  content: "\e02e"
+}
+
+.genre-icon-vampire:before {
+  content: "\e02f"
+}
+
+.genre-icon-fantasy-2:before {
+  content: "\e030"
+}
+
+.genre-icon-game:before {
+  content: "\e031"
+}
+
+.genre-icon-comedy:before {
+  content: "\e032"
+}

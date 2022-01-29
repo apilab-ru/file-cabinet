@@ -1,18 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { captureException } from '@sentry/angular';
-import { GenreOld } from '@server/models';
-
-const findName = (list, id): string => {
-  const tag = list && list.find(g => g.id == id);
-  if (!tag && list) {
-    captureException({
-      message: 'not found genre',
-      id,
-      list,
-    });
-  }
-  return tag && tag.name;
-};
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
+import { Genre } from '@server/models/genre';
 
 @Component({
   selector: 'app-genres',
@@ -20,14 +15,19 @@ const findName = (list, id): string => {
   styleUrls: ['./genres.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GenresComponent {
+export class GenresComponent implements OnChanges {
   @Input() list: number[];
-  @Input() genres: GenreOld[];
+  @Input() genres: Genre[];
 
   @Output() clickGenre = new EventEmitter<number>();
 
-  getName(id: number): string {
-    return findName(this.genres, id);
+  genresList: Genre[];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.list && this.genres) {
+      this.genresList = this.list.map(id => this.genres.find(genre => genre.id === +id))
+        .filter(it => !!it);
+    }
   }
 
   clickTag(tag: number): void {

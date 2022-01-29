@@ -1,3 +1,11 @@
-<span class="tag" *ngFor="let tag of list" (click)="clickTag(tag)">
-  {{ getName(tag) }}
-</span>
+<div class="genres">
+  <div class="genres-list">
+      <span
+        *ngFor="let genre of genresList"
+        class="genre"
+        (click)="clickTag(genre.id)"
+      >
+        <span class="genre-icon-{{ genre.key }}" [matTooltip]="genre.name"></span>
+      </span>
+  </div>
+</div>

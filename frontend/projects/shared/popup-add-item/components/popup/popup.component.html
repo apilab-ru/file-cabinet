@@ -8,14 +8,13 @@
   (updateSearchData)="onUpdateSearchData($event)"
 ></app-card-edit>
 
-<ng-container *ngIf="!(item$ | async)">
-  <app-founded-list
-    *ngIf="foundedList$ | async as foundedList"
-    [list]="foundedList"
-    [genres]="genres$ | async"
-    (selectedChange)="selectItem($event)"
-  ></app-founded-list>
-</ng-container>
+<app-founded-list
+  *ngIf="foundedList$ | async"
+  [list]="foundedList$ | async"
+  [foundedItem]="item$ | async"
+  [genres]="genres$ | async"
+  (selectedChange)="selectItem($event)"
+></app-founded-list>
 
 <app-loader
   *ngIf="isLoading$ | async"

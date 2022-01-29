@@ -14,6 +14,7 @@ import { StarsModule } from '@shared/stars/stars.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoaderModule } from '@shared/loader/loader.module';
 import { SearchBoxComponent } from './components/search-box/search-box.component';
+import { FoundedItemComponent } from './components/founded-item/founded-item.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { SearchBoxComponent } from './components/search-box/search-box.component
     HorizontalScrollDirective,
     PopupComponent,
     SearchBoxComponent,
+    FoundedItemComponent,
   ],
   imports: [
     CommonModule,

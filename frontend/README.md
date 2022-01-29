@@ -22,3 +22,8 @@ npm install copyfiles -g
 
 ## Tools
 [Sentry](https://sentry.io/organizations/apilab/issues/?project=6103397)
+
+## SourceMap
+--plugin ~build-customization-plugin.js
+https://angularquestions.com/2021/05/10/chrome-extension-development-with-angular-how-to-include-source-maps/
+

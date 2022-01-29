@@ -6,7 +6,11 @@
   position: relative;
 
   &__genres {
-    margin-bottom: 0.5em;
+    position: absolute;
+    top: 4px;
+    border-radius: 4px;
+    left: 0;
+    width: 170px;
   }
 
   &__status {
@@ -63,6 +67,7 @@
   height: 250px;
   object-fit: cover;
   margin-top: 4px;
+  border-radius: 2px;
 }
 
 .card__info {

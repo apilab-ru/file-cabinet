@@ -1,13 +1,16 @@
-:host {
-  display: flex;
-  flex-wrap: wrap;
+@import "projects/shared/styles/colors";
 
-  .tag {
-    padding: 3px;
-    cursor: pointer;
+.genres {
+  background: $tooltip;
+  color: $inverted;
+  padding: 2px 5px;
+  border-radius: 2px;
+}
 
-    & + & {
-      margin-left: 3px;
-    }
-  }
+.genre {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 5px;
+  font-size: 16px;
+  cursor: pointer;
 }

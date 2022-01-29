@@ -1,20 +1,24 @@
-<div appHorizontalScroll class="root">
+<div appHorizontalScroll [isEnabled]="!foundedItem && !!list?.length" class="root">
   <div class="list">
-    <div *ngFor="let item of list; trackBy:trackBy" class="item">
-      <div class="title" [matTooltip]="item.description">
-        {{ item.title }} {{ item.year }}
-      </div>
-      <div class="genres">
-        {{ getGenres(genres, item.genreIds) }}
+    <ng-container *ngIf="!foundedItem">
+      <app-founded-item
+        *ngFor="let item of list; trackBy:trackBy"
+        class="item"
+        [item]="item"
+        [genres]="genres"
+        (selectedChange)="select(item)"
+      ></app-founded-item>
+    </ng-container>
 
-        <button class="button" mat-raised-button (click)="select(item)">
-          Выбрать
-        </button>
-      </div>
-      <img class="image" [src]="item.image">
-    </div>
+    <app-founded-item
+      *ngIf="foundedItem"
+      class="item -founded"
+      [item]="foundedItem"
+      [genres]="genres"
+      [withoutEmitter]="true"
+    ></app-founded-item>
 
-    <div *ngIf="!list.length" class="empty">
+    <div *ngIf="!list?.length && !foundedItem" class="empty">
       Не найдено, уточните запрос
     </div>
   </div>

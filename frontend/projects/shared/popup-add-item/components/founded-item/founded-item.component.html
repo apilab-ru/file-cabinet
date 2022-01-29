@@ -1,0 +1,27 @@
+<div class="item">
+  <div class="title">
+    {{ item.title }} / {{ item.year }}
+
+    <button class="info" (click)="toggleMode()">
+      <img [src]="mode === 'view' ? iconInfo : iconInfoFilled">
+    </button>
+  </div>
+  <div class="genres">
+    <div class="genres-list">
+      <span
+        *ngFor="let genre of genresList"
+        class="genre"
+      >
+        <span class="genre-icon-{{ genre.key }}" [matTooltip]="genre.name"></span>
+      </span>
+    </div>
+
+    <button *ngIf="!withoutEmitter" class="button" mat-raised-button (click)="select(item)">
+      Выбрать
+    </button>
+  </div>
+  <img class="image" [src]="item.image">
+  <div class="description" [class.-show]="mode === 'description'">
+    <div [innerHTML]="item.description"></div>
+  </div>
+</div>

@@ -20,12 +20,6 @@
     </span>
     <!--span class="card__rating">{{ item.item.popularity }}</span-->
   </div>
-  <app-genres
-    class="card__genres"
-    [list]="item.item.genreIds"
-    (clickGenre)="onClickGenre($event)"
-    [genres]="genres"
-  ></app-genres>
 
   <button
     *ngIf="isLibraryMode"
@@ -42,6 +36,12 @@
       [lazyLoad]="item.item.image"
       [errorImage]="placeholderError"
     />
+    <app-genres
+      class="card__genres"
+      [list]="item.item.genreIds"
+      (clickGenre)="onClickGenre($event)"
+      [genres]="genres"
+    ></app-genres>
     <app-link *ngIf="item.url" class="card__link" [link]="item.url"></app-link>
     <div class="card__description">
       <div>{{ item.item.description || item.comment || 'Нет описания' }}</div>

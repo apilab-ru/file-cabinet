@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   BASE_CLEVER_SEARCH_KEYS,
-  deepCopy, GenreOld,
+  deepCopy,
   ICleverSearchKeys,
   ISearchStatus,
   ISearchValue,
@@ -15,6 +15,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { FileCabService } from '@shared/services/file-cab.service';
 import { Tag } from '@shared/models/tag';
 import { StatusList } from '@shared/const/const';
+import { Genre } from '@server/models/genre';
 
 const BASE_STATE: ISearchStatus = {
   search: '',
@@ -150,7 +151,7 @@ export class SearchService {
     };
   }
 
-  private loadKeys(mode: LibraryMode, genres: GenreOld[], tags: Tag[]): ICleverSearchKeys {
+  private loadKeys(mode: LibraryMode, genres: Genre[], tags: Tag[]): ICleverSearchKeys {
     const keys = deepCopy(BASE_CLEVER_SEARCH_KEYS);
     keys.genres.list = genres;
     // keys.tags.list = tags;

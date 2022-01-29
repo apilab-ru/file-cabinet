@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProgressModule } from '@shared/progress/progress.module';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -45,11 +46,12 @@ import { ProgressModule } from '@shared/progress/progress.module';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+    ProgressModule,
     ReactiveFormsModule,
     SharedModule,
     StarsModule,
-    MatSnackBarModule,
-    ProgressModule,
   ],
 })
 export class LibraryModule {

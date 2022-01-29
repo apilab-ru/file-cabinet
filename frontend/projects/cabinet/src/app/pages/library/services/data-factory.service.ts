@@ -1,7 +1,7 @@
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { AnimeService } from '../../../services/anime.service';
 import { FilmsService } from '../../../services/films.service';
-import { GenreOld, ISearchStatus, LibraryItem, MediaItem, Path, SearchRequestResult } from '../../../../models';
+import { ISearchStatus, LibraryItem, MediaItem, Path, SearchRequestResult } from '../../../../models';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { LibraryService } from '../../../services/library.service';
 import { Injectable } from '@angular/core';
@@ -11,7 +11,7 @@ import { GenreKind } from '../../../../../../../../server/src/genres/const';
 
 @Injectable()
 export class DataFactoryService {
-  genres$: Observable<GenreOld[]>;
+  genres$: Observable<Genre[]>;
 
   private path$ = new BehaviorSubject<Path | null>(null);
 

@@ -11,8 +11,6 @@ import { runInZone } from '@shared/utils/run-in-zone';
   providedIn: 'root',
 })
 export class FilmsService {
-  genres$ = this.fileCabService.filmGenres$;
-
   private readonly keyMovie = 'cache_movie';
   private readonly keyTv = 'cache_tv';
 

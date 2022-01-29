@@ -2,7 +2,6 @@ import { BehaviorSubject, merge, NEVER, Observable, of, ReplaySubject, Subject, 
 import {
   deepCopy,
   FIREBASE_EVENT_TABLE,
-  GenreOld,
   LibraryItem,
   LibraryItemType,
   MediaItem,
@@ -77,8 +76,6 @@ export class FileCab {
   config$: Observable<typeof configData>;
   store$: Observable<typeof storeData> = this.store.asObservable();
 
-  filmGenres$: Observable<GenreOld[]>;
-  animeGenres$: Observable<GenreOld[]>;
   genres$: Observable<Genre[]>;
 
   settings$: Observable<LibrarySettings>;
@@ -90,12 +87,6 @@ export class FileCab {
 
     this.config$.subscribe();
 
-    this.filmGenres$ = fileCabApi.loadFilmGenres().pipe(
-      shareReplay(1),
-    );
-    this.animeGenres$ = fileCabApi.loadAnimeGenres().pipe(
-      shareReplay(1),
-    );
     this.genres$ = fileCabApi.loadGenres().pipe(
       shareReplay(1),
     );
@@ -187,10 +178,6 @@ export class FileCab {
   updateSettings(settings: LibrarySettings): void {
     this.settingsUpdate.next(settings);
     this.storeApi.setGlobalStorage(settings);
-  }
-
-  selectGenres(type: string): Observable<GenreOld[]> {
-    return type === 'anime' ? this.animeGenres$ : this.filmGenres$;
   }
 
   searchInStore(

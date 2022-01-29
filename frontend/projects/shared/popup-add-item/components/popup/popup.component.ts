@@ -27,7 +27,8 @@ import { BaseInfo } from '@shared/popup-add-item/models/base-info';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FileCabService } from '@shared/services/file-cab.service';
 import * as isEqual from 'lodash/isEqual';
-import { GenreOld, LibraryItem, MediaItem } from '@server/models';
+import { LibraryItem, MediaItem } from '@server/models';
+import { Genre } from '@server/models/genre';
 
 @UntilDestroy()
 @Component({
@@ -50,7 +51,7 @@ export class PopupComponent implements OnInit, OnChanges {
   isLoading$ = new BehaviorSubject(false);
   libraryItem$: Observable<LibraryItem>;
   item$: Observable<MediaItem>;
-  genres$: Observable<GenreOld[]>;
+  genres$: Observable<Genre[]>;
   foundedList$: Observable<MediaItem[]>;
   searchData$: Observable<SearchData>;
   baseInfo$: Observable<BaseInfo>;
@@ -70,10 +71,7 @@ export class PopupComponent implements OnInit, OnChanges {
       distinctUntilChanged(isEqual),
       shareReplay({ refCount: true, bufferSize: 1 }),
     );
-    this.genres$ = this.searchData$.pipe(
-      filter(data => !!data.type),
-      switchMap(data => this.fileCabService.selectGenres(data.type)),
-    );
+    this.genres$ = this.fileCabService.genres$;
     this.libraryItem$ = combineLatest([
       this.searchData$,
       this.baseInfo$,
