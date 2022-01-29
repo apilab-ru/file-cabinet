@@ -1,4 +1,5 @@
 @import "../../../../../../../shared/styles/custom-scroll";
+@import "../../../../../../../shared/styles/colors";
 @import "../../../../../../../shared/styles/star";
 
 .card {
@@ -80,11 +81,20 @@
   margin-top: 15px;
   display: block;
   position: absolute;
-  bottom: 5px;
-  left: 5px;
-  background: #ffffffe6;
-  padding: 1px 4px;
+  bottom: 0;
+  left: 0;
+  background: $tooltip;
+  color: $inverted;
+  padding: 1px 5px 4px;
+  width: 170px;
+  box-sizing: border-box;
   border-radius: 2px;
+
+  ::ng-deep {
+    a {
+      color: $inverted;
+    }
+  }
 }
 
 .card__title {

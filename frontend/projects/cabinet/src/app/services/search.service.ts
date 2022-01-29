@@ -107,10 +107,11 @@ export class SearchService {
     if (!value[0]) {
       return true;
     }
+
     const separateSearch = this.separateSearchValue(value);
     switch (key) {
       case SearchKeys.genres:
-        const searchResGenres = this.compareList(item.item.genreIds, separateSearch);
+        const searchResGenres = this.compareList(item.item.genreIds.map(id => +id), separateSearch);
         return searchResGenres.positive.reduce((prev, next) => prev && next, true)
           && searchResGenres.negative.reduce((prev, next) => prev && next, true);
 
