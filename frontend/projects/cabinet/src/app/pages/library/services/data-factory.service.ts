@@ -1,93 +1,35 @@
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { AnimeService } from '../../../services/anime.service';
-import { FilmsService } from '../../../services/films.service';
-import { ISearchStatus, LibraryItem, MediaItem, Path, SearchRequestResult } from '../../../../models';
-import { catchError, map, switchMap } from 'rxjs/operators';
-import { LibraryService } from '../../../services/library.service';
+import { Observable } from 'rxjs';
+import { LibraryItem, LibraryMode } from '../../../../models';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Genre } from '@server/models/genre';
-import { FileCabService } from '@shared/services/file-cab.service';
-import { GenreKind } from '../../../../../../../../server/src/genres/const';
+import { SearchService } from './search.service';
+import { LocalDataSourceService } from './local-data-source.service';
+import { ExternalDataSourceService } from './external-data-source.service';
+import { DataSourceService } from './data-source.service';
+import { DataSourceState } from '../models/interface';
 
 @Injectable()
 export class DataFactoryService {
-  genres$: Observable<Genre[]>;
+  list$: Observable<LibraryItem[]>;
+  state$: Observable<DataSourceState>;
 
-  private path$ = new BehaviorSubject<Path | null>(null);
+  private source$: Observable<DataSourceService<LibraryItem>>;
 
   constructor(
-    private animeService: AnimeService,
-    private filmsService: FilmsService,
-    private libraryService: LibraryService,
-    private fileCabService: FileCabService,
+    private localDataService: LocalDataSourceService,
+    private externalDataService: ExternalDataSourceService,
+    private searchService: SearchService,
   ) {
-    this.genres$ = this.path$.pipe(
-      switchMap(path => this.getGenresByType(path)),
+    this.source$ = this.searchService.mode$.pipe(
+      map(mode => mode === LibraryMode.library ? this.localDataService : this.externalDataService),
     );
-  }
 
-  setPath(path: Path): void {
-    this.path$.next(path);
-  }
-
-  getFromLibrary(): Observable<LibraryItem[]> {
-    return combineLatest([
-      this.path$,
-      this.libraryService.data$,
-    ]).pipe(
-      map(([path, data]) => data[path] || []),
+    this.list$ = this.source$.pipe(
+      switchMap(source => source.list$),
     );
-  }
 
-  search(state: ISearchStatus): Observable<LibraryItem[]> {
-    return combineLatest([
-      this.getFromLibrary(),
-      this.path$.pipe(switchMap(path => this.load(path, state))),
-      this.path$,
-    ]).pipe(
-      map(([library, list, path]) => {
-        return list.map(item => {
-          const founded = library.find(it => it.item.id === item.item.id);
-          return founded
-            ? { ...founded, founded: true }
-            : { ...item, founded: false };
-        });
-      }),
-    );
-  }
-
-  private load(path: Path | null, state?: ISearchStatus): Observable<LibraryItem[]> {
-    switch (path) {
-      case Path.tv:
-        return this.filmsService.findTv(state?.search).pipe(
-          map(this.factoryItems),
-          catchError(() => of([])),
-        );
-
-      case Path.films:
-        return this.filmsService.findMovie(state?.search).pipe(
-          map(this.factoryItems),
-          catchError(() => of([])),
-        );
-
-      case Path.anime:
-        return this.animeService.findAnime(state?.search).pipe(
-          map(this.factoryItems),
-          catchError(() => of([])),
-        );
-
-      default:
-        return of([]);
-    }
-  }
-
-  private factoryItems(result: SearchRequestResult<MediaItem>): LibraryItem[] {
-    return result.results.map(item => ({ item }));
-  }
-
-  private getGenresByType(type: Path): Observable<Genre[]> {
-    return this.fileCabService.genres$.pipe(
-      map(list => list.filter(it => it.kind.includes(type as undefined as GenreKind))),
+    this.state$ = this.source$.pipe(
+      switchMap(source => source.state$),
     );
   }
 }

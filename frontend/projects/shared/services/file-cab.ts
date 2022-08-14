@@ -40,6 +40,8 @@ import { FirebaseService } from '@shared/services/firebase.service';
 import { Genre } from '@server/models/genre';
 import { userApiService } from './user-api.service';
 import { notificationsService } from './notifications.service';
+import { MediaCompareData } from '@shared/models/media-compare';
+import { mediaCompare } from '@shared/utils/item-compare';
 
 const configData = {
   schemas: {} as Record<string, ISchema>,
@@ -54,8 +56,7 @@ const storeData = {
 
 const DEBOUNCE_TIME_AFTER_UPDATE = 20_000;
 
-export interface ItemParam {
-  id?: number;
+export interface ItemParam extends MediaCompareData {
   name?: string;
   url?: string;
 }
@@ -191,7 +192,6 @@ export class FileCab {
         it => it.item.title === item.name
           || it.url === item.url
           || it.name === item.name
-          || (item.id === it.item.id),
       ) || null),
     );
   }
@@ -199,13 +199,13 @@ export class FileCab {
   searchApi(path: string, name: string): Observable<SearchRequestResult<MediaItem>> {
     switch (path) {
       case 'anime':
-        return fileCabApi.searchAnime(name);
+        return fileCabApi.searchAnime({ name });
 
       case 'films':
-        return fileCabApi.searchFilm(name);
+        return fileCabApi.searchFilm({ name });
 
       case 'tv':
-        return fileCabApi.searchTv(name);
+        return fileCabApi.searchTv({ name });
 
       default:
         return throwError(`path ${name} not support`);
@@ -249,8 +249,7 @@ export class FileCab {
       return false;
     }
 
-    return !!data[path].find(it => it.item.id === item.id
-      || (item.url && item.url === it.url),
+    return !!data[path].find(it => mediaCompare(it.item, item) || (item.url && item.url === it.url),
     );
   }
 
@@ -280,7 +279,7 @@ export class FileCab {
     const { data } = this.store.getValue();
 
     if (data[path]) {
-      const founded = data[path].find(it => it.item.id === item.id);
+      const founded = data[path].find(it => mediaCompare(it.item, item));
       if (founded) {
         return Promise.reject({ code: 'notUnique', item: founded });
       }

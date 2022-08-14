@@ -9,13 +9,16 @@ import {
   LibraryMode,
   Path,
   SearchKeys,
-} from '../../models';
+} from '../../../../models';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { FileCabService } from '@shared/services/file-cab.service';
 import { Tag } from '@shared/models/tag';
 import { StatusList } from '@shared/const/const';
 import { Genre } from '@server/models/genre';
+import { DataSourceFormService } from './data-source-form.service';
+import { OrderField } from '../models/interface';
+import { ORDER_DEFAULT } from '../models/const';
 
 const BASE_STATE: ISearchStatus = {
   search: '',
@@ -24,26 +27,61 @@ const BASE_STATE: ISearchStatus = {
   },
 };
 
+const ORDER_FIELD_LIST: OrderField[] = [
+  {
+    key: ORDER_DEFAULT,
+    name: 'Дата добавления',
+  },
+  {
+    key: 'item.title',
+    name: 'Название',
+  },
+  {
+    key: 'item.year',
+    name: 'Год',
+  },
+  {
+    key: 'star',
+    name: 'Оценка',
+  },
+  {
+    key: 'status',
+    name: 'Статус',
+  },
+];
+
+const MAP_MODE_TO_MAX_LIMIT = {
+  [LibraryMode.library]: 100,
+  [LibraryMode.search]: 50,
+};
+
+const MAP_MODE_TO_ORDER_LIST = {
+  [LibraryMode.library]: ORDER_FIELD_LIST,
+  [LibraryMode.search]: [],
+};
+
 @Injectable()
 export class SearchService {
   private status = new BehaviorSubject<ISearchStatus>(BASE_STATE);
   private mode = new BehaviorSubject<LibraryMode>(LibraryMode.library);
-  private path$ = new BehaviorSubject<Path | null>(null);
-  private page = new BehaviorSubject(1);
+  private path = new BehaviorSubject<Path | null>(null);
 
-  page$ = this.page.asObservable();
+  path$ = this.path.asObservable();
   mode$ = this.mode.asObservable();
   status$ = this.status.asObservable();
   searchKeys$: Observable<ICleverSearchKeys>;
+  genres$: Observable<Genre[]>;
 
   constructor(
     private fileCabService: FileCabService,
+    private dataSourceFormService: DataSourceFormService,
   ) {
     this.searchKeys$ = this.createSearchKeys();
+    this.setMode(LibraryMode.library);
   }
 
   setPath(path: Path): void {
-    this.path$.next(path);
+    this.path.next(path);
   }
 
   selectGenre(genre: number): void {
@@ -59,16 +97,24 @@ export class SearchService {
 
   update(status: ISearchStatus): void {
     this.status.next(status);
+    this.setPage(1);
   }
 
   setMode(mode: LibraryMode): void {
     this.mode.next(mode);
+    this.dataSourceFormService.setMaxLimit(MAP_MODE_TO_MAX_LIMIT[mode]);
+    this.dataSourceFormService.setOrderList(MAP_MODE_TO_ORDER_LIST[mode]);
+    this.setPage(1);
   }
 
-  filterByState(data: LibraryItem[], state: ISearchStatus, mode: LibraryMode): LibraryItem[] {
+  setPage(page: number): void {
+    this.dataSourceFormService.setPage(page);
+  }
+
+  filterByState(data: LibraryItem[], state: ISearchStatus): LibraryItem[] {
     if (state) {
       state.search = state.search && state.search.toLocaleLowerCase();
-      const list = data?.filter(item => this.itemToStateCompare(item, state, mode));
+      const list = data?.filter(item => this.itemToStateCompare(item, state));
       return list;
     } else {
       return data;
@@ -76,20 +122,20 @@ export class SearchService {
   }
 
   private createSearchKeys(): Observable<ICleverSearchKeys> {
-    const genres$ = this.path$.pipe(
+    this.genres$ = this.path$.pipe(
       switchMap(path => this.fileCabService.selectGenres(path)),
     );
 
     return combineLatest([
       this.mode$,
       this.fileCabService.tags$,
-      genres$,
+      this.genres$,
     ]).pipe(
       map(([mode, tags, genres]) => this.loadKeys(mode, genres, tags)),
     );
   }
 
-  private itemToStateCompare(item: LibraryItem, state: ISearchStatus, mode: LibraryMode): boolean {
+  private itemToStateCompare(item: LibraryItem, state: ISearchStatus): boolean {
     let isCompare = true;
     isCompare = item.item.title?.toLocaleLowerCase().search(state.search) > -1
       || item.item.originalTitle?.toLocaleLowerCase().search(state.search) > -1

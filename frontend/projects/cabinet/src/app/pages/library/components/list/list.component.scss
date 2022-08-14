@@ -1,8 +1,11 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100% - 10px);
 }
 
 .data {
+  flex: 1;
   display: grid;
   grid-template-columns: 1fr;
 
@@ -17,4 +20,16 @@
   @media screen and (min-width: 1800px) {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   }
+
+  &.-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.message {
+  font-size: 18px;
+  margin-top: 160px;
+  margin-bottom: auto;
 }

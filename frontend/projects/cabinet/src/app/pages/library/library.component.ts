@@ -1,17 +1,20 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { catchError, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { filter, shareReplay, switchMap, take } from 'rxjs/operators';
 import { LibraryService } from '../../services/library.service';
 import { ISearchStatus, LibraryItem, LibraryMode, Path } from '../../../models';
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DataFactoryService } from './services/data-factory.service';
-import { SearchService } from '../../services/search.service';
+import { SearchService } from './services/search.service';
 import { AddItemComponent } from '../../shared/components/add-item/add-item.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { StatusList } from '@shared/const/const';
 import { MetaData } from '@server/models/meta-data';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { LocalDataSourceService } from './services/local-data-source.service';
+import { ExternalDataSourceService } from './services/external-data-source.service';
+import { DataSourceFormService } from './services/data-source-form.service';
 
 @UntilDestroy()
 @Component({
@@ -21,17 +24,21 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   providers: [
     SearchService,
     DataFactoryService,
+    LocalDataSourceService,
+    ExternalDataSourceService,
+    DataSourceFormService,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LibraryComponent implements OnInit {
   mode$ = this.searchService.mode$;
   list$: Observable<LibraryItem[]>;
-  genres$ = this.dataFactoryService.genres$;
+  genres$ = this.searchService.genres$;
+
   searchStatus$ = this.searchService.status$;
-  page$ = this.searchService.page$;
   searchKeys$ = this.searchService.searchKeys$;
-  isLoad$ = new BehaviorSubject(false);
+  state$ = this.dataFactoryService.state$;
+
   LibraryMode = LibraryMode;
 
   private path: Path;
@@ -52,21 +59,10 @@ export class LibraryComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(data => {
         this.path = data.path;
-        this.dataFactoryService.setPath(data.path);
         this.searchService.setPath(data.path);
       });
 
-    this.list$ = combineLatest([
-      this.searchService.status$,
-      this.searchService.mode$,
-    ]).pipe(
-      tap(() => this.isLoad$.next(true)),
-      switchMap(([status, mode]) => this.selectData(mode, status)),
-      catchError(err => {
-        this.notification(err.message);
-        return of([]);
-      }),
-      tap(() => this.isLoad$.next(false)),
+    this.list$ = this.dataFactoryService.list$.pipe(
       shareReplay({ refCount: true, bufferSize: 1 }),
     );
   }
@@ -117,12 +113,8 @@ export class LibraryComponent implements OnInit {
     return item.item.id || item.item.imdbId || item.item.smotretId;
   }
 
-  private selectData(mode: LibraryMode, state: ISearchStatus): Observable<LibraryItem[]> {
-    return (mode === LibraryMode.library
-      ? this.dataFactoryService.getFromLibrary().pipe(
-        map(list => this.searchService.filterByState(list, state, mode)),
-      )
-      : this.dataFactoryService.search(state));
+  onPageChange(page: number): void {
+    this.searchService.setPage(page);
   }
 
   private notification(message: string): void {

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LibraryComponent } from './library.component';
-import { ListModule } from './components/list/list.module';
 import { GenresComponent } from './components/genres/genres.component';
 import { MatIconModule } from '@angular/material/icon';
 import { LinkComponent } from './components/link/link.component';
@@ -20,6 +19,10 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProgressModule } from '@shared/progress/progress.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { PaginatorComponent } from './components/paginator/paginator.component';
+import { ListComponent } from './components/list/list.component';
+import { ListIteratorDirective } from './components/list/list-iterator-directive';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -28,6 +31,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     GenresComponent,
     LibraryComponent,
     LinkComponent,
+    PaginatorComponent,
+
+    ListComponent,
+    ListIteratorDirective,
   ],
   imports: [
     RouterModule.forChild([
@@ -39,7 +46,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     CommonModule,
     FormsModule,
     LazyLoadImageModule,
-    ListModule,
     LoaderModule,
     MatButtonModule,
     MatDialogModule,
@@ -52,6 +58,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ReactiveFormsModule,
     SharedModule,
     StarsModule,
+    MatSelectModule,
   ],
 })
 export class LibraryModule {

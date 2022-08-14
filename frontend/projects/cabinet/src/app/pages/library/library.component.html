@@ -29,8 +29,10 @@
 </ng-template>
 
 <div [appLayoutTopSlot]="searchInput" class="content">
-  <app-loader *ngIf="isLoad$ | async"></app-loader>
-  <app-list [list]="list$ | async">
+  <app-loader *ngIf="(state$ | async)?.loading"></app-loader>
+  <app-list
+    [list]="list$ | async"
+  >
     <app-card
       *listIterator="let item of (list$ | async); trackBy: trackBy"
       class="card"

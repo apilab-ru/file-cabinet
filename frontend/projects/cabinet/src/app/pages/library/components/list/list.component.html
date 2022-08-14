@@ -1,17 +1,16 @@
-<div class="data">
+<app-paginator></app-paginator>
+<div class="data" [class.-empty]="!list?.length">
   <ng-template
-    *ngIf="(showData$ | async)?.length"
+    *ngIf="list?.length; else emptyPlaceholder"
     ngFor
-    [ngForOf]="showData$ | async"
+    [ngForOf]="list"
     [ngForTrackBy]="trackBy"
     [ngForTemplate]="rowTemplate"
   ></ng-template>
+
+  <ng-template #emptyPlaceholder>
+    <div class="message">Нет данных</div>
+  </ng-template>
 </div>
-<div class="paginator">
-  <mat-paginator
-    [length]="(data$ | async)?.length"
-    [pageSize]="limit$ | async"
-    [pageSizeOptions]="limitList$ | async"
-    (page)="setPage($event)"
-  ></mat-paginator>
-</div>
+<app-paginator></app-paginator>
+

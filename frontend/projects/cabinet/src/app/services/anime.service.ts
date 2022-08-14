@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { CacheService } from './cache.service';
-import { MediaItem, SearchRequestResult } from '@server/models/index';
+import { MediaItem, SearchRequest, SearchRequestResult } from '@server/models/index';
 import { Observable } from 'rxjs';
 import { fileCabApi } from '@shared/services/file-cab.api';
 import { FileCabService } from '@shared/services/file-cab.service';
@@ -24,8 +24,8 @@ export class AnimeService {
     );
   }
 
-  findAnime(name: string): Observable<SearchRequestResult<MediaItem>> {
-    return this.cache.get<SearchRequestResult<MediaItem>>(this.keyAnime, name).pipe(
+  findAnime(param: SearchRequest): Observable<SearchRequestResult<MediaItem>> {
+    return this.cache.get<SearchRequestResult<MediaItem>>(this.keyAnime, param).pipe(
       runInZone(this.ngZone),
     );
   }

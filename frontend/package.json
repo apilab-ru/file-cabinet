@@ -9,8 +9,8 @@
     "build:ts": "webpack --config webpack.config.js --mode production --devtool=false",
     "build": "npm run build:ts && npm run build:cabinet && npm run build:popup && npm run copy",
     "copy": "copyfiles -f ./projects/extension/* ../extension",
-    "start:cabinet": "ng build --project=cabinet --watch --base-href ./index.html?/ --source-map=true",
-    "start:popup": "ng build --project=popup --source-map=true --watch --base-href ./index.html?/",
+    "start:cabinet": "ng build --project=cabinet --watch --base-href ./index.html?/ --optimization=false",
+    "start:popup": "ng build --project=popup --optimization=false --watch --base-href ./index.html?/",
     "start:ts": "webpack --mode development --config webpack.config.js -w",
     "storybook": "start-storybook -p 6006"
   },

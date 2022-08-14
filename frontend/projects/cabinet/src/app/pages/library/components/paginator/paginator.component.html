@@ -1,0 +1,55 @@
+<div class="controls">
+  <div class="order">
+    <mat-form-field *ngIf="(orderFieldList$ | async)?.length" class="order-field select-field">
+      <mat-label>Сортировать:</mat-label>
+      <mat-select [ngModel]="orderField$ | async" (ngModelChange)="setOrderField($event)">
+        <mat-option *ngFor="let field of orderFieldList$ | async" [value]="field.key">
+          {{ field.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="order-direction">
+      <button
+        *ngFor="let orderType of orderTypes"
+        class="button-action icon-{{ orderType }}"
+        [class.-active]="(orderType$ | async) !== orderType"
+        (click)="setOrderType(orderType)"
+      ></button>
+
+      {{ orderType$ | async }}
+    </div>
+  </div>
+
+  <div class="paginator">
+    <mat-form-field class="page-size select-field">
+      <mat-label>Элементов на страницу:</mat-label>
+      <mat-select [ngModel]="limit$ | async" (ngModelChange)="setLimit($event)">
+        <mat-option *ngFor="let item of limitList$ | async" [value]="item">
+          {{ item }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="page-status">
+      <span>{{ page$ | async }}</span>
+
+      <span *ngIf="totalPages$ | async as totalPages" class="total-page">
+        из {{ totalPages }}
+      </span>
+    </div>
+
+    <div class="page-navigation">
+      <button
+        class="button-action icon-chevron-left"
+        [class.-active]="hasPrev$ | async"
+        (click)="prevPage()"
+      ></button>
+      <button
+        class="button-action icon-chevron-right"
+        [class.-active]="hasNext$ | async"
+        (click)="nextPage()"
+      ></button>
+    </div>
+  </div>
+</div>

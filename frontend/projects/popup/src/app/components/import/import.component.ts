@@ -120,8 +120,8 @@ export class PopupImportComponent implements OnInit {
   }
 
   private checkAndAddItem(parserResponse: ParserResponse): Observable<void> {
-    if (parserResponse.id) {
-      return this.fileCabService.loadById(parserResponse.type, parserResponse.id).pipe(
+    if (parserResponse.smotretId) {
+      return this.fileCabService.loadById(parserResponse.type, parserResponse.smotretId).pipe(
         map(item => {
           this.fileCabService.addItemLibToStore(parserResponse.type, {
             ...parserResponse.meta,
@@ -187,7 +187,9 @@ export class PopupImportComponent implements OnInit {
 
     return combineLatest(
       list.map(it => this.fileCabService.checkExisted(it.type || defaultType, {
-        id: it.id,
+        smotretId: it.smotretId,
+        shikimoriId: it.shikimoriId,
+        imdbId: it.imdbId,
         url: it.meta?.url,
       })),
     ).pipe(
