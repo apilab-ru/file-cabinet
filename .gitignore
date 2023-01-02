@@ -11,6 +11,8 @@ extension.crx
 /frontend/node_modules
 /server/node_modules
 /server/cache
+/server/src/config/config-custom.ts
+/server/src/config/fb-config.json
 
 # profiling files
 chrome-profiler-events.json
